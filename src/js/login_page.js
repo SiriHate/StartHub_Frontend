@@ -1,6 +1,6 @@
 document.getElementById('forgot-password-link').addEventListener('click', function(e) {
     e.preventDefault();
-    window.location.href = 'http://localhost/password_recovery.php';
+    window.location.href = CONFIG.base_api_url + '/password_recovery.php';
 });
 
 function login() {
@@ -17,7 +17,7 @@ function login() {
         "password": password
     };
 
-    fetch('http://127.0.0.1:8080/api/v1/users/member/login', {
+    fetch(CONFIG.base_api_url + '/api/v1/users/member/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -40,5 +40,5 @@ function login() {
 }
 
 function redirectToRegistration() {
-    window.location.href = 'http://localhost/registration.php';
+    window.location.href = CONFIG.base_web_url + '/registration.php';
 }
