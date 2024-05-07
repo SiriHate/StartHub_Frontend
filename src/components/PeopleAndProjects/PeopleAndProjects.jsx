@@ -1,9 +1,9 @@
 import React from 'react';
 import NavigationBar from "../NavigationBar/NavigationBar";
+import styles from './PeopleAndProjects.module.css';
 import {Helmet} from "react-helmet";
-import styles from "../ArticlesAndNews/ArticlesAndNews.module.css";
 
-function ArticlesAndNews() {
+function PeopleAndProjects() {
     return (
         <>
             <Helmet>
@@ -17,4 +17,4 @@ function ArticlesAndNews() {
     );
 }
 
-export default ArticlesAndNews;
+export default PeopleAndProjects;

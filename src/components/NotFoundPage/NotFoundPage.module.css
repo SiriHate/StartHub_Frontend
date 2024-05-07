@@ -1,4 +1,6 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Tomorrow:wght@400;600;700&display=swap');
+
+.notFoundPageContainer {
     margin: 0;
     padding: 0;
     font-family: 'Tomorrow', sans-serif;
@@ -8,13 +10,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-}
-
-.not-found-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 100%;
+    position: relative;
 }
 
 .text {
@@ -37,11 +33,14 @@ h1 {
     animation: starTwinkle 3s infinite linear;
 }
 
-.astronaut img {
-    width: 100px;
+.astronaut {
     position: absolute;
     top: 55%;
     animation: astronautFly 6s infinite linear;
+}
+
+.astronaut img {
+    width: 100px;
 }
 
 @keyframes astronautFly {
@@ -84,19 +83,19 @@ h1 {
     }
 }
 
-.return-home-btn {
+.returnHomeBtn {
     display: inline-block;
     padding: 15px 30px;
-    background-color: #354078; /* Темно-синий оттенок */
+    background-color: #354078;
     color: white;
     text-decoration: none;
     border: none;
-    border-radius: 20px; /* Закругление углов */
+    border-radius: 20px;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-top: 20px; /* Небольшой отступ сверху */
+    margin-top: 20px;
 }
 
-.return-home-btn:hover {
-    background-color: #2A3550; /* Темно-синий оттенок при наведении */
+.returnHomeBtn:hover {
+    background-color: #2A3550;
 }

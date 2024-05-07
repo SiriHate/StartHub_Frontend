@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../Global.css';
-import './PasswordRecoveryPage.css';
-import {Helmet} from "react-helmet";
+import styles from './PasswordRecoveryPage.module.css';
+import { Helmet } from "react-helmet";
 
 const PasswordRecoveryPage = () => {
     const [email, setEmail] = useState('');
@@ -48,23 +47,25 @@ const PasswordRecoveryPage = () => {
         <div>
             <Helmet>
                 <title>Восстановление пароля</title>
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <img src="/logo.png" alt="Логотип компании" id="logo" />
-            <div className="form-container">
-                <div className="wrapper">
-                    <div className="title">
+            <img src="/logo.png" alt="Логотип компании" className={styles.logo}/>
+            <div className={styles.formContainer}>
+                <div className={styles.wrapper}>
+                    <div className={styles.title}>
                         Восстановление пароля
                     </div>
                     <form onSubmit={handleSubmit}>
-                        <div className="field">
+                        <div className={styles.field}>
                             <input type="text" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                             <label htmlFor="email">Email</label>
                         </div>
-                        <div className="field">
+                        <div className={styles.field}>
                             <input type="submit" value="Восстановить пароль" />
                         </div>
-                        <div className="signup-link">
-                            Перейти к <button onClick={() => navigate('/')} className="link-button">Авторизации</button>
+                        <div className={styles.signupLink}>
+                            Перейти к <span onClick={() => navigate('/')} className={styles.linkText}>Авторизации</span>
                         </div>
                     </form>
                 </div>

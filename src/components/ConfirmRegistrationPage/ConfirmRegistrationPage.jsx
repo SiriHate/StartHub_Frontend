@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import '../Global.css';
 import './ConfirmRegistrationPage.css';
 
 const ConfirmRegistrationPage = () => {

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
-import '../Global.css';
-import './LoginPage.css';
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Helmet} from 'react-helmet';
+import styles from './LoginPage.module.css';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -11,7 +10,6 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Load saved credentials when the component mounts
     useEffect(() => {
         const savedUsername = localStorage.getItem('username') || '';
         const savedPassword = localStorage.getItem('password') || '';
@@ -35,11 +33,9 @@ const LoginPage = () => {
 
         try {
             const response = await fetch(`http://localhost:8081/api/v1/users/member/login`, {
-                method: 'POST',
-                headers: {
+                method: 'POST', headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
+                }, body: JSON.stringify({username, password})
             });
 
             if (response.status === 401) {
@@ -49,17 +45,12 @@ const LoginPage = () => {
                 setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
             } else {
                 const token = await response.text();
-                console.log({ username, password });
-                document.cookie = `Authorization=Bearer ${token}; path=/`;
+                document.cookie = `Authorization=Bearer ${token}; path=/; SameSite=None; Secure`;
 
                 if (rememberMe) {
-                    try {
-                        localStorage.setItem('username', username);
-                        localStorage.setItem('password', password);
-                        localStorage.setItem('rememberMe', rememberMe.toString());
-                    } catch (error) {
-                        console.error('Failed to save to localStorage:', error);
-                    }
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('password', password);
+                    localStorage.setItem('rememberMe', rememberMe.toString());
                 } else {
                     localStorage.removeItem('username');
                     localStorage.removeItem('password');
@@ -83,83 +74,84 @@ const LoginPage = () => {
         navigate('/registration');
     };
 
-    return (
-        <div>
-            <Helmet>
-                <title>Авторизация - Ваша компания</title>
-            </Helmet>
-
-            <div>
-                <img src="/logo.png" alt="Логотип компании" id="logo" />
-            </div>
-
-            <div className="form-container">
-                <div className="wrapper">
-                    <div className="title">
-                        Авторизация
+    return (<div className={styles.loginPage}>
+        <Helmet>
+            <title>Авторизация</title>
+            <html className={styles.html}/>
+            <body className={styles.body}/>
+        </Helmet>
+        <img src="/logo.png" alt="Логотип" className={styles.logo}/>
+        <div className={styles.formContainer}>
+            <div className={styles.wrapper}>
+                <div className={styles.title}>
+                    Авторизация
+                </div>
+                <form onSubmit={handleLogin}>
+                    <div className={styles.field}>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={username}
+                            className={styles.fieldInput}
+                            placeholder=" " // placeholder for triggering the :placeholder-shown pseudo-class
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
+                        <label htmlFor="username" className={styles.fieldLabel}>Имя пользователя</label>
                     </div>
-                    <form onSubmit={handleLogin}>
-                        <div className="field">
+                    <div className={styles.field}>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={password}
+                            className={styles.fieldInput}
+                            placeholder=" " // placeholder for triggering the :placeholder-shown pseudo-class
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    <div className={styles.content}>
+                        <div className={styles.checkbox}>
                             <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
+                                type="checkbox"
+                                id="remember-me"
+                                checked={rememberMe}
+                                className={styles.checkboxInput}
+                                onChange={(e) => setRememberMe(e.target.checked)}
                             />
-                            <label htmlFor="username">Имя пользователя</label>
+                            <label htmlFor="remember-me" className={styles.checkboxLabel}>Запомнить меня</label>
                         </div>
-                        <div className="field">
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            <label htmlFor="password">Пароль</label>
-                        </div>
-                        {error && <div className="error-message">{error}</div>}
-                        <div className="content">
-                            <div className="checkbox">
-                                <input
-                                    type="checkbox"
-                                    id="remember-me"
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                />
-                                <label htmlFor="remember-me">Запомнить меня</label>
-                            </div>
-                            <div className="pass-link">
-                                <button
-                                    onClick={handleForgotPassword}
-                                    id="forgot-password-link"
-                                    className="link-button"
-                                >
-                                    Забыли пароль?
-                                </button>
-                            </div>
-                        </div>
-                        <div className="field">
-                            <input type="submit" value="Войти" />
-                        </div>
-                        <div className="signup-link">
-                            Еще нет аккаунта?{' '}
+                        <div className={styles.passLink}>
                             <button
-                                onClick={redirectToRegistration}
-                                id="registration-link"
-                                className="link-button"
+                                onClick={handleForgotPassword}
+                                id="forgot-password-link"
+                                className={styles.linkButton}
                             >
-                                Регистрация
+                                Забыли пароль?
                             </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div className={styles.field}>
+                        <input type="submit" value="Войти" className={styles.submitButton}/>
+                    </div>
+                    <div className={styles.signupLink}>
+                        Еще нет аккаунта?{' '}
+                        <button
+                            onClick={redirectToRegistration}
+                            id="registration-link"
+                            className={styles.linkButton}
+                        >
+                            Регистрация
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    );
+    </div>);
 };
 
 export default LoginPage;
