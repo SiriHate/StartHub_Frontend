@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import styles from "./NavigationBar.module.css";
 
 const NavigationBar = () => {
@@ -9,6 +9,9 @@ const NavigationBar = () => {
     return (
         <header className={styles.navigationHeader}>
             <div className={styles.headerContainer}>
+                <div className={styles.logoContainer}>
+                    <img src="/logo.png" alt="Логотип" className={styles.logo}/>
+                </div>
                 <nav className={styles.navContainer}>
                     <ul className={styles.navList}>
                         <li className={styles.navItem}>
@@ -32,8 +35,8 @@ const NavigationBar = () => {
                             </Link>
                         </li>
                         <li className={styles.navItem}>
-                            <Link to="/profile" className={getActiveClass("/profile")}>
-                                <i className={`fas fa-user ${styles.faUser}`} /> Личный кабинет
+                            <Link to="/member/personal-account" className={getActiveClass("/member/personal-account")}>
+                                <i className={`fas fa-user ${styles.faUser}`}/> Личный кабинет
                             </Link>
                         </li>
                     </ul>

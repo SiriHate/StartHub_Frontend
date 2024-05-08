@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import './ConfirmRegistrationPage.css';
+import {Helmet} from "react-helmet";
+import styles from "./ConfirmRegistrationPage.css";
 
 const ConfirmRegistrationPage = () => {
     const [message, setMessage] = useState('');
@@ -47,6 +48,10 @@ const ConfirmRegistrationPage = () => {
 
     return (
         <div className="confirm-registration-container">
+            <Helmet>
+                <title>Подтверждение регистрации</title>
+                <body className={styles.body}/>
+            </Helmet>
             {loading ? <h2>Загрузка...</h2> : <h2>{message}</h2>}
         </div>
     );

@@ -1,15 +1,20 @@
-.html {
+.body {
     height: 100%;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     overflow-x: hidden;
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
 }
 
-.body {
-    height: 100%;
-    box-sizing: border-box;
-    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+.content {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .myProjectsPage {
@@ -24,6 +29,13 @@
 
 .content {
     width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .controls {
@@ -71,6 +83,10 @@
     background: #25496b;
 }
 
+.myProjectsTitle {
+    color: white;
+}
+
 .createButton {
     background: #1f8b3f;
 }
@@ -92,8 +108,8 @@
 }
 
 .projectImage {
-    width: 300px;
-    height: 300px;
+    width: 150px;
+    height: 150px;
     object-fit: cover;
     border-radius: 5px;
 }

@@ -7,12 +7,23 @@ import styles from "../EventsCalendarPage/EventsCalendarPage.module.css";
 
 function EventsCalendarPage() {
     const [date, setDate] = useState(new Date());
+    const [events, setEvents] = useState([
+        { id: 1, date: '2023-05-01', title: "Майский праздник" },
+        { id: 2, date: '2023-05-09', title: "День Победы" },
+        // Добавьте здесь другие события
+    ]);
+
+    // Фильтрация событий по выбранной дате
+    const eventsForDay = events.filter(event =>
+        new Date(event.date).toDateString() === date.toDateString()
+    );
 
     return (
         <>
             <Helmet>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <title>Календарь событий</title>
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
             <NavigationBar />
             <div className={styles.eventsCalendarPage}>
@@ -27,6 +38,17 @@ function EventsCalendarPage() {
                             : '';
                     }}
                 />
+                <div className={styles.eventList}>
+                    {eventsForDay.length > 0 ? (
+                        <ul>
+                            {eventsForDay.map(event => (
+                                <li key={event.id}>{event.title}</li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>На эту дату событий нет.</p>
+                    )}
+                </div>
             </div>
         </>
     );

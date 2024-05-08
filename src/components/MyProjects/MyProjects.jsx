@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
+import {useNavigate} from 'react-router-dom';
 import styles from "./MyProjects.module.css";
 import NavigationBar from "../NavigationBar/NavigationBar";
 
 const projectsData = [
-    { id: 1, name: "Project One", image: "project1.jpg" },
+    { id: 1, name: "Project One", image: "project2.jpg" },
     { id: 2, name: "Project Two", image: "project2.jpg" },
     // Add more projects as needed
 ];
@@ -12,6 +13,7 @@ const projectsData = [
 const MyProjects = () => {
     const [projects, setProjects] = useState(projectsData);
     const [searchQuery, setSearchQuery] = useState("");
+    const navigate = useNavigate();
 
     const handleSearch = () => {
         setProjects(
@@ -21,20 +23,21 @@ const MyProjects = () => {
         );
     };
 
-    const handleCreateProject = () => {
-        console.log("Create Project button clicked");
-        // Add your create project logic here
+    const handleCreateProject = (e) => {
+        e.preventDefault();
+        navigate('/create_project');
     };
 
     return (
         <>
             <Helmet>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <title>Мои проекты</title>
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
+            <NavigationBar />
             <div className={styles.myProjectsPage}>
-                <NavigationBar />
-                <h2>Мои проекты</h2>
+                <h2 className={`${styles.formTitle} ${styles.myProjectsTitle}`}>Мои проекты</h2>
                 <div className={styles.content}>
                     <div className={styles.controls}>
                         <div className={styles.searchBar}>
@@ -57,7 +60,7 @@ const MyProjects = () => {
                         ) : (
                             projects.map(project => (
                                 <div key={project.id} className={styles.project}>
-                                    <img src={project.image} alt={project.name} className={styles.projectImage} />
+                                    <img src="/logo.png" alt={project.name} className={styles.projectImage} />
                                     <div className={styles.projectName}>{project.name}</div>
                                 </div>
                             ))

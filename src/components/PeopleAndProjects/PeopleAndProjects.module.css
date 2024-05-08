@@ -1,23 +1,200 @@
-.html {
+.body {
     height: 100%;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     overflow-x: hidden;
-}
-
-.body {
-    height: 100%;
-    box-sizing: border-box;
     background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
 }
 
 .peopleAndProjectsPage {
-    height: 100%;
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
     width: 100%;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.sidebar {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.toggleSwitch {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+
+.toggleButton {
+    margin-top: 50px;
+    background: #366dbf;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.toggleButton:last-child {
+    margin-right: 0;
+}
+
+.toggleButton.active {
+    background: #25496b;
+}
+
+.filters {
+    background: linear-gradient(to bottom, #1f1746 0%, #131537 100%);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 150px;
+    position: absolute;
+    width: 100%;
+}
+
+.categoryButton {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #2a163e;
+    color: #ddd;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.categoryButton:hover {
+    background: #221340;
+}
+
+.activeCategory {
+    background: #442266;
+    color: white;
+    font-weight: bold;
+}
+
+.activeCategory:hover {
+    background: #331944;
+}
+
+.applyButton {
+    background-color: #3a2a5a;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+}
+
+.applyButton:hover {
+    background-color: #2f2350;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    overflow: auto;
+    width: 100%;
+}
+
+.controls {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 70%;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+.searchBar {
+    display: flex;
+    width: 100%;
+    gap: 15px;
+}
+
+.searchInput {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    color: #18181A;
+    background: #fff;
+    outline: none;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #366dbf;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 170px;
+    height: 50px;
+}
+
+.button:hover {
+    background: #25496b;
+}
+
+.projectsList {
+    width: 70%;
+    display: flex;
     flex-direction: column;
-    font-family: 'Montserrat', sans-serif;
+    gap: 10px;
+    align-items: center;
+}
+
+.project {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #1f1f40;
+    border-radius: 5px;
+    gap: 20px;
+    width: 100%;
+}
+
+.projectImage {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.projectName {
+    font-size: 18px;
+    color: #fff;
+}
+
+.emptyProjects {
+    text-align: center;
+    color: #e23b3b;
+    margin-top: 50px;
 }

@@ -25,7 +25,7 @@
     flex-direction: column;
     max-width: 800px;
     width: 100%;
-    border: 2px solid #2a2a55;  /* Менее броский цвет */
+    border: 2px solid #2a2a55;
 }
 
 .headerContainer {
@@ -124,11 +124,11 @@
 .info {
     font-size: 16px;
     margin-top: 5px;
-    color: #aaa; /* Светлый цвет для названия поля */
+    color: #aaa;
 }
 
 .value {
-    color: #fff; /* Белый цвет для значения поля */
+    color: #fff;
 }
 
 .modalTitle {
@@ -149,7 +149,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* Полупрозрачный черный цвет для фона */
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modalContent {
@@ -163,8 +163,8 @@
 }
 
 .modalContent p {
-    margin-bottom: 15px; /* Отступ снизу */
-    color: #fff; /* Белый цвет текста */
+    margin-bottom: 15px;
+    color: #fff;
 }
 
 .modalContent button {
@@ -176,8 +176,8 @@
     cursor: pointer;
     margin-right: 10px;
     transition: background 0.3s ease;
-    width: calc(50% - 10px); /* Ширина кнопок с отступом */
-    box-sizing: border-box; /* Учитываем отступы в общей ширине */
+    width: calc(50% - 10px);
+    box-sizing: border-box;
 }
 
 .modalContent button:last-child {
@@ -185,22 +185,22 @@
 }
 
 .modalContent button.confirmDeleteButton {
-    background: #e23b3b; /* Красный цвет кнопки */
-    color: #fff; /* Белый цвет текста */
+    background: #e23b3b;
+    color: #fff;
 }
 
 .modalContent button.confirmCreateButton {
-    background: #3cb043; /* Красный цвет кнопки */
-    color: #fff; /* Белый цвет текста */
+    background: #3cb043;
+    color: #fff;
 }
 
 .modalContent button.cancelButton {
-    background: #aaa; /* Светло-серый цвет кнопки */
-    color: #fff; /* Белый цвет текста */
+    background: #aaa;
+    color: #fff;
 }
 
 .modalContent button:hover {
-    opacity: 0.8; /* Понижаем прозрачность при наведении */
+    opacity: 0.8;
 }
 
 .createButton {
@@ -213,7 +213,7 @@
     transition: background 0.3s;
     background: #1f8b3f;
     margin: 10px;
-    width: 100%;  /* Ширина, равная ширине adminPanel */
+    width: 100%;
 }
 
 .createButton:hover {
@@ -229,7 +229,7 @@
 
 .emptyModerators {
     text-align: center;
-    color: #e23b3b; /* Красный цвет текста */
+    color: #e23b3b;
     margin-top: 50px;
 }
 
@@ -247,6 +247,6 @@
 .modalLabel {
     display: block;
     text-align: left;
-    color: #fff; /* Белый цвет для надписи */
+    color: #fff;
     margin-bottom: 5px;
 }

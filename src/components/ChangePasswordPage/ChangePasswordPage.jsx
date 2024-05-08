@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import './ChangePasswordPage.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import styles from "./ChangePasswordPage.module.css";
 
 const PasswordChangePage = () => {
     const [newPassword, setNewPassword] = useState('');
@@ -82,7 +82,9 @@ const PasswordChangePage = () => {
     return (
         <div>
             <Helmet>
-                <title>Изменение пароля</title>
+                <title>Подтверждение регистрации</title>
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
             <img src="/logo.png" alt="Логотип компании" id="logo"/>
             <div className="form-container">
