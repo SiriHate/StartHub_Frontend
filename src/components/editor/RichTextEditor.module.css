@@ -1,0 +1,14 @@
+.qlToolbar {
+    background-color: #f0f0f0 !important;
+    padding: 5px !important;
+}
+
+.qlContainer {
+    background-color: #ffffff !important;
+    color: #000 !important;
+    border-color: #ccc !important;
+}
+
+.qlEditor {
+    min-height: 500px !important
+}

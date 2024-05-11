@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+.html {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.profilePage {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profileCard {
+    margin-top: 50px;
+    background: #1b1739;
+    color: #f0f0f0;
+    width: 70%;
+    max-width: 35%;
+    min-width: 35%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 50px;
+}
+
+.profileCardHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #1b1739;
+    width: 100%;
+    padding: 20px;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid #444;
+}
+
+.username {
+    font-size: 24px;
+    font-weight: 600;
+    color: #f0f0f0;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.infoSection {
+    width: 90%;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px solid #333;
+}
+
+.infoItem {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.label {
+    font-weight: 600;
+    color: #f0f0f0;
+    flex: 1;
+    min-width: 150px;
+    margin-right: 10px;
+    text-align: right;
+}
+
+.aboutLabel {
+    font-weight: 600;
+    color: #f0f0f0;
+    flex: 1;
+    min-width: 150px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.infoText {
+    font-size: 16px;
+    font-weight: 400;
+    color: #f0f0f0;
+    flex: 2;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #26243b;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.aboutSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.aboutText {
+    width: 90%;
+    background-color: #26243b;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    margin-top: 10px;
+    text-align: justify;
+    min-height: 100px;
+    color: #f0f0f0;
+    font-size: 14px;
+}
+
+@media screen and (max-width: 600px) {
+    .profilePage {
+        width: 90%;
+    }
+
+    .label {
+        min-width: 120px;
+    }
+}

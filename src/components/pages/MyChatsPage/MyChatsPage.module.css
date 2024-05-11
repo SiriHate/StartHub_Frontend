@@ -1,0 +1,60 @@
+.chatPage {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 20px;
+}
+
+.chatList {
+    width: 300px;
+    background: #1b1739;
+    color: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+    height: 90vh;
+    overflow-y: auto;
+}
+
+.chatPreview {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+}
+
+.chatPreview:hover {
+    background-color: #26243b;
+}
+
+.chatName {
+    font-weight: 600;
+}
+
+.chatSnippet {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.chatWindow {
+    flex-grow: 1;
+    background: #1b1739;
+    color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    height: 90vh;
+}
+
+.chatTitle {
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+.messages {
+    margin-top: 20px;
+}
+
+.noChatSelected {
+    text-align: center;
+    color: #ccc;
+}

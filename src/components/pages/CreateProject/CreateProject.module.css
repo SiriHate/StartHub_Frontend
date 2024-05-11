@@ -1,0 +1,307 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+.html, .body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.body {
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
+}
+
+.createProjectPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.createProjectContainer {
+    width: 100%;
+    max-width: 600px;
+    background-color: #1b1739;
+    color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.formTitle {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.createProjectForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.centerLabel {
+    text-align: center;
+    width: 100%;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroup label {
+    margin-bottom: 5px;
+    color: #f0f0f0;
+}
+
+.formGroup input[type="text"],
+.formGroup textarea,
+.formGroup select {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #26243b;
+    color: #f0f0f0;
+}
+
+.formGroup input[type="file"] {
+    border: none;
+    color: #f0f0f0;
+}
+
+.formGroup textarea {
+    height: 100px;
+}
+
+.goBackButton {
+    height: 40px;
+    width: 150px;
+    margin-bottom: 30px;
+    padding: 8px 10px;
+    border: none;
+    background-color: #5a55a3;
+    color: #ffffff;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
+.submitButton {
+    margin-top: 25px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #4444aa;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+.submitButton:hover {
+    background-color: #5555bb;
+}
+
+.goBackButton:hover {
+    background-color: #484391;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.logoPreview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.logoPreview img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.uploadButton {
+    padding: 10px;
+    background-color: #4444aa;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 10px;
+    border: none;
+}
+
+.uploadButton:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.uploadButton input[type="file"] {
+    display: none;
+}
+
+.memberInputContainer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.memberInputContainer input,
+.memberInputContainer select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.memberInputContainer button {
+    padding: 8px 12px;
+    border-radius: 5px;
+    background-color: #4a86e8;
+    color: white;
+    cursor: pointer;
+}
+
+.memberInputContainer button:hover {
+    background-color: #357abD;
+}
+
+.membersList {
+    margin-top: 20px;
+    border: 1px solid #444;
+    padding: 10px;
+    background-color: #26243b;
+    border-radius: 5px;
+}
+
+.memberItem {
+    background-color: #1f1f40;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    counter-increment: memberCounter;
+}
+
+.memberItem::before {
+    content: counter(memberCounter) ". ";
+    color: #f0f0f0;
+    margin-right: 10px;
+}
+
+.emptyMessage {
+    color: #ccc;
+    text-align: center;
+    padding: 20px;
+}
+
+
+.memberItem {
+    background-color: #1f1f40;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.memberItem button {
+    padding: 4px 8px;
+    border-radius: 5px;
+    background-color: #cc3f42;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.memberItem button:hover {
+    background-color: #aa5355;
+}
+
+.errorText {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.sectionTitle {
+    margin-top: 30px;
+    font-size: 20px;
+    color: #f0f0f0;
+    text-align: left;
+}
+
+.memberInputContainer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: -8px;
+}
+
+.fullWidthInput, .uniformHeightSelect {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #26243b;
+    color: #f0f0f0;
+    height: 40px;
+}
+
+.addMemberButton {
+    padding: 10px 15px;
+    border-radius: 5px;
+    background-color: #4a86e8;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+.addMemberButton:hover {
+    background-color: #357abD;
+}
+
+.removeMemberButton {
+    padding: 4px 8px;
+    border-radius: 5px;
+    background-color: #914444;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.removeMemberButton:hover {
+    background-color: #914444;
+}
+
+@media screen and (max-width: 600px) {
+    .createProjectContainer {
+        width: 90%;
+    }
+}
