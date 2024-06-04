@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './PasswordRecoveryPage.module.css';
 import { Helmet } from "react-helmet";
+import config from '../../../config';
 
 const PasswordRecoveryPage = () => {
     const [email, setEmail] = useState('');
@@ -26,7 +27,7 @@ const PasswordRecoveryPage = () => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8081/api/v1/users/member/password_recovery/request', {
+            const response = await fetch(`${config.USER_SERVICE}/members/password_recovery/request`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

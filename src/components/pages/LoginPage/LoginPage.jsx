@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Helmet} from 'react-helmet';
-import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './LoginPage.module.css';
+import config from '../../../config';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -33,7 +33,7 @@ const LoginPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8081/api/v1/users/user/login`, {
+            const response = await fetch(`${config.USER_SERVICE}/users/login`, {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json'
                 }, body: JSON.stringify({username, password})
@@ -96,7 +96,7 @@ const LoginPage = () => {
                                 name="username"
                                 value={username}
                                 className={styles.fieldInput}
-                                placeholder=" " // placeholder for triggering the :placeholder-shown pseudo-class
+                                placeholder=" "
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
                             />
@@ -109,7 +109,7 @@ const LoginPage = () => {
                                 name="password"
                                 value={password}
                                 className={styles.fieldInput}
-                                placeholder=" " // placeholder for triggering the :placeholder-shown pseudo-class
+                                placeholder=" "
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
@@ -153,7 +153,8 @@ const LoginPage = () => {
                     </form>
                 </div>
             </div>
-        </div>);
+        </div>
+    );
 };
 
 export default LoginPage;

@@ -23,6 +23,7 @@
 }
 
 .manageProjectContainer {
+    position: relative;
     width: 100%;
     max-width: 600px;
     background-color: #1b1739;
@@ -33,6 +34,7 @@
 }
 
 .formTitle {
+    margin-top: 15px;
     text-align: center;
     margin-bottom: 50px;
     font-size: 24px;
@@ -83,23 +85,36 @@
 }
 
 .goBackButton {
-    height: 40px;
-    width: 150px;
-    margin-bottom: 30px;
-    padding: 8px 10px;
-    border: none;
-    background-color: #5a55a3;
-    color: #ffffff;
-    border-radius: 20px;
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    font-weight: 500;
+}
+
+.goBackButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.15);
+}
+
+.goBackButton svg {
+    transition: fill 0.3s ease;
 }
 
 .submitButton {
     margin-top: 25px;
-    padding: 10px 15px;
+    width: 100%;
+    padding: 12px 20px;
     border: none;
     background-color: #4444aa;
     color: #fff;
@@ -107,6 +122,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-weight: 600;
+    font-size: 16px;
 }
 
 .submitButton:hover {
@@ -219,7 +235,6 @@
     padding: 20px;
 }
 
-
 .memberItem {
     background-color: #1f1f40;
     padding: 8px;
@@ -298,6 +313,42 @@
 
 .removeMemberButton:hover {
     background-color: #914444;
+}
+
+.scheduleMeetingButton, .deleteProjectButton, .statisticsButton {
+    width: 100%;
+    padding: 12px 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.scheduleMeetingButton {
+    background-color: #4a86e8; /* Blue for scheduling */
+}
+
+.scheduleMeetingButton:hover {
+    background-color: #357abD;
+}
+
+.statisticsButton {
+    background-color: #3a86ff;
+}
+
+.statisticsButton:hover {
+    background-color: #3a86ff;
+}
+
+.deleteProjectButton {
+    background-color: #cc3f42;
+}
+
+.deleteProjectButton:hover {
+    background-color: #aa5355;
 }
 
 @media screen and (max-width: 600px) {

@@ -1,9 +1,12 @@
 import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet";
-import "react-quill/dist/quill.snow.css";
+import "quill/dist/quill.snow.css";
 import styles from "./CreateNews.module.css";
 import NavigationBar from "../../navigation_bar/NavigationBar";
+import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import RichTextEditor from "../../editor/RichTextEditor";
+import { useNavigate } from "react-router-dom";
+import config from "../../../config";
 
 const CreateNews = () => {
     const [newsTitle, setNewsTitle] = useState("");
@@ -13,6 +16,7 @@ const CreateNews = () => {
     const [newsCategory, setNewsCategory] = useState('');
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,7 +30,7 @@ const CreateNews = () => {
         formData.append('file', newsLogo);
 
         try {
-            const uploadResponse = await fetch('http://localhost:3001/upload/newsLogos', {
+            const uploadResponse = await fetch(`${config.FILE_SERVER}/upload/newsLogos`, {
                 method: 'POST',
                 body: formData,
             });
@@ -41,7 +45,7 @@ const CreateNews = () => {
                     category: newsCategory
                 };
 
-                const response = await fetch('http://localhost:8083/api/v1/main/news', {
+                const response = await fetch(`${config.MAIN_SERVICE}/news`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -81,6 +85,9 @@ const CreateNews = () => {
             <NavigationBar />
             <div className={styles.createNewsPage}>
                 <div className={styles.createNewsContainer}>
+                    <button onClick={() => navigate(-1)} className={styles.goBackButton}>
+                        <GoBackIcon/>
+                    </button>
                     <h2 className={styles.formTitle}>Публикация новости</h2>
                     <form className={styles.createNewsForm} onSubmit={handleSubmit}>
                         <div className={styles.formGroup}>

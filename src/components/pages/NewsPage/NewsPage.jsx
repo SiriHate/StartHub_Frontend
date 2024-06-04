@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import styles from "./NewsPage.module.css";
+import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from "../../navigation_bar/NavigationBar";
+import config from '../../../config';
 
 const NewsPage = () => {
     const { newsId } = useParams();
+    const navigate = useNavigate();
     const [news, setNews] = useState({
         title: "",
         reporter: "",
@@ -13,21 +16,23 @@ const NewsPage = () => {
         category: "",
         content: ""
     });
+    const [loading, setLoading] = useState(true);
     const [redirect, setRedirect] = useState(false);
 
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await fetch(`http://localhost:8083/api/v1/main/news/${newsId}`);
+                const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setNews({
                         title: data.title,
                         reporter: data.reporter,
-                        previewUrl: `http://localhost:3001${data.previewUrl}`,
+                        previewUrl: `${config.FILE_SERVER}${data.previewUrl}`,
                         category: data.category,
                         content: data.content
                     });
+                    setLoading(false);
                 } else {
                     console.error('Ошибка при получении данных:', response.status);
                     setRedirect(true);
@@ -40,6 +45,10 @@ const NewsPage = () => {
 
         fetchNews();
     }, [newsId]);
+
+    if (loading) {
+        return <div className={styles.loading}>Loading...</div>;
+    }
 
     if (redirect) {
         return <Navigate to="/not-found" replace />;
@@ -54,12 +63,15 @@ const NewsPage = () => {
             </Helmet>
             <NavigationBar />
             <div className={styles.newsContainer}>
+                <button onClick={() => navigate(-1)} className={styles.goBackButton}>
+                    <GoBackIcon />
+                </button>
                 <h1 className={styles.newsTitle}>{news.title}</h1>
                 <div className={styles.newsMetadata}>
                     Автор: <span className={styles.newsReporter}>{news.reporter}</span> | Категория: <span
                     className={styles.newsCategory}>{news.category}</span>
                 </div>
-                <img src={news.previewUrl} alt="Логотип новости" className={styles.newsPreview}/>
+                <img src={news.previewUrl} alt="News preview" className={styles.newsPreview}/>
                 <div className={styles.newsText} dangerouslySetInnerHTML={{__html: news.content}}/>
             </div>
         </>

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './PersonalMemberAccount.module.css';
 import NavigationBar from '../../navigation_bar/NavigationBar';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
+import config from '../../../config';
 
 function PersonalMemberAccount() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,10 +22,11 @@ function PersonalMemberAccount() {
     const [avatar, setAvatar] = useState('');
     const [about, setAbout] = useState('');
     const [specialization, setSpecialization] = useState('');
+    const [profileHiddenFlag, setProfileHiddenFlag] = useState(false);
     const specializations = ["Frontend Developer", "Backend Developer", "UI/UX Designer", "Product Manager"];
 
     useEffect(() => {
-        fetch('http://localhost:8081/api/v1/users/member/personInfo', {
+        fetch(`${config.USER_SERVICE}/members/auth/personInfo`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,20 +44,18 @@ function PersonalMemberAccount() {
                 setPhone(data.phone);
                 setEmail(data.email);
                 setBirthday(data.birthday);
-                setSpecialization(data.specialization)
+                setSpecialization(data.specialization);
                 setUsername(data.username);
                 setAbout(data.about);
-                setAvatar('http://localhost:3001' + data.avatarUrl || "/default_avatar.jpg");
+                setAvatar(`${config.FILE_SERVER}${data.avatarUrl}` || "/default_avatar.jpg");
+                setProfileHiddenFlag(data.profileHiddenFlag);
             })
             .catch(error => console.error('Fetch error:', error));
     }, [authorizationToken]);
 
-
-
     const handleAboutChange = (event) => {
         setAbout(event.target.value);
     };
-
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -73,6 +73,33 @@ function PersonalMemberAccount() {
         setBirthday(event.target.value);
     };
 
+    const handleProfileHiddenChange = (event) => {
+        const newProfileHiddenFlag = event.target.checked;
+        setProfileHiddenFlag(newProfileHiddenFlag);
+
+        const requestBody = JSON.stringify({
+            profileHiddenFlag: newProfileHiddenFlag
+        });
+
+        fetch(`${config.USER_SERVICE}/members/auth/profile_visibility`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken ? `${authorizationToken}` : '',
+            },
+            body: requestBody,
+        })
+            .then(response => {
+                if (response.status !== 200) {
+                    return response.json().then(error => {
+                        throw new Error(error.errorMessage || 'Failed to change profile visibility');
+                    });
+                }
+                alert('Profile visibility updated successfully.');
+            })
+            .catch(error => console.error('Visibility update error:', error));
+    };
+
     const isValidEmail = (email) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     };
@@ -83,8 +110,8 @@ function PersonalMemberAccount() {
             return;
         }
 
-        fetch('http://localhost:8081/api/v1/users/member/change_personal_info', {
-            method: 'POST',
+        fetch(`${config.USER_SERVICE}/members/auth/personal_info`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': authorizationToken ? `${authorizationToken}` : ''
@@ -95,7 +122,8 @@ function PersonalMemberAccount() {
                 email: email,
                 birthday: birthday,
                 specialization: specialization,
-                about: about
+                about: about,
+                profileHiddenFlag: profileHiddenFlag
             }),
         })
             .then(response => {
@@ -126,8 +154,8 @@ function PersonalMemberAccount() {
             return;
         }
 
-        fetch('http://localhost:8081/api/v1/users/member/change_password', {
-            method: 'POST',
+        fetch(`${config.USER_SERVICE}/members/auth/change_password`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': authorizationToken ? `${authorizationToken}` : '',
@@ -149,7 +177,7 @@ function PersonalMemberAccount() {
     };
 
     const handleDeleteAccount = () => {
-        fetch('http://localhost:8081/api/v1/users/member/delete_my_account', {
+        fetch(`${config.USER_SERVICE}/members/auth/delete_my_account`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -187,8 +215,7 @@ function PersonalMemberAccount() {
         const formData = new FormData();
         formData.append('file', file);
 
-        // Загрузка файла на сервер файлов
-        fetch('http://localhost:3001/upload/memberAvatars', {
+        fetch(`${config.FILE_SERVER}/upload/memberAvatars`, {
             method: 'POST',
             body: formData,
         })
@@ -199,9 +226,9 @@ function PersonalMemberAccount() {
                 return response.json();
             })
             .then(data => {
-                const avatarUrl = data.url; // Предполагаем, что сервер возвращает URL в свойстве url
+                const avatarUrl = data.url;
                 console.log('Upload success:', avatarUrl);
-                return sendAvatarUrlToBackend(avatarUrl); // Отправляем URL на бэкенд
+                return sendAvatarUrlToBackend(avatarUrl);
             })
             .catch(error => {
                 console.error('Upload error:', error);
@@ -209,8 +236,8 @@ function PersonalMemberAccount() {
     };
 
     const sendAvatarUrlToBackend = (avatarUrl) => {
-        fetch('http://localhost:8081/api/v1/users/member/change_avatar', {
-            method: 'POST',
+        fetch(`${config.USER_SERVICE}/members/auth/change_avatar`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': authorizationToken ? ` ${authorizationToken}` : ''
@@ -243,9 +270,18 @@ function PersonalMemberAccount() {
             <Helmet>
                 <title>Личный кабинет</title>
             </Helmet>
-            <NavigationBar/>
+            <NavigationBar />
             <div className={styles.profileCard}>
                 <div className={styles.profileCardHeader}>
+                    <div className={styles.hideProfileWrapper}>
+                        <span className={styles.label}>Скрыть профиль</span>
+                        <input
+                            type="checkbox"
+                            className={styles.infoInput}
+                            checked={profileHiddenFlag}
+                            onChange={handleProfileHiddenChange}
+                        />
+                    </div>
                     <img src={`${avatar}`} alt="User Avatar" className={styles.avatar}/>
                     <input
                         type="file"
@@ -356,7 +392,8 @@ function PersonalMemberAccount() {
                 <div className={styles.actionsSection}>
                     <div className={styles.buttonWrapper}>
                         <button className={styles.logoutBtn} onClick={handleLogout}>Выйти</button>
-                        <button className={styles.deleteAccountBtn} onClick={handleOpenDeleteModal}>Удалить аккаунт</button>
+                        <button className={styles.deleteAccountBtn} onClick={handleOpenDeleteModal}>Удалить аккаунт
+                        </button>
                     </div>
                 </div>
             </div>

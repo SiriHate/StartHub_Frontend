@@ -17,62 +17,86 @@
 .articlePreview {
     width: 100%;
     max-width: 600px;
-    display: block;
-    margin: 10px auto;
-}
-
-.articlePreview {
-    width: 300px;
-    height: 300px;
+    height: auto;
     object-fit: cover;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     display: block;
-    margin: 0 auto;
+    margin: 20px auto;
+    transition: transform 0.3s ease;
 }
 
+.articlePreview:hover {
+    transform: scale(1.05);
+}
+
+.goBackButton {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.goBackButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.15);
+}
+
+.goBackButton svg {
+    transition: fill 0.3s ease;
+}
+
+
 .articleText {
-    width: 90%;
+    margin: 20px auto; /* Centers the text block horizontally */
     background-color: #26243b;
-    padding: 10px 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    margin-top: 10px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     text-align: justify;
     min-height: 100px;
     color: #f0f0f0;
-    font-size: 14px;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-wrap: break-word;
 }
 
 .articleContainer {
-    width: 65%;
-    margin: 0 auto;
+    position: relative;
+    width: 70%;
+    margin: 50px auto;
     background-color: #1b1739;
     color: #f0f0f0;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
 }
 
 .articleTitle {
     text-align: center;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-.articleContent {
-    line-height: 1.6;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
 }
 
 .articleMetadata {
     color: #b3b1d7;
-    font-size: 16px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    margin-bottom: 15px;
     text-align: center;
 }
 
-.articleAuthor, .articleDate {
-    font-weight: 500;
+.articleAuthor, .articleCategory {
+    font-weight: bold;
 }
-

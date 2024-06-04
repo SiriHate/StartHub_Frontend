@@ -21,6 +21,7 @@ import NewsPage from "./components/pages/NewsPage/NewsPage";
 import ArticlePage from "./components/pages/ArticlePage/ArticlePage";
 import MyChatsPage from "./components/pages/MyChatsPage/MyChatsPage";
 import ManageProject from "./components/pages/ManageProject/ManageProject";
+import ProjectStatistic from "./components/pages/ProjectStatistics/ProjectStatistics";
 
 const App = () => {
     return (
@@ -31,12 +32,11 @@ const App = () => {
                 <Route path="/password-recovery" element={<PasswordRecoveryPage/>}/>
                 <Route path="/change-password" element={<PasswordChangePage/>}/>
                 <Route path="/admin_panel" element={<AdminPanel/>}/>
-                <Route path="/member/personal-account" element={<PersonalMemberAccount/>}/>
-                <Route path="/member/profile/:userId" element={<MemberProfilePage/>}/>
+                <Route path="/members/personal-account" element={<PersonalMemberAccount/>}/>
+                <Route path="/members/profile/:userId" element={<MemberProfilePage/>}/>
                 <Route path="/articles-and-news" element={<ArticlesAndNews/>}/>
                 <Route path="/create_article" element={<CreateArticle/>}/>
                 <Route path="/article/:articleId" element={<ArticlePage/>}/>
-                <Route path="/my_chats" element={<MyChatsPage/>}/>
                 <Route path="/create_news" element={<CreateNews/>}/>
                 <Route path="/news/:newsId" element={<NewsPage/>}/>
                 <Route path="/confirm-registration" element={<ConfirmRegistrationPage/>}/>
@@ -45,8 +45,9 @@ const App = () => {
                 <Route path="/my_projects" element={<MyProjects/>}/>
                 <Route path="/create_project" element={<CreateProject/>}/>
                 <Route path="/project/:projectId" element={<ProjectDetails/>}/>
+                <Route path="/project/:projectId/statistics" element={<ProjectStatistic/>}/>
                 <Route path="/manage_project/:projectId" element={<ManageProject/>}/>
-                <Route path="/chats" element={<MyChatsPage/>}/>
+                <Route path="/my_chats" element={<MyChatsPage/>}/>
                 <Route path="*" element={<NotFoundPage/>}/>
             </Routes>
         </Router>

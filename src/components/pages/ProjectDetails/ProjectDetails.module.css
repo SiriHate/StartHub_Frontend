@@ -19,6 +19,7 @@
 }
 
 .projectCard {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -76,6 +77,33 @@
 .arrow {
     font-size: 24px;
     color: var(--text-color);
+}
+
+.goBackButton {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.goBackButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.15);
+}
+
+.goBackButton svg {
+    transition: fill 0.3s ease;
 }
 
 .descriptionCard {

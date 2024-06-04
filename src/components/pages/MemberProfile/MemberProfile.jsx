@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import styles from './MemberProfile.module.css';
+import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from '../../navigation_bar/NavigationBar';
 import { Helmet } from "react-helmet";
+import config from '../../../config';
 
 function MemberProfile() {
     const { userId } = useParams();
@@ -15,9 +17,10 @@ function MemberProfile() {
     const [specialization, setSpecialization] = useState('');
     const [about, setAbout] = useState('');
     const [redirect, setRedirect] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:8081/api/v1/users/member/${userId}`, {
+        fetch(`${config.USER_SERVICE}/members/${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -37,7 +40,7 @@ function MemberProfile() {
                 setBirthday(data.birthday);
                 setSpecialization(data.specialization);
                 setAbout(data.about);
-                const avatarSrc = data.avatarUrl ? `http://localhost:3001${data.avatarUrl}` : "/default_avatar.jpg";
+                const avatarSrc = data.avatarUrl ? `${config.FILE_SERVER}${data.avatarUrl}` : "/default_avatar.jpg";
                 setAvatar(avatarSrc);
             })
             .catch(error => {
@@ -46,23 +49,31 @@ function MemberProfile() {
             });
     }, [userId]);
 
+    const handleSendMessage = () => {
+        alert(`Message sent to ${username}`);
+    };
+
     if (redirect) {
         return <Navigate to="/not-found" replace />;
     }
 
     return (
         <div>
-            <NavigationBar/>
+            <NavigationBar />
             <div className={styles.profilePage}>
                 <Helmet>
                     <title>Профиль пользователя - {username}</title>
-                    <html className={styles.html}/>
-                    <body className={styles.body}/>
+                    <html className={styles.html} />
+                    <body className={styles.body} />
                 </Helmet>
                 <div className={styles.profileCard}>
+                    <button onClick={() => navigate('/people_and_projects')} className={styles.goBackButton}>
+                        <GoBackIcon />
+                    </button>
                     <div className={styles.profileCardHeader}>
-                        <img src={avatar} alt="Аватар пользователя" className={styles.avatar}/>
+                        <img src={avatar} alt="Аватар пользователя" className={styles.avatar} />
                         <div className={styles.username}>{username}</div>
+                        <button onClick={handleSendMessage} className={styles.sendMessageButton}>Отправить сообщение</button>
                     </div>
                     <div className={styles.infoSection}>
                         <div className={styles.infoItem}>

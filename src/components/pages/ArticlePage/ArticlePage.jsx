@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import styles from "./ArticlePage.module.css";
+import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from "../../navigation_bar/NavigationBar";
+import config from "../../../config";
 
 const ArticlePage = () => {
     const { articleId } = useParams();
+    const navigate = useNavigate();
     const [article, setArticle] = useState({
         title: "",
         owner: "",
@@ -13,22 +16,23 @@ const ArticlePage = () => {
         category: "",
         content: ""
     });
-
-    const [redirect, setRedirect] = useState(false);  // State to handle redirection
+    const [loading, setLoading] = useState(true);
+    const [redirect, setRedirect] = useState(false);
 
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const response = await fetch(`http://localhost:8083/api/v1/main/article/${articleId}`);
+                const response = await fetch(`${config.MAIN_SERVICE}/article/${articleId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setArticle({
                         title: data.title,
                         owner: data.owner,
-                        previewUrl: `http://localhost:3001${data.previewUrl}`,
+                        previewUrl: `${config.FILE_SERVER}${data.previewUrl}`,
                         category: data.category,
                         content: data.content
                     });
+                    setLoading(false);
                 } else {
                     console.error('Ошибка при получении данных:', response.status);
                     setRedirect(true);
@@ -41,6 +45,10 @@ const ArticlePage = () => {
 
         fetchArticle();
     }, [articleId]);
+
+    if (loading) {
+        return <div className={styles.loading}>Loading...</div>;
+    }
 
     if (redirect) {
         return <Navigate to="/not-found" replace />;
@@ -55,12 +63,15 @@ const ArticlePage = () => {
             </Helmet>
             <NavigationBar />
             <div className={styles.articleContainer}>
+                <button onClick={() => navigate(-1)} className={styles.goBackButton}>
+                    <GoBackIcon/>
+                </button>
                 <h1 className={styles.articleTitle}>{article.title}</h1>
                 <div className={styles.articleMetadata}>
                     Автор: <span className={styles.articleAuthor}>{article.owner}</span> | Категория: <span
                     className={styles.articleCategory}>{article.category}</span>
                 </div>
-                <img src={article.previewUrl} alt="Логотип статьи" className={styles.articlePreview}/>
+                <img src={article.previewUrl} alt="Article preview" className={styles.articlePreview}/>
                 <div className={styles.articleText} dangerouslySetInnerHTML={{__html: article.content}}/>
             </div>
         </>

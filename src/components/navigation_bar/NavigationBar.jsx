@@ -31,11 +31,16 @@ const NavigationBar = () => {
                         </li>
                         <li className={styles.navItem}>
                             <Link to="/my_projects" className={getActiveClass("/my_projects")}>
-                                Мои проекты
+                                Мои проекты и публикации
                             </Link>
                         </li>
                         <li className={styles.navItem}>
-                            <Link to="/member/personal-account" className={getActiveClass("/member/personal-account")}>
+                            <Link to="/my_chats" className={getActiveClass("/my_chats")}>
+                                Чаты
+                            </Link>
+                        </li>
+                        <li className={styles.navItem}>
+                            <Link to="/members/personal-account" className={getActiveClass("/members/personal-account")}>
                                 <i className={`fas fa-user ${styles.faUser}`}/> Личный кабинет
                             </Link>
                         </li>

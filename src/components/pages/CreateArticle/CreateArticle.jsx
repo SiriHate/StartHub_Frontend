@@ -1,9 +1,13 @@
 import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet";
-import "react-quill/dist/quill.snow.css";
+import Quill from 'quill';
+import "quill/dist/quill.snow.css";
 import styles from "./CreateArticle.module.css";
+import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from "../../navigation_bar/NavigationBar";
 import RichTextEditor from "../../editor/RichTextEditor";
+import { useNavigate } from "react-router-dom";
+import config from "../../../config";
 
 const CreateArticle = () => {
     const [articleTitle, setArticleTitle] = useState("");
@@ -13,6 +17,7 @@ const CreateArticle = () => {
     const [articleCategory, setArticleCategory] = useState('');
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,12 +27,11 @@ const CreateArticle = () => {
             return;
         }
 
-        // Сначала загружаем логотип на сервер
         const formData = new FormData();
         formData.append('file', articleLogo);
 
         try {
-            const uploadResponse = await fetch('http://localhost:3001/upload/articleLogos', {
+            const uploadResponse = await fetch(`${config.FILE_SERVER}/upload/articleLogos`, {
                 method: 'POST',
                 body: formData,
             });
@@ -41,7 +45,7 @@ const CreateArticle = () => {
                     category: articleCategory
                 };
 
-                const response = await fetch('http://localhost:8083/api/v1/main/article', {
+                const response = await fetch(`${config.MAIN_SERVICE}/article`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -81,6 +85,9 @@ const CreateArticle = () => {
             <NavigationBar />
             <div className={styles.createArticlePage}>
                 <div className={styles.createArticleContainer}>
+                    <button onClick={() => navigate(-1)} className={styles.goBackButton}>
+                        <GoBackIcon/>
+                    </button>
                     <h2 className={styles.formTitle}>Публикация статьи</h2>
                     <form className={styles.createArticleForm} onSubmit={handleSubmit}>
                         <div className={styles.formGroup}>
@@ -98,7 +105,7 @@ const CreateArticle = () => {
                                     ref={fileInputRef}
                                     id="logoUpload"
                                     accept="image/*"
-                                    style={{display: "none"}} // Скрыть стандартный input
+                                    style={{display: "none"}}
                                     onChange={(e) => setArticleLogo(e.target.files[0])}
                                 />
                             </div>

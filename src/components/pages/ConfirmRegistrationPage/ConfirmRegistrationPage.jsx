@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {Helmet} from "react-helmet";
 import styles from "./ConfirmRegistrationPage.css";
+import config from "../../../config";
 
 const ConfirmRegistrationPage = () => {
     const [message, setMessage] = useState('');
@@ -18,7 +19,7 @@ const ConfirmRegistrationPage = () => {
 
         const confirmRegistration = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8081/api/v1/users/confirmation/confirm-registration', {
+                const response = await fetch(`${config.USER_SERVICE}/api/v1/users/confirmation/confirm-registration`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

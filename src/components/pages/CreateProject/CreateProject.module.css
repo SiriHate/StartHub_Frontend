@@ -23,6 +23,7 @@
 }
 
 .createProjectContainer {
+    position: relative;
     width: 100%;
     max-width: 600px;
     background-color: #1b1739;
@@ -33,6 +34,7 @@
 }
 
 .formTitle {
+    margin-top: 15px;
     text-align: center;
     margin-bottom: 50px;
     font-size: 24px;
@@ -82,21 +84,6 @@
     height: 100px;
 }
 
-.goBackButton {
-    height: 40px;
-    width: 150px;
-    margin-bottom: 30px;
-    padding: 8px 10px;
-    border: none;
-    background-color: #5a55a3;
-    color: #ffffff;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    font-weight: 500;
-}
-
 .submitButton {
     margin-top: 25px;
     padding: 10px 15px;
@@ -113,9 +100,31 @@
     background-color: #5555bb;
 }
 
+.goBackButton {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
 .goBackButton:hover {
-    background-color: #484391;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.15);
+}
+
+.goBackButton svg {
+    transition: fill 0.3s ease;
 }
 
 .logoPreview {

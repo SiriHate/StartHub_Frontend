@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from "./ChangePasswordPage.module.css";
+import config from "../../../config";
 
 const PasswordChangePage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [token, setToken] = useState('');
-    const [tokenValid, setTokenValid] = useState(false); // Добавляем состояние для хранения информации о валидности токена
+    const [tokenValid, setTokenValid] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -15,14 +16,13 @@ const PasswordChangePage = () => {
         const searchParams = new URLSearchParams(location.search);
         const tokenParam = searchParams.get('token');
         if (tokenParam) {
-            // Проверяем токен при загрузке страницы
             checkTokenValidity(tokenParam);
         }
     }, [location]);
 
     const checkTokenValidity = async (token) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/v1/users/confirmation/check_confirmation_token?token=${token}`);
+            const response = await fetch(`${config.USER_SERVICE}/confirmation/check_confirmation_token?token=${token}`);
             if (response.ok) {
                 setToken(token);
                 setTokenValid(true);
@@ -54,7 +54,7 @@ const PasswordChangePage = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8081/api/v1/users/member/password_recovery/confirm', {
+            const response = await fetch(`${config.USER_SERVICE}/members/password_recovery/confirm`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

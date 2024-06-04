@@ -27,17 +27,6 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-.content {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    padding: 20px;
-    font-family: 'Montserrat', sans-serif;
-}
-
 .controls {
     display: flex;
     justify-content: space-between;
@@ -107,6 +96,28 @@
     background: #1f1f40;
     border-radius: 5px;
     gap: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
+.manageButton {
+    padding: 12px 20px;
+    font-size: 16px;
+    background: #366dbf;
+    border: none;
+    margin-right: 10px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.manageButton:hover {
+    background: #25496b;
 }
 
 .projectImage {
@@ -125,4 +136,32 @@
     text-align: center;
     color: #e23b3b;
     margin-top: 50px;
+}
+
+.paginationControls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pageButton {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    background: #366dbf;
+    border-radius: 5px;
+}
+
+.pageButton:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.pageNumber {
+    color: #fff;
+    margin: 0 10px;
 }

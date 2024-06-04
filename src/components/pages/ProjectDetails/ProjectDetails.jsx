@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { Provider, LikeButton } from "@lyket/react";
+import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from "../../navigation_bar/NavigationBar";
 import styles from "./ProjectDetails.module.css";
+import config from '../../../config';
 
 function ProjectDetails() {
     const { projectId } = useParams();
@@ -17,12 +19,13 @@ function ProjectDetails() {
         members: [],
         stages: []
     });
-    const [redirect, setRedirect] = useState(false);  // State for handling redirection on fetch error
+    const [redirect, setRedirect] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8083/api/v1/main/projects/${projectId}`);
+                const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch project details');
                 }
@@ -33,7 +36,7 @@ function ProjectDetails() {
                     category: data.category,
                     stage: data.stage,
                     projectDescription: data.projectDescription,
-                    projectLogoUrl: `http://localhost:3001${data.projectLogoUrl}`,
+                    projectLogoUrl: `${config.FILE_SERVER}${data.projectLogoUrl}`,
                     likes: data.likes,
                     members: data.members,
                     stages: ["Концепция", "Разработка", "Тестирование", "Производство"]
@@ -62,6 +65,9 @@ function ProjectDetails() {
             <div className={styles.projectCard}>
                 <div className={styles.header}>
                     <div className={styles.titleContainer}>
+                        <button onClick={() => navigate(-1)} className={styles.goBackButton}>
+                            <GoBackIcon/>
+                        </button>
                         <h1>{project.projectName}</h1>
                         <span className={styles.categoryTag}>Категория: {project.category}</span>
                     </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./AdminPanel.module.css";
 import { Helmet } from "react-helmet";
+import config from "../../../config";
 
 const AdminPanel = () => {
     const [moderators, setModerators] = useState([]);
@@ -28,33 +29,49 @@ const AdminPanel = () => {
     }, []);
 
     const fetchModerators = () => {
-        fetch("http://127.0.0.1:8081/api/v1/users/moderator/get")
+        fetch(`${config.USER_SERVICE}/moderators`)
             .then(response => {
-                if (!response.ok && response.status === 404) {
-                    setModerators([]);
-                    return [];
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        setModerators([]);
+                    }
+                    throw new Error("Failed to fetch moderators");
                 }
                 return response.json();
             })
-            .then(data => setModerators(data))
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setModerators(data);
+                } else {
+                    throw new Error("Data is not an array");
+                }
+            })
             .catch(error => console.error("Fetch error:", error));
     };
 
     const searchModerators = () => {
-        fetch(`http://127.0.0.1:8081/api/v1/users/moderator/search?username=${searchQuery}`)
+        fetch(`${config.USER_SERVICE}/moderators/search-by-username?username=${searchQuery}`)
             .then(response => {
-                if (!response.ok && response.status === 404) {
-                    setModerators([]);
-                    return [];
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        setModerators([]);
+                    }
+                    throw new Error("Failed to search moderators");
                 }
                 return response.json();
             })
-            .then(data => setModerators(data))
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setModerators(data);
+                } else {
+                    throw new Error("Data is not an array");
+                }
+            })
             .catch(error => console.error("Search error:", error));
     };
 
     const deleteModerator = (id) => {
-        fetch(`http://127.0.0.1:8081/api/v1/users/moderator/delete/${id}`, {
+        fetch(`${config.USER_SERVICE}/moderators/${id}`, {
             method: "DELETE"
         })
             .then(response => {
@@ -67,7 +84,7 @@ const AdminPanel = () => {
     };
 
     const createModerator = (newModerator) => {
-        fetch("http://127.0.0.1:8081/api/v1/users/moderator/create", {
+        fetch(`${config.USER_SERVICE}/moderators`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -84,7 +101,7 @@ const AdminPanel = () => {
     };
 
     const updateModerator = (editModerator) => {
-        fetch(`http://127.0.0.1:8081/api/v1/users/moderator/update/${editModerator.id}`, {
+        fetch(`${config.USER_SERVICE}/moderators/${editModerator.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -138,7 +155,7 @@ const AdminPanel = () => {
             id: moderator.id,
             name: moderator.name,
             username: moderator.username,
-            password: "", // Keep password empty for editing
+            password: "",
             employeeId: moderator.employeeId
         });
         setIsEditModalOpen(true);
@@ -177,12 +194,12 @@ const AdminPanel = () => {
                 </div>
                 <div className={styles.moderatorsListContainer}>
                     <div className={styles.moderatorsList}>
-                        {moderators.length === 0 ? (
+                        {Array.isArray(moderators) && moderators.length === 0 ? (
                             <div className={styles.emptyModerators}>
                                 Не найдено ни одного модератора
                             </div>
                         ) : (
-                            moderators.map(moderator => (
+                            Array.isArray(moderators) && moderators.map(moderator => (
                                 <div key={moderator.id} className={styles.moderator}>
                                     <div className={styles.moderatorInfo}>
                                         <div className={styles.info}>ID пользователя: <span

@@ -3,37 +3,37 @@ import { Helmet } from "react-helmet";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./ArticlesAndNews.module.css";
 import NavigationBar from "../../navigation_bar/NavigationBar";
+import config from "../../../config";
 
-const categories = ["Все", "Технологии", "Спорт", "Здравохранение", "Бизнесс"];
+const categories = ["Все", "Технологии", "Спорт", "Здравоохранение", "Бизнес"];
 
 const ArticlesAndNews = () => {
     const [items, setItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentTab, setCurrentTab] = useState("Новости");
     const [selectedCategory, setSelectedCategory] = useState("Все");
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const url = `http://localhost:8083/api/v1/main/${currentTab === "Статьи" ? "article" : "news"}`;
+                const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "article" : "news"}?page=${page}&size=1`;
                 const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                const modifiedData = data.map(item => ({
-                    ...item,
-                    previewUrl: `http://localhost:3001${item.previewUrl}`
-                }));
-                setItems(modifiedData);
+                setItems(data.content);
+                setTotalPages(data.totalPages);
             } catch (error) {
                 console.error("Failed to fetch items:", error);
                 setItems([]);
             }
         };
         fetchItems();
-    }, [currentTab]);
+    }, [currentTab, page]);
 
     const handleSearch = () => {
         const filteredItems = items.filter(item =>
@@ -74,6 +74,23 @@ const ArticlesAndNews = () => {
         return currentTab === "Новости" ? "Не найдено ни одной новости" : "Не найдено ни одной статьи";
     };
 
+    const handleNextPage = () => {
+        if (page < totalPages - 1) {
+            setPage(page + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (page > 0) {
+            setPage(page - 1);
+        }
+    };
+
+    const handleTabChange = (tab) => {
+        setCurrentTab(tab);
+        setPage(0); // Reset page to 0 when switching tabs
+    };
+
     return (
         <>
             <Helmet>
@@ -96,10 +113,10 @@ const ArticlesAndNews = () => {
                 </div>
                 <div className={styles.content}>
                     <div className={styles.controls}>
-                        <button onClick={() => setCurrentTab("Новости")} className={`${styles.tabButton} ${currentTab === "Новости" ? styles.activeTab : ''}`}>
+                        <button onClick={() => handleTabChange("Новости")} className={`${styles.tabButton} ${currentTab === "Новости" ? styles.activeTab : ''}`}>
                             Новости
                         </button>
-                        <button onClick={() => setCurrentTab("Статьи")} className={`${styles.tabButton} ${currentTab === "Статьи" ? styles.activeTab : ''}`}>
+                        <button onClick={() => handleTabChange("Статьи")} className={`${styles.tabButton} ${currentTab === "Статьи" ? styles.activeTab : ''}`}>
                             Статьи
                         </button>
                         <div className={styles.searchBar}>
@@ -134,6 +151,15 @@ const ArticlesAndNews = () => {
                                 </div>
                             ))
                         )}
+                    </div>
+                    <div className={styles.paginationControls}>
+                        <button onClick={handlePreviousPage} disabled={page === 0} className={styles.pageButton}>
+                            Предыдущая
+                        </button>
+                        <span className={styles.pageNumber}>Страница {page + 1}</span>
+                        <button onClick={handleNextPage} disabled={page === totalPages - 1} className={styles.pageButton}>
+                            Следующая
+                        </button>
                     </div>
                 </div>
             </div>

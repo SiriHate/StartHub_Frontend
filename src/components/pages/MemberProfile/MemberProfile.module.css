@@ -28,6 +28,7 @@
 }
 
 .profileCard {
+    position: relative;
     margin-top: 50px;
     background: #1b1739;
     color: #f0f0f0;
@@ -54,6 +55,33 @@
     padding: 20px;
 }
 
+.goBackButton {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.goBackButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.15);
+}
+
+.goBackButton svg {
+    transition: fill 0.3s ease;
+}
+
 .avatar {
     width: 120px;
     height: 120px;
@@ -67,6 +95,22 @@
     color: #f0f0f0;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.sendMessageButton {
+    margin-top: 10px;
+    background-color: #3a3b6b;
+    color: #f0f0f0;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.sendMessageButton:hover {
+    background-color: #5a5b8c;
 }
 
 .infoSection {
