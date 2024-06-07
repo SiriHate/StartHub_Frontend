@@ -14,6 +14,22 @@
     color: white;
 }
 
+.applyButton {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+
+.applyButton:hover {
+    background-color: #0056b3;
+}
+
 .category {
     padding: 10px;
     border-radius: 5px;
@@ -64,7 +80,7 @@
 }
 
 .activeTab {
-    background: #4a90e2; /* Lighter blue for active state */
+    background: #4a90e2;
 }
 
 .articlesAndNewsPage {
@@ -74,6 +90,7 @@
 }
 
 .searchButton {
+    width: 150px;
     margin-left: 5px;
     padding: 10px 20px;
     border: none;

@@ -11,7 +11,7 @@ import ConfirmRegistrationPage from "./components/pages/ConfirmRegistrationPage/
 import MemberProfilePage from "./components/pages/MemberProfile/MemberProfile";
 import EventsCalendarPage from "./components/pages/EventsCalendarPage/EventsCalendarPage";
 import PeopleAndProjects from "./components/pages/PeopleAndProjects/PeopleAndProjects";
-import MyProjects from "./components/pages/MyProjects/MyProjects";
+import MySpace from "./components/pages/MySpace/MySpace";
 import CreateProject from "./components/pages/CreateProject/CreateProject";
 import ProjectDetails from "./components/pages/ProjectDetails/ProjectDetails";
 import PersonalMemberAccount from "./components/pages/PersonalMemberAccount/PersonalMemberAccount";
@@ -42,7 +42,7 @@ const App = () => {
                 <Route path="/confirm-registration" element={<ConfirmRegistrationPage/>}/>
                 <Route path="/events_calendar" element={<EventsCalendarPage/>}/>
                 <Route path="/people_and_projects" element={<PeopleAndProjects/>}/>
-                <Route path="/my_projects" element={<MyProjects/>}/>
+                <Route path="/my_space" element={<MySpace/>}/>
                 <Route path="/create_project" element={<CreateProject/>}/>
                 <Route path="/project/:projectId" element={<ProjectDetails/>}/>
                 <Route path="/project/:projectId/statistics" element={<ProjectStatistic/>}/>

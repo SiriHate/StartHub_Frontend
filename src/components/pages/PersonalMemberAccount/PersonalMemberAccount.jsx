@@ -47,7 +47,7 @@ function PersonalMemberAccount() {
                 setSpecialization(data.specialization);
                 setUsername(data.username);
                 setAbout(data.about);
-                setAvatar(`${config.FILE_SERVER}${data.avatarUrl}` || "/default_avatar.jpg");
+                setAvatar(`${config.FILE_SERVER}${data.avatarUrl}` || "/default_user_avatar.jpg");
                 setProfileHiddenFlag(data.profileHiddenFlag);
             })
             .catch(error => console.error('Fetch error:', error));

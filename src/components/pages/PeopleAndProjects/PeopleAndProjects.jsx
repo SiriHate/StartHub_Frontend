@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import styles from "./PeopleAndProjects.module.css";
 import NavigationBar from "../../navigation_bar/NavigationBar";
-import config from '../../../config';
+import config from "../../../config";
 
 const projectCategories = ["Все", "Разработка", "Дизайн", "Маркетинг", "Администрация"];
 const specialistSpecializations = ["Все", "Frontend", "Backend", "UI/UX", "Product Manager"];
@@ -13,45 +13,65 @@ const PeopleAndProjects = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [currentTab, setCurrentTab] = useState("project");
     const [selectedFilter, setSelectedFilter] = useState("Все");
-    const [page, setPage] = useState(0); // Current page number
-    const [totalPages, setTotalPages] = useState(1); // Total number of pages
+    const [appliedFilter, setAppliedFilter] = useState("");
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            let url = currentTab === "project"
-                ? `${config.MAIN_SERVICE}/projects?page=${page}&size=1`
-                : `${config.USER_SERVICE}/members/visible?page=${page}&size=1`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setItems(data.content); // Assuming the API returns a pageable response
-                setTotalPages(data.totalPages); // Update total pages based on the response
-            } catch (error) {
-                console.error("Failed to fetch data:", error);
-                setItems([]); // Ensuring items is always an array
+    const fetchItems = async (searchQuery, filter, currentTab, page) => {
+        try {
+            const serviceUrl = currentTab === "project" ? config.MAIN_SERVICE : config.USER_SERVICE;
+            const filterParam = filter ? (currentTab === "project" ? `&category=${filter}` : `&specialization=${filter}`) : "";
+            const queryParam = searchQuery ? (currentTab === "project" ? `&query=${searchQuery}` : `&username=${searchQuery}`) : "";
+            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=10${filterParam}${queryParam}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
-        fetchData();
-    }, [currentTab, page]);
+            const data = await response.json();
+            setItems(data.content);
+            setTotalPages(data.totalPages);
+        } catch (error) {
+            console.error("Failed to fetch items:", error);
+            setItems([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchItems("", "", currentTab, 0);  // Initial fetch with default values
+    }, [currentTab]);
 
     const handleSearch = () => {
-        const filteredItems = items.filter(item =>
-            item[currentTab === "project" ? "projectName" : "username"].toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setItems(filteredItems);
+        setPage(0);  // Reset page to 0 when performing a new search
+        fetchItems(searchQuery, appliedFilter, currentTab, 0);
+    };
+
+    const applyFilter = () => {
+        setPage(0);  // Reset page to 0 when applying filters
+        setSearchQuery("");  // Reset search query when applying filters
+        const filterToApply = selectedFilter === "Все" ? "" : selectedFilter;
+        setAppliedFilter(filterToApply);
+        fetchItems("", filterToApply, currentTab, 0);
     };
 
     const selectFilter = (filter) => {
         setSelectedFilter(filter);
     };
 
+    const openProject = (id) => {
+        navigate(`/project/${id}`);
+    };
+
+    const openMember = (id) => {
+        navigate(`/members/profile/${id}`);
+    };
+
     const openItem = (id) => {
-        const path = currentTab === "project" ? `/project/${id}` : `/members/profile/${id}`;
-        navigate(path);
+        if (currentTab === "project") {
+            openProject(id);
+        } else {
+            openMember(id);
+        }
     };
 
     const getEmptyMessage = () => {
@@ -60,46 +80,56 @@ const PeopleAndProjects = () => {
 
     const handleNextPage = () => {
         if (page < totalPages - 1) {
-            setPage(page + 1);
+            const newPage = page + 1;
+            setPage(newPage);
+            fetchItems(searchQuery, appliedFilter, currentTab, newPage);
         }
     };
 
     const handlePreviousPage = () => {
         if (page > 0) {
-            setPage(page - 1);
+            const newPage = page - 1;
+            setPage(newPage);
+            fetchItems(searchQuery, appliedFilter, currentTab, newPage);
         }
     };
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
-        setPage(0); // Reset page to 0 when switching tabs
+        setPage(0);  // Reset page to 0 when switching tabs
+        fetchItems(searchQuery, appliedFilter, tab, 0);
     };
 
     return (
         <>
             <Helmet>
                 <title>{currentTab === "project" ? "Проекты" : "Специалисты"}</title>
-                <body className={styles.body}/>
+                <body className={styles.body} />
             </Helmet>
             <NavigationBar />
             <div className={styles.peopleAndProjectsPage}>
                 <div className={styles.sidebar}>
-                    {(currentTab === "project" ? projectCategories : specialistSpecializations).map(filter => (
-                        <div
-                            key={filter}
-                            className={`${styles.filter} ${selectedFilter === filter ? styles.activeFilter : ''}`}
-                            onClick={() => selectFilter(filter)}
-                        >
-                            {filter}
-                        </div>
-                    ))}
+                    <div className={styles.filters}>
+                        {(currentTab === "project" ? projectCategories : specialistSpecializations).map(filter => (
+                            <div
+                                key={filter}
+                                className={`${styles.filter} ${selectedFilter === filter ? styles.activeFilter : ''}`}
+                                onClick={() => selectFilter(filter)}
+                            >
+                                {filter}
+                            </div>
+                        ))}
+                        <button onClick={applyFilter} className={styles.applyButton}>Применить</button>
+                    </div>
                 </div>
                 <div className={styles.content}>
                     <div className={styles.controls}>
-                        <button onClick={() => handleTabChange("project")} className={`${styles.tabButton} ${currentTab === "project" ? styles.activeTab : ''}`}>
+                        <button onClick={() => handleTabChange("project")}
+                                className={`${styles.tabButton} ${currentTab === "project" ? styles.activeTab : ''}`}>
                             Проекты
                         </button>
-                        <button onClick={() => handleTabChange("member")} className={`${styles.tabButton} ${currentTab === "member" ? styles.activeTab : ''}`}>
+                        <button onClick={() => handleTabChange("member")}
+                                className={`${styles.tabButton} ${currentTab === "member" ? styles.activeTab : ''}`}>
                             Специалисты
                         </button>
                         <div className={styles.searchBar}>
@@ -120,7 +150,14 @@ const PeopleAndProjects = () => {
                         ) : (
                             items.map(item => (
                                 <div key={item.id || item.username} className={styles.item} onClick={() => openItem(item.id || item.username)}>
-                                    <img src={`${config.FILE_SERVER}${item.projectLogoUrl || item.avatarUrl}`} alt={item.projectName || item.username} className={styles.itemImage}/>
+                                    <img
+                                        src={`${config.FILE_SERVER}${item.projectLogoUrl || item.avatarUrl || ''}`}
+                                        alt={item.projectName || item.username}
+                                        className={styles.itemImage}
+                                        onError={(e) => {
+                                            e.target.src = currentTab === "project" ? "/default_list_element_logo.jpg" : "/default_user_avatar.jpg";
+                                        }}
+                                    />
                                     <div className={styles.itemContent}>
                                         <div className={styles.itemName}>{item.projectName || item.name}</div>
                                         <div className={styles.itemDetail}>

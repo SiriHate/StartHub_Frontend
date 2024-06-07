@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./ArticlesAndNews.module.css";
 import NavigationBar from "../../navigation_bar/NavigationBar";
 import config from "../../../config";
@@ -12,42 +12,44 @@ const ArticlesAndNews = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [currentTab, setCurrentTab] = useState("Новости");
     const [selectedCategory, setSelectedCategory] = useState("Все");
+    const [appliedCategory, setAppliedCategory] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "article" : "news"}?page=${page}&size=1`;
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setItems(data.content);
-                setTotalPages(data.totalPages);
-            } catch (error) {
-                console.error("Failed to fetch items:", error);
-                setItems([]);
+    const fetchItems = async (searchQuery, category, currentTab, page) => {
+        try {
+            const categoryParam = category ? `&category=${category}` : "";
+            const queryParam = searchQuery ? `&query=${searchQuery}` : "";
+            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "article/search" : "news/search"}?page=${page}&size=10${categoryParam}${queryParam}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
-        fetchItems();
-    }, [currentTab, page]);
+            const data = await response.json();
+            setItems(data.content);
+            setTotalPages(data.totalPages);
+        } catch (error) {
+            console.error("Failed to fetch items:", error);
+            setItems([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchItems("", "", currentTab, 0);  // Initial fetch with default values
+    }, [currentTab]);
 
     const handleSearch = () => {
-        const filteredItems = items.filter(item =>
-            item.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setItems(filteredItems);
+        setPage(0);  // Reset page to 0 when performing a new search
+        fetchItems(searchQuery, appliedCategory, currentTab, 0);
     };
 
-    const handleCreateArticle = () => {
-        navigate('/create_article');
-    };
-
-    const handleCreateNews = () => {
-        navigate('/create_news');
+    const applyCategoryFilter = () => {
+        setPage(0);  // Reset page to 0 when applying filters
+        setSearchQuery("");  // Reset search query when applying filters
+        const categoryToApply = selectedCategory === "Все" ? "" : selectedCategory;
+        setAppliedCategory(categoryToApply);
+        fetchItems("", categoryToApply, currentTab, 0);
     };
 
     const selectCategory = (category) => {
@@ -76,40 +78,48 @@ const ArticlesAndNews = () => {
 
     const handleNextPage = () => {
         if (page < totalPages - 1) {
-            setPage(page + 1);
+            const newPage = page + 1;
+            setPage(newPage);
+            fetchItems(searchQuery, appliedCategory, currentTab, newPage);
         }
     };
 
     const handlePreviousPage = () => {
         if (page > 0) {
-            setPage(page - 1);
+            const newPage = page - 1;
+            setPage(newPage);
+            fetchItems(searchQuery, appliedCategory, currentTab, newPage);
         }
     };
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
-        setPage(0); // Reset page to 0 when switching tabs
+        setPage(0);  // Reset page to 0 when switching tabs
+        fetchItems(searchQuery, appliedCategory, tab, 0);
     };
 
     return (
         <>
             <Helmet>
                 <title>{currentTab}</title>
-                <html className={styles.html}/>
-                <body className={styles.body}/>
+                <html className={styles.html} />
+                <body className={styles.body} />
             </Helmet>
             <NavigationBar />
             <div className={styles.articlesAndNewsPage}>
                 <div className={styles.sidebar}>
-                    {categories.map(category => (
-                        <div
-                            key={category}
-                            className={`${styles.category} ${selectedCategory === category ? styles.activeCategory : ''}`}
-                            onClick={() => selectCategory(category)}
-                        >
-                            {category}
-                        </div>
-                    ))}
+                    <div className={styles.categories}>
+                        {categories.map(category => (
+                            <div
+                                key={category}
+                                className={`${styles.category} ${selectedCategory === category ? styles.activeCategory : ''}`}
+                                onClick={() => selectCategory(category)}
+                            >
+                                {category}
+                            </div>
+                        ))}
+                    </div>
+                    <button onClick={applyCategoryFilter} className={styles.applyButton}>Применить</button>
                 </div>
                 <div className={styles.content}>
                     <div className={styles.controls}>
@@ -129,12 +139,6 @@ const ArticlesAndNews = () => {
                             />
                             <button onClick={handleSearch} className={styles.searchButton}>Поиск</button>
                         </div>
-                        <button
-                            onClick={currentTab === "Статьи" ? handleCreateArticle : handleCreateNews}
-                            className={styles.createButton}
-                        >
-                            Создать публикацию
-                        </button>
                     </div>
                     <h2 className={styles.publicationsTitle}>{currentTab}</h2>
                     <div className={styles.itemsList}>
@@ -143,7 +147,12 @@ const ArticlesAndNews = () => {
                         ) : (
                             items.map(item => (
                                 <div key={item.id} className={styles.item} onClick={() => openItem(item.id)}>
-                                    <img src={item.previewUrl} alt={item.title} className={styles.itemImage}/>
+                                    <img
+                                        src={item.previewUrl}
+                                        alt={item.title}
+                                        className={styles.itemImage}
+                                        onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
+                                    />
                                     <div className={styles.itemContent}>
                                         <div className={styles.itemName}>{item.title}</div>
                                         <div className={styles.itemDetail}>{item.category}</div>

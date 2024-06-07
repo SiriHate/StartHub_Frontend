@@ -5,6 +5,7 @@ import styles from './MyChatsPage.module.css';
 import axios from 'axios';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
+import { jwtDecode } from 'jwt-decode'; // Import jwtDecode as a named import
 import config from '../../../config';
 
 const MyChatsPage = () => {
@@ -15,10 +16,18 @@ const MyChatsPage = () => {
     const [message, setMessage] = useState('');
     const [stompClient, setStompClient] = useState(null);
     const subscriptionRef = useRef(null);
+    const [username, setUsername] = useState('');
+
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
     useEffect(() => {
+        if (authorizationToken) {
+
+            const decodedToken = jwtDecode(authorizationToken);
+            setUsername(decodedToken.sub);
+        }
+
         const fetchChats = async () => {
             try {
                 const response = await axios.get(`${config.CHAT_SERVICE}/chats/user/auth`, {
@@ -127,7 +136,7 @@ const MyChatsPage = () => {
     const handleSendMessage = () => {
         if (message.trim() && stompClient && stompClient.connected && activeChat) {
             const chatMessage = {
-                senderUsername: 'currentUser',
+                senderUsername: username,
                 messageContent: message,
                 chatId: activeChat.id
             };
@@ -138,6 +147,14 @@ const MyChatsPage = () => {
 
     const getChatName = (chat) => {
         return chat.chatTitle;
+    };
+
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
     return (
@@ -152,7 +169,7 @@ const MyChatsPage = () => {
                 <div className={styles.chatList}>
                     <input
                         type="text"
-                        placeholder="Search for users"
+                        placeholder="Введите название чата..."
                         value={searchQuery}
                         onChange={handleSearchChange}
                         className={styles.searchInput}
@@ -182,10 +199,11 @@ const MyChatsPage = () => {
                                     activeChat.messages.map((message, index) => (
                                         <div
                                             key={index}
-                                            className={`${styles.message} ${message.senderUsername === 'currentUser' ? styles.myMessage : styles.otherMessage}`}
+                                            className={`${styles.message} ${message.senderUsername === username ? styles.myMessage : styles.otherMessage}`}
                                         >
                                             <div className={styles.messageSender}>{message.senderUsername}</div>
                                             <div className={styles.messageContent}>{message.messageContent}</div>
+                                            <div className={styles.messageTimestamp}>{formatTimestamp(message.timestamp)}</div>
                                         </div>
                                     ))
                                 ) : (
@@ -206,7 +224,7 @@ const MyChatsPage = () => {
                             </div>
                         </div>
                     ) : (
-                        <p className={styles.noChatSelected}>Select a chat to view messages</p>
+                        <p className={styles.noChatSelected}>Выберите чат для просмотра сообщений</p>
                     )}
                 </div>
             </div>

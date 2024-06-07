@@ -30,8 +30,8 @@ const NavigationBar = () => {
                             </Link>
                         </li>
                         <li className={styles.navItem}>
-                            <Link to="/my_projects" className={getActiveClass("/my_projects")}>
-                                Мои проекты и публикации
+                            <Link to="/my_space" className={getActiveClass("/my_space")}>
+                                Мое пространство
                             </Link>
                         </li>
                         <li className={styles.navItem}>

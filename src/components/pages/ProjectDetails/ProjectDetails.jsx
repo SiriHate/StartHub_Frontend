@@ -71,7 +71,7 @@ function ProjectDetails() {
                         <h1>{project.projectName}</h1>
                         <span className={styles.categoryTag}>Категория: {project.category}</span>
                     </div>
-                    <img src={project.projectLogoUrl || "/default_avatar.jpg"} alt="Logo" className={styles.logo}/>
+                    <img src={project.projectLogoUrl || "/default_user_avatar.jpg"} alt="Logo" className={styles.logo}/>
                 </div>
                 <div className={styles.stageContainer}>
                     {project.stages.map((stage, index) => (
