@@ -5,23 +5,38 @@ import styles from "./ArticlesAndNews.module.css";
 import NavigationBar from "../../navigation_bar/NavigationBar";
 import config from "../../../config";
 
-const categories = ["Все", "Технологии", "Спорт", "Здравоохранение", "Бизнес"];
-
 const ArticlesAndNews = () => {
     const [items, setItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentTab, setCurrentTab] = useState("Новости");
+    const [categories, setCategories] = useState(["Все"]);
     const [selectedCategory, setSelectedCategory] = useState("Все");
     const [appliedCategory, setAppliedCategory] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
 
+    const fetchCategories = async (tab) => {
+        try {
+            const url = `${config.MAIN_SERVICE}/${tab === "Статьи" ? "article_categories" : "news_categories"}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const categoryNames = data.map(category => category.name);
+            setCategories(["Все", ...categoryNames]);
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+            setCategories(["Все"]);
+        }
+    };
+
     const fetchItems = async (searchQuery, category, currentTab, page) => {
         try {
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "article/search" : "news/search"}?page=${page}&size=10${categoryParam}${queryParam}`;
+            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles/search" : "news/search"}?page=${page}&size=10${categoryParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -36,17 +51,18 @@ const ArticlesAndNews = () => {
     };
 
     useEffect(() => {
-        fetchItems("", "", currentTab, 0);  // Initial fetch with default values
+        fetchCategories(currentTab);
+        fetchItems("", "", currentTab, 0);
     }, [currentTab]);
 
     const handleSearch = () => {
-        setPage(0);  // Reset page to 0 when performing a new search
+        setPage(0);
         fetchItems(searchQuery, appliedCategory, currentTab, 0);
     };
 
     const applyCategoryFilter = () => {
-        setPage(0);  // Reset page to 0 when applying filters
-        setSearchQuery("");  // Reset search query when applying filters
+        setPage(0);
+        setSearchQuery("");
         const categoryToApply = selectedCategory === "Все" ? "" : selectedCategory;
         setAppliedCategory(categoryToApply);
         fetchItems("", categoryToApply, currentTab, 0);
@@ -94,7 +110,8 @@ const ArticlesAndNews = () => {
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
-        setPage(0);  // Reset page to 0 when switching tabs
+        setPage(0);
+        fetchCategories(tab);
         fetchItems(searchQuery, appliedCategory, tab, 0);
     };
 
@@ -148,7 +165,7 @@ const ArticlesAndNews = () => {
                             items.map(item => (
                                 <div key={item.id} className={styles.item} onClick={() => openItem(item.id)}>
                                     <img
-                                        src={item.previewUrl}
+                                        src={`${config.FILE_SERVER}${item.previewUrl}`}
                                         alt={item.title}
                                         className={styles.itemImage}
                                         onError={(e) => e.target.src = '/default_list_element_logo.jpg'}

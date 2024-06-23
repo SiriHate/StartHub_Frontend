@@ -23,10 +23,10 @@ function PersonalMemberAccount() {
     const [about, setAbout] = useState('');
     const [specialization, setSpecialization] = useState('');
     const [profileHiddenFlag, setProfileHiddenFlag] = useState(false);
-    const specializations = ["Frontend Developer", "Backend Developer", "UI/UX Designer", "Product Manager"];
+    const [specializations, setSpecializations] = useState([]);
 
     useEffect(() => {
-        fetch(`${config.USER_SERVICE}/members/auth/personInfo`, {
+        fetch(`${config.USER_SERVICE}/members/me/personal_info`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -44,11 +44,31 @@ function PersonalMemberAccount() {
                 setPhone(data.phone);
                 setEmail(data.email);
                 setBirthday(data.birthday);
-                setSpecialization(data.specialization);
+                setSpecialization(data.specializationId);
                 setUsername(data.username);
                 setAbout(data.about);
                 setAvatar(`${config.FILE_SERVER}${data.avatarUrl}` || "/default_user_avatar.jpg");
                 setProfileHiddenFlag(data.profileHiddenFlag);
+            })
+            .catch(error => console.error('Fetch error:', error));
+    }, [authorizationToken]);
+
+    useEffect(() => {
+        fetch(`${config.USER_SERVICE}/specialist_specializations`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken ? `${authorizationToken}` : '',
+            },
+        })
+            .then(response => {
+                if (response.status !== 200) {
+                    throw new Error('Failed to fetch specializations');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setSpecializations(data);
             })
             .catch(error => console.error('Fetch error:', error));
     }, [authorizationToken]);
@@ -81,7 +101,7 @@ function PersonalMemberAccount() {
             profileHiddenFlag: newProfileHiddenFlag
         });
 
-        fetch(`${config.USER_SERVICE}/members/auth/profile_visibility`, {
+        fetch(`${config.USER_SERVICE}/members/me/profile_hidden_flag`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -110,7 +130,7 @@ function PersonalMemberAccount() {
             return;
         }
 
-        fetch(`${config.USER_SERVICE}/members/auth/personal_info`, {
+        fetch(`${config.USER_SERVICE}/members/me/personal_info`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -121,7 +141,7 @@ function PersonalMemberAccount() {
                 phone: phone,
                 email: email,
                 birthday: birthday,
-                specialization: specialization,
+                specializationId: Number(specialization),
                 about: about,
                 profileHiddenFlag: profileHiddenFlag
             }),
@@ -154,7 +174,7 @@ function PersonalMemberAccount() {
             return;
         }
 
-        fetch(`${config.USER_SERVICE}/members/auth/change_password`, {
+        fetch(`${config.USER_SERVICE}/members/me/password`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -177,7 +197,7 @@ function PersonalMemberAccount() {
     };
 
     const handleDeleteAccount = () => {
-        fetch(`${config.USER_SERVICE}/members/auth/delete_my_account`, {
+        fetch(`${config.USER_SERVICE}/members/me`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -215,7 +235,7 @@ function PersonalMemberAccount() {
         const formData = new FormData();
         formData.append('file', file);
 
-        fetch(`${config.FILE_SERVER}/upload/memberAvatars`, {
+        fetch(`${config.FILE_SERVER}/members/me/avatar`, {
             method: 'POST',
             body: formData,
         })
@@ -236,7 +256,7 @@ function PersonalMemberAccount() {
     };
 
     const sendAvatarUrlToBackend = (avatarUrl) => {
-        fetch(`${config.USER_SERVICE}/members/auth/change_avatar`, {
+        fetch(`${config.USER_SERVICE}/members/me/avatar`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -343,7 +363,7 @@ function PersonalMemberAccount() {
                         >
                             <option value="">Выберите специализацию</option>
                             {specializations.map(spec => (
-                                <option key={spec} value={spec}>{spec}</option>
+                                <option key={spec.id} value={spec.id}>{spec.name}</option>
                             ))}
                         </select>
                     </div>

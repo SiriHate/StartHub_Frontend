@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
-import { Provider, LikeButton } from "@lyket/react";
 import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from "../../navigation_bar/NavigationBar";
 import styles from "./ProjectDetails.module.css";
@@ -96,17 +95,11 @@ function ProjectDetails() {
                         ))}
                     </ul>
                 </div>
-                <Provider apiKey="acc0dbccce8e557db5ebbe6d605aaa">
-                    <div className={styles.likeSection}>
-                        <LikeButton
-                            namespace="testing-react"
-                            id="everybody-like-now"
-                            likes={project.likes}
-                        />
-                    </div>
-                </Provider>
+                <div className={styles.likeSection}>
+                    <p>Количество оценивших пользователей: {project.likes || 0}</p>
+                </div>
                 <div className={styles.projectMenu}>
-                    <button className={styles.menuButton}>Поддержать проект</button>
+                    <button className={styles.menuButton}>Оценить проект</button>
                     <button className={styles.menuButton}>Обсуждение проекта</button>
                     <button className={styles.menuButton}>Ближайшее мероприятие</button>
                 </div>

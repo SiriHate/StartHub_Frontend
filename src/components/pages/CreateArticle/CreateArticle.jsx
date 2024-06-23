@@ -1,7 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet";
-import Quill from 'quill';
-import "quill/dist/quill.snow.css";
 import styles from "./CreateArticle.module.css";
 import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from "../../navigation_bar/NavigationBar";
@@ -14,10 +12,28 @@ const CreateArticle = () => {
     const [articleLogo, setArticleLogo] = useState(null);
     const fileInputRef = useRef();
     const [articleContent, setArticleContent] = useState('');
-    const [articleCategory, setArticleCategory] = useState('');
+    const [articleCategory, setArticleCategory] = useState(null);
+    const [categories, setCategories] = useState([]);
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch(`${config.MAIN_SERVICE}/article_categories`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setCategories(data);
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,10 +58,10 @@ const CreateArticle = () => {
                     title: articleTitle,
                     previewUrl: uploadResult.url,
                     content: articleContent,
-                    category: articleCategory
+                    categoryId: articleCategory // Changed to send the category ID
                 };
 
-                const response = await fetch(`${config.MAIN_SERVICE}/article`, {
+                const response = await fetch(`${config.MAIN_SERVICE}/articles`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -59,7 +75,7 @@ const CreateArticle = () => {
                     setArticleTitle('');
                     setArticleLogo(null);
                     setArticleContent('');
-                    setArticleCategory('');
+                    setArticleCategory(null);
                 } else {
                     throw new Error('Ошибка при создании статьи: ' + response.statusText);
                 }
@@ -86,7 +102,7 @@ const CreateArticle = () => {
             <div className={styles.createArticlePage}>
                 <div className={styles.createArticleContainer}>
                     <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon/>
+                        <GoBackIcon />
                     </button>
                     <h2 className={styles.formTitle}>Публикация статьи</h2>
                     <form className={styles.createArticleForm} onSubmit={handleSubmit}>
@@ -96,7 +112,7 @@ const CreateArticle = () => {
                             </label>
                             <div className={styles.logoPreview}>
                                 {articleLogo &&
-                                    <img src={URL.createObjectURL(articleLogo)} alt="Article Logo Preview"/>}
+                                    <img src={URL.createObjectURL(articleLogo)} alt="Article Logo Preview" />}
                                 <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
                                     Загрузить фото
                                 </button>
@@ -105,7 +121,7 @@ const CreateArticle = () => {
                                     ref={fileInputRef}
                                     id="logoUpload"
                                     accept="image/*"
-                                    style={{display: "none"}}
+                                    style={{ display: "none" }}
                                     onChange={(e) => setArticleLogo(e.target.files[0])}
                                 />
                             </div>
@@ -124,21 +140,20 @@ const CreateArticle = () => {
                             <label htmlFor="articleCategory">Категория статьи</label>
                             <select
                                 id="articleCategory"
-                                value={articleCategory}
-                                onChange={(e) => setArticleCategory(e.target.value)}
+                                value={articleCategory || ''}
+                                onChange={(e) => setArticleCategory(Number(e.target.value))}
                                 required
                                 className={styles.selectInput}
                             >
                                 <option value="">Выберите категорию</option>
-                                <option value="Технологии">Технологии</option>
-                                <option value="Наука">Наука</option>
-                                <option value="Спорт">Спорт</option>
-                                <option value="Искусство">Искусство</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>{category.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="articleContent">Содержание статьи</label>
-                            <RichTextEditor content={articleContent} setContent={setArticleContent}/>
+                            <RichTextEditor content={articleContent} setContent={setArticleContent} />
                         </div>
                         <button type="submit" className={styles.submitButton}>
                             Опубликовать статью

@@ -45,7 +45,7 @@ const MyChatsPage = () => {
     }, [authorizationToken]);
 
     useEffect(() => {
-        const socket = new SockJS(`${config.CHAT_SERVICE}/ws`);
+        const socket = new SockJS(`http://localhost:8084/ws`);
         const client = Stomp.over(socket);
 
         client.connect({ 'Authorization': authorizationToken }, (frame) => {

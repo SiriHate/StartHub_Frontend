@@ -1,10 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import styles from './RichTextEditor.module.css';
 
 const RichTextEditor = ({ content, setContent }) => {
+
+    const editorRef = useRef(null);
     const quillRef = useRef(null);
+
     const formats = [
         'header', 'font', 'size',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
@@ -36,27 +39,23 @@ const RichTextEditor = ({ content, setContent }) => {
     };
 
     useEffect(() => {
-        if (quillRef.current) {
-            const toolbar = quillRef.current.getEditor().getModule('toolbar').container;
-            toolbar.classList.add(styles.qlToolbar);
+        if (editorRef.current && !quillRef.current) {
+            quillRef.current = new Quill(editorRef.current, {
+                theme: 'snow',
+                modules: modules,
+                formats: formats
+            });
 
-            const container = quillRef.current.getEditor().container;
-            container.classList.add(styles.qlContainer);
+            quillRef.current.on('text-change', () => {
+                setContent(quillRef.current.root.innerHTML);
+            });
 
-            const editor = quillRef.current.getEditor().scroll.domNode;
-            editor.classList.add(styles.qlEditor);
+            quillRef.current.root.innerHTML = content;
         }
-    }, []);
+    }, [content, setContent]);
 
     return (
-        <Quill
-            ref={quillRef}
-            theme="snow"
-            modules={modules}
-            formats={formats}
-            value={content}
-            onChange={setContent}
-        />
+        <div ref={editorRef} className={styles.editor}></div>
     );
 };
 

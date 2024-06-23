@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import "quill/dist/quill.snow.css";
 import styles from "./CreateNews.module.css";
@@ -14,9 +14,27 @@ const CreateNews = () => {
     const fileInputRef = useRef();
     const [newsContent, setNewsContent] = useState('');
     const [newsCategory, setNewsCategory] = useState('');
+    const [categories, setCategories] = useState([]);
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch(`${config.MAIN_SERVICE}/news_categories`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setCategories(data);
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,7 +60,7 @@ const CreateNews = () => {
                     title: newsTitle,
                     previewUrl: uploadResult.url,
                     content: newsContent,
-                    category: newsCategory
+                    categoryId: newsCategory // Changed to send the category ID
                 };
 
                 const response = await fetch(`${config.MAIN_SERVICE}/news`, {
@@ -60,6 +78,7 @@ const CreateNews = () => {
                     setNewsLogo(null);
                     setNewsContent('');
                     setNewsCategory('');
+                    navigate('/my_space'); // Redirect to /my_space
                 } else {
                     throw new Error('Ошибка при создании новости: ' + response.statusText);
                 }
@@ -111,33 +130,32 @@ const CreateNews = () => {
                             </div>
                         </div>
                         <div className={styles.formGroup}>
-                            <label htmlFor="articleTitle">Название новости</label>
+                            <label htmlFor="newsTitle">Название новости</label>
                             <input
                                 type="text"
-                                id="articleTitle"
+                                id="newsTitle"
                                 value={newsTitle}
                                 onChange={(e) => setNewsTitle(e.target.value)}
                                 required
                             />
                         </div>
                         <div className={styles.formGroup}>
-                            <label htmlFor="articleCategory">Категория новости</label>
+                            <label htmlFor="newsCategory">Категория новости</label>
                             <select
-                                id="articleCategory"
+                                id="newsCategory"
                                 value={newsCategory}
                                 onChange={(e) => setNewsCategory(e.target.value)}
                                 required
                                 className={styles.selectInput}
                             >
                                 <option value="">Выберите категорию</option>
-                                <option value="Технологии">Технологии</option>
-                                <option value="Наука">Наука</option>
-                                <option value="Спорт">Спорт</option>
-                                <option value="Искусство">Искусство</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>{category.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className={styles.formGroup}>
-                            <label htmlFor="articleContent">Содержание новости</label>
+                            <label htmlFor="newsContent">Содержание новости</label>
                             <RichTextEditor content={newsContent} setContent={setNewsContent}/>
                         </div>
                         <button type="submit" className={styles.submitButton}>

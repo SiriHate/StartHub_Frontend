@@ -22,7 +22,7 @@ const ArticlePage = () => {
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/article/${articleId}`);
+                const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setArticle({

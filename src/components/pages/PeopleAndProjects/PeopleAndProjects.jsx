@@ -5,18 +5,34 @@ import styles from "./PeopleAndProjects.module.css";
 import NavigationBar from "../../navigation_bar/NavigationBar";
 import config from "../../../config";
 
-const projectCategories = ["Все", "Разработка", "Дизайн", "Маркетинг", "Администрация"];
-const specialistSpecializations = ["Все", "Frontend", "Backend", "UI/UX", "Product Manager"];
-
 const PeopleAndProjects = () => {
     const [items, setItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentTab, setCurrentTab] = useState("project");
+    const [filters, setFilters] = useState(["Все"]);
     const [selectedFilter, setSelectedFilter] = useState("Все");
     const [appliedFilter, setAppliedFilter] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+
+    const fetchCategories = async (tab) => {
+        try {
+            const url = tab === "project"
+                ? `${config.MAIN_SERVICE}/project_categories`
+                : `${config.USER_SERVICE}/specialist_specializations`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const categoryNames = data.map(category => category.name);
+            setFilters(["Все", ...categoryNames]);
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+            setFilters(["Все"]);
+        }
+    };
 
     const fetchItems = async (searchQuery, filter, currentTab, page) => {
         try {
@@ -38,6 +54,7 @@ const PeopleAndProjects = () => {
     };
 
     useEffect(() => {
+        fetchCategories(currentTab);
         fetchItems("", "", currentTab, 0);  // Initial fetch with default values
     }, [currentTab]);
 
@@ -97,6 +114,7 @@ const PeopleAndProjects = () => {
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
         setPage(0);  // Reset page to 0 when switching tabs
+        fetchCategories(tab);
         fetchItems(searchQuery, appliedFilter, tab, 0);
     };
 
@@ -110,7 +128,7 @@ const PeopleAndProjects = () => {
             <div className={styles.peopleAndProjectsPage}>
                 <div className={styles.sidebar}>
                     <div className={styles.filters}>
-                        {(currentTab === "project" ? projectCategories : specialistSpecializations).map(filter => (
+                        {filters.map(filter => (
                             <div
                                 key={filter}
                                 className={`${styles.filter} ${selectedFilter === filter ? styles.activeFilter : ''}`}

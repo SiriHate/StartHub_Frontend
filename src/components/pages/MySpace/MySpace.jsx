@@ -19,13 +19,13 @@ const MySpace = () => {
 
     const fetchItems = async (category, searchQuery, page) => {
         try {
-            let url = `${config.MAIN_SERVICE}/projects/find-my-projects`;
+            let url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
             if (category === "Мои статьи") {
-                url = `${config.MAIN_SERVICE}/article/search`;
+                url = `${config.MAIN_SERVICE}/users/my/articles`;
             } else if (category === "Мои новости") {
-                url = `${config.MAIN_SERVICE}/news/search`;
+                url = `${config.MAIN_SERVICE}/users/my/news`;
             } else if (category === "Мои мероприятия") {
-                url = `${config.MAIN_SERVICE}/events/search`;
+                url = `${config.MAIN_SERVICE}/users/my/events`;
             }
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
@@ -33,7 +33,7 @@ const MySpace = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': ` ${authorizationToken}`
+                    'Authorization': authorizationToken
                 }
             });
 
@@ -61,8 +61,10 @@ const MySpace = () => {
     const handleCreateItem = () => {
         if (selectedCategory === "Мои проекты") {
             navigate('/create_project');
-        } else if (selectedCategory === "Мои статьи" || selectedCategory === "Мои новости") {
-            navigate('/create_publication');
+        } else if (selectedCategory === "Мои статьи") {
+            navigate('/create_article');
+        } else if (selectedCategory === "Мои новости") {
+            navigate('/create_news');
         } else if (selectedCategory === "Мои мероприятия") {
             navigate('/create_event');
         }
@@ -77,6 +79,14 @@ const MySpace = () => {
             navigate(`/news/${itemId}`);
         } else if (selectedCategory === "Мои мероприятия") {
             navigate(`/event/${itemId}`);
+        }
+    };
+
+    const manageItem = (itemId) => {
+        if (selectedCategory === "Мои проекты") {
+            navigate(`/manage_project/${itemId}`);
+        } else if (selectedCategory === "Мои статьи" || selectedCategory === "Мои новости" || selectedCategory === "Мои мероприятия") {
+            navigate(`/manage_publication/${itemId}`);
         }
     };
 
@@ -157,7 +167,7 @@ const MySpace = () => {
                             {getCreateButtonText()}
                         </button>
                     </div>
-                    <h2 className={`${styles.mySpaceTitle}`}>{selectedCategory}</h2>
+                    <h2 className={styles.mySpaceTitle}>{selectedCategory}</h2>
                     <div className={styles.itemsList}>
                         {items.length === 0 ? (
                             <div className={styles.emptyItems}>Не найдено ни одного {selectedCategory.toLowerCase().split(" ")[1]}</div>
@@ -165,7 +175,7 @@ const MySpace = () => {
                             items.map(item => (
                                 <div key={item.id} className={styles.item} onClick={() => openItem(item.id)}>
                                     <img
-                                        src={`${config.FILE_SERVER}${item.previewUrl}`}
+                                        src={`${config.FILE_SERVER}${selectedCategory === "Мои проекты" ? item.projectLogoUrl : item.previewUrl}`}
                                         alt={item.title || item.projectName || item.eventName}
                                         className={styles.itemImage}
                                         onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
@@ -174,6 +184,15 @@ const MySpace = () => {
                                         <div className={styles.itemName}>{item.title || item.projectName || item.eventName}</div>
                                         <div className={styles.itemDetail}>{item.category}</div>
                                     </div>
+                                    <button
+                                        className={styles.manageButton}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            manageItem(item.id);
+                                        }}
+                                    >
+                                        {selectedCategory === "Мои проекты" ? "Управление проектом" : "Управление публикацией"}
+                                    </button>
                                 </div>
                             ))
                         )}

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import styles from "./CreateProject.module.css";
@@ -9,22 +9,50 @@ import config from "../../../config";
 function CreateProject() {
     const [projectName, setProjectName] = useState("");
     const [projectDescription, setProjectDescription] = useState("");
-    const [category, setCategory] = useState("");
+    const [categoryId, setCategoryId] = useState("");
     const [stage, setStage] = useState("");
     const [projectLogo, setProjectLogo] = useState(null);
     const fileInputRef = useRef();
     const [members, setMembers] = useState([]);
     const [username, setUsername] = useState("");
-    const [role, setRole] = useState("");
+    const [roleName, setRoleName] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [specializations, setSpecializations] = useState([]);
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // Fetch project categories
+        fetch(`${config.MAIN_SERVICE}/project_categories`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken ? `${authorizationToken}` : '',
+            },
+        })
+            .then(response => response.json())
+            .then(data => setCategories(data))
+            .catch(error => console.error('Error fetching categories:', error));
+
+        // Fetch specialist roles
+        fetch(`${config.USER_SERVICE}/specialist_specializations`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken ? `${authorizationToken}` : '',
+            },
+        })
+            .then(response => response.json())
+            .then(data => setSpecializations(data))
+            .catch(error => console.error('Error fetching specializations:', error));
+    }, [authorizationToken]);
+
     const addMember = () => {
-        if (username && role) {
-            setMembers([...members, { username, role }]);
+        if (username && roleName) {
+            setMembers([...members, { username, role: roleName }]);
             setUsername("");
-            setRole("");
+            setRoleName("");
         }
     };
 
@@ -35,7 +63,7 @@ function CreateProject() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!projectName || !projectDescription || !category || !stage) {
+        if (!projectName || !projectDescription || !categoryId || !stage) {
             console.error('Please fill out all required fields.');
             return;
         }
@@ -60,9 +88,12 @@ function CreateProject() {
                 projectLogoUrl: projectLogoUrl,
                 projectName: projectName,
                 projectDescription: projectDescription,
-                category: category,
+                categoryId: categoryId,
                 stage: stage,
-                members: members
+                members: members.map(member => ({
+                    username: member.username,
+                    role: member.role
+                }))
             };
 
             const response = await fetch(`${config.MAIN_SERVICE}/projects`, {
@@ -153,15 +184,14 @@ function CreateProject() {
                             <label htmlFor="projectCategory">Категория проекта</label>
                             <select
                                 id="projectCategory"
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
+                                value={categoryId}
+                                onChange={(e) => setCategoryId(e.target.value)}
                                 required
                             >
                                 <option value="">Выберите категорию</option>
-                                <option value="Technology">Технологии</option>
-                                <option value="Science">Наука</option>
-                                <option value="Art">Искусство</option>
-                                <option value="Business">Бизнес</option>
+                                {categories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className={styles.formGroup}>
@@ -189,14 +219,14 @@ function CreateProject() {
                                 className={styles.fullWidthInput}
                             />
                             <select
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
+                                value={roleName}
+                                onChange={(e) => setRoleName(e.target.value)}
                                 className={styles.uniformHeightSelect}
                             >
                                 <option value="">Выберите роль</option>
-                                <option value="Разработчик">Разработчик</option>
-                                <option value="Дизайнер">Дизайнер</option>
-                                <option value="Менеджер">Менеджер</option>
+                                {specializations.map(spec => (
+                                    <option key={spec.id} value={spec.name}>{spec.name}</option>
+                                ))}
                             </select>
                             <button type="button" onClick={addMember} className={styles.addMemberButton}>+</button>
                         </div>
