@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+.navigationHeader {
+    background: linear-gradient(to right, #4a90e2, #357abf);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.navigationHeader::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.headerContainer {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+.logoContainer {
+    margin-left: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 150px;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.navContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    margin: 0;
+    padding: 0;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #6ba1d8;
+    border-right: 1px solid #6ba1d8;
+    transition: background 0.3s ease-in-out;
+    padding: 0 10px;
+}
+
+.navItem:first-child {
+    border-left: none;
+}
+
+.navItem:last-child {
+    border-right: none;
+}
+
+.navLink {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 15px 20px;
+    display: block;
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    white-space: nowrap;
+}
+
+.navItem:hover {
+    background-color: #3b76bf;
+}
+
+.navLink:hover {
+    color: #b0d4f7;
+}
+
+.navLink.active {
+    background-color: #3b76bf;
+    color: #b0d4f7;
+}
+
+.faUser {
+    padding-right: 8px;
+    transition: color 0.3s ease-in-out;
+}
+
+.navItem:hover .faUser {
+    color: #b0d4f7;
+}

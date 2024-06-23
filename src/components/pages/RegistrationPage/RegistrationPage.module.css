@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.html {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
+}
+
+.registrationPage {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
+    font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
+}
+
+::selection {
+    background: #4158d0;
+    color: #fff;
+}
+
+.linkButton {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
+
+.logo {
+    position: relative;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: auto;
+    z-index: 10;
+}
+
+.formContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.wrapper {
+    width: 380px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow-y: hidden;
+    max-height: 90vh;
+    margin-bottom: 50px;
+}
+
+.title {
+    font-size: 35px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 100px;
+    color: #fff;
+    user-select: none;
+    border-radius: 15px 15px 0 0;
+    background: #4a90e2;
+}
+
+.form {
+    padding: 10px 30px 50px 30px;
+}
+
+.field {
+    height: 50px;
+    width: 100%;
+    margin-top: 20px;
+    position: relative;
+}
+
+.input {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    font-size: 17px;
+    padding-left: 20px;
+    border: 1px solid lightgrey;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.label {
+    position: absolute;
+    top: 0%;
+    left: 20px;
+    color: #4158d0;
+    font-weight: 400;
+    font-size: 14px;
+    background: #fff;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+
+.submitButton {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    background: #4a90e2;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.submitButtonActive {
+    transform: scale(0.95);
+}
+
+.signupLink {
+    color: #262626;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.signupLinkA {
+    color: #4158d0;
+    text-decoration: none;
+}
+
+.signupLinkAHover {
+    text-decoration: underline;
+}

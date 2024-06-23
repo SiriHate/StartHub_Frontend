@@ -1,0 +1,239 @@
+.body {
+    background: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+}
+
+.sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: #27293d;
+    height: 100vh;
+    color: white;
+}
+
+.applyButton {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+
+.applyButton:hover {
+    background-color: #0056b3;
+}
+
+.category {
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.category:hover, .activeCategory {
+    background: #1f8b3f;
+}
+
+.tabButton {
+    background: #357abf;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-right: 10px;
+}
+
+.paginationControls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pageNumber {
+    color: #fff;
+    margin: 0 10px;
+}
+
+.pageButton {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    background: #357abf;
+    border-radius: 5px;
+}
+
+.pageButton:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.activeTab {
+    background: #4a90e2;
+}
+
+.articlesAndNewsPage {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.searchButton {
+    width: 150px;
+    margin-left: 5px;
+    padding: 10px 20px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    background: #357abf;
+    border-radius: 5px;
+}
+
+.createButton {
+    margin-left: 5px;
+    padding: 10px 20px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    background: #1f8b3f;
+    border-radius: 5px;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.controls {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.searchBar {
+    display: flex;
+    gap: 5px;
+    flex-grow: 1;
+    width: 50%; /* Search bar now takes up 50% of the width */
+    margin: 0 auto; /* Centering the search bar */
+}
+
+.searchInput {
+    flex-grow: 1;
+    padding: 10px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    outline: none;
+    width: calc(100% - 120px); /* Adjust width to fit button */
+}
+
+.button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    background: #357abf; /* Reverting to a matching style */
+}
+
+.button:hover {
+    background: #25496b; /* Darker shade for hover state */
+}
+
+.publicationsTitle {
+    color: white;
+    margin: 25px 0;
+}
+
+.projectsList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #1f1f40;
+    border-radius: 5px;
+    gap: 20px;
+}
+
+.projectImage {
+    width: 150px;
+    height: 150px;
+    border-radius: 5px;
+}
+
+.projectName {
+    font-size: 18px;
+    color: #fff;
+}
+
+.itemsList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #1f1f40;
+    border-radius: 5px;
+    gap: 20px;
+}
+
+.itemImage {
+    width: 150px;
+    height: 150px;
+    border-radius: 5px;
+}
+
+.itemContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.itemDetail {
+    font-size: 14px; /* Меньший размер шрифта для подробностей */
+    color: #bbb; /* Светлый цвет шрифта для контраста */
+}
+
+.itemName {
+    font-size: 18px;
+    color: #fff;
+}
+
+.emptyItems {
+    text-align: center;
+    color: #e23b3b;
+    margin-top: 50px;
+}
+
+.emptyItems {
+    text-align: center;
+    color: #e23b3b;
+    margin-top: 50px;
+}
