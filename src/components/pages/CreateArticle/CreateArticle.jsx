@@ -58,7 +58,7 @@ const CreateArticle = () => {
                     title: articleTitle,
                     previewUrl: uploadResult.url,
                     content: articleContent,
-                    categoryId: articleCategory // Changed to send the category ID
+                    categoryId: articleCategory
                 };
 
                 const response = await fetch(`${config.MAIN_SERVICE}/articles`, {

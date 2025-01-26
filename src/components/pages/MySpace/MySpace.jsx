@@ -85,9 +85,15 @@ const MySpace = () => {
     const manageItem = (itemId) => {
         if (selectedCategory === "Мои проекты") {
             navigate(`/manage_project/${itemId}`);
-        } else if (selectedCategory === "Мои статьи" || selectedCategory === "Мои новости" || selectedCategory === "Мои мероприятия") {
-            navigate(`/manage_publication/${itemId}`);
+        } else if (selectedCategory === "Мои статьи") {
+            navigate(`/manage_article/${itemId}`);
+        } else if (selectedCategory === "Мои новости") {
+            navigate(`/manage_news/${itemId}`);
         }
+        else if (selectedCategory === "Мои мероприятия") {
+            navigate(`/manage_event/${itemId}`);
+        }
+
     };
 
     const handleNextPage = () => {

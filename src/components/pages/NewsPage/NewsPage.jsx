@@ -11,7 +11,7 @@ const NewsPage = () => {
     const navigate = useNavigate();
     const [news, setNews] = useState({
         title: "",
-        reporter: "",
+        owner: "",
         previewUrl: "",
         category: "",
         content: ""
@@ -27,7 +27,7 @@ const NewsPage = () => {
                     const data = await response.json();
                     setNews({
                         title: data.title,
-                        reporter: data.reporter,
+                        owner: data.owner,
                         previewUrl: `${config.FILE_SERVER}${data.previewUrl}`,
                         category: data.category,
                         content: data.content
@@ -68,7 +68,7 @@ const NewsPage = () => {
                 </button>
                 <h1 className={styles.newsTitle}>{news.title}</h1>
                 <div className={styles.newsMetadata}>
-                    Автор: <span className={styles.newsReporter}>{news.reporter}</span> | Категория: <span
+                    Автор: <span className={styles.newsOwner}>{news.owner}</span> | Категория: <span
                     className={styles.newsCategory}>{news.category}</span>
                 </div>
                 <img src={news.previewUrl} alt="News preview" className={styles.newsPreview}/>

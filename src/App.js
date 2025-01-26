@@ -22,6 +22,8 @@ import ArticlePage from "./components/pages/ArticlePage/ArticlePage";
 import MyChatsPage from "./components/pages/MyChatsPage/MyChatsPage";
 import ManageProject from "./components/pages/ManageProject/ManageProject";
 import ProjectStatistic from "./components/pages/ProjectStatistics/ProjectStatistics";
+import ManageArticle from "./components/pages/ManageArticle/ManageArticle";
+import ManageNews from "./components/pages/ManageNews/ManageNews";
 
 const App = () => {
     return (
@@ -37,8 +39,10 @@ const App = () => {
                 <Route path="/articles-and-news" element={<ArticlesAndNews/>}/>
                 <Route path="/create_article" element={<CreateArticle/>}/>
                 <Route path="/article/:articleId" element={<ArticlePage/>}/>
+                <Route path="/manage_article/:articleId" element={<ManageArticle/>}/>
                 <Route path="/create_news" element={<CreateNews/>}/>
                 <Route path="/news/:newsId" element={<NewsPage/>}/>
+                <Route path="/manage_news/:newsId" element={<ManageNews/>}/>
                 <Route path="/confirm-registration" element={<ConfirmRegistrationPage/>}/>
                 <Route path="/events_calendar" element={<EventsCalendarPage/>}/>
                 <Route path="/people_and_projects" element={<PeopleAndProjects/>}/>
