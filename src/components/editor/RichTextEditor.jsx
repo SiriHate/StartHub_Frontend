@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import styles from './RichTextEditor.module.css';
 
-const RichTextEditor = ({ content, setContent }) => {
+const RichTextEditor = ({content, setContent}) => {
 
     const editorRef = useRef(null);
     const quillRef = useRef(null);
@@ -19,19 +19,19 @@ const RichTextEditor = ({ content, setContent }) => {
 
     const modules = {
         toolbar: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'font': [] }],
-            [{ 'size': ['small', false, 'large', 'huge'] }],
+            [{'header': [1, 2, 3, 4, 5, 6, false]}],
+            [{'font': []}],
+            [{'size': ['small', false, 'large', 'huge']}],
             ['bold', 'italic', 'underline', 'strike'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'script': 'sub'}, { 'script': 'super' }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            [{ 'indent': '-1'}, { 'indent': '+1' }],
-            [{ 'align': [] }],
+            [{'color': []}, {'background': []}],
+            [{'script': 'sub'}, {'script': 'super'}],
+            [{'list': 'ordered'}, {'list': 'bullet'}],
+            [{'indent': '-1'}, {'indent': '+1'}],
+            [{'align': []}],
             ['link', 'image', 'video'],
             ['blockquote', 'code-block'],
             ['clean'],
-            [{ 'table': true }]
+            [{'table': true}]
         ],
         clipboard: {
             matchVisual: false,

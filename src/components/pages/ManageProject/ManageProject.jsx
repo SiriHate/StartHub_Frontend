@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Helmet } from "react-helmet";
-import { useNavigate, useParams } from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
+import {Helmet} from "react-helmet";
+import {useNavigate, useParams} from "react-router-dom";
 import styles from "./ManageProject.module.css";
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
 import config from "../../../config";
 
 function ManageProject() {
@@ -17,7 +17,7 @@ function ManageProject() {
     const [members, setMembers] = useState([]);
     const [username, setUsername] = useState("");
     const [role, setRole] = useState("");
-    const { projectId } = useParams();
+    const {projectId} = useParams();
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
@@ -45,7 +45,7 @@ function ManageProject() {
 
     const addMember = () => {
         if (username && role) {
-            setMembers([...members, { username, role }]);
+            setMembers([...members, {username, role}]);
             setUsername("");
             setRole("");
         }
@@ -144,14 +144,14 @@ function ManageProject() {
         <>
             <Helmet>
                 <title>Управление проектом</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.manageProjectPage}>
                 <div className={styles.manageProjectContainer}>
                     <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon />
+                        <GoBackIcon/>
                     </button>
                     <h2 className={styles.formTitle}>Управление проектом</h2>
                     <form className={styles.manageProjectForm} onSubmit={handleChange}>
@@ -159,7 +159,7 @@ function ManageProject() {
                             <label htmlFor="projectLogo" className={styles.centerLabel}>Логотип проекта</label>
                             <div className={styles.logoPreview}>
                                 {projectLogo &&
-                                    <img src={projectLogo} alt="Project Logo Preview" />}
+                                    <img src={projectLogo} alt="Project Logo Preview"/>}
                                 <button
                                     type="button"
                                     className={styles.uploadButton}
@@ -172,7 +172,7 @@ function ManageProject() {
                                     ref={fileInputRef}
                                     id="logoUpload"
                                     accept="image/*"
-                                    style={{ display: 'none' }}
+                                    style={{display: 'none'}}
                                     onChange={(e) => setProjectLogo(e.target.files[0])}
                                 />
                             </div>
@@ -257,9 +257,12 @@ function ManageProject() {
                                 <div className={styles.emptyMessage}>Пока не добавлено ни одного участника</div>)}
                         </div>
                         <button type="submit" className={styles.submitButton}>Применить изменения</button>
-                        <button onClick={handleCreateMeeting} className={styles.scheduleMeetingButton}>Создать встречу</button>
-                        <button onClick={handleViewStatistics} className={styles.statisticsButton}>Просмотр статистики</button>
-                        <button onClick={handleDeleteProject} className={styles.deleteProjectButton}>Удалить проект</button>
+                        <button onClick={handleCreateMeeting} className={styles.scheduleMeetingButton}>Создать встречу
+                        </button>
+                        <button onClick={handleViewStatistics} className={styles.statisticsButton}>Просмотр статистики
+                        </button>
+                        <button onClick={handleDeleteProject} className={styles.deleteProjectButton}>Удалить проект
+                        </button>
                     </form>
                 </div>
             </div>

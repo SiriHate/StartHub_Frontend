@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
+import {Helmet} from "react-helmet";
+import {useNavigate} from "react-router-dom";
 import styles from "./CreateProject.module.css";
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
 import config from "../../../config";
 
 function CreateProject() {
@@ -50,7 +50,7 @@ function CreateProject() {
 
     const addMember = () => {
         if (username && roleName) {
-            setMembers([...members, { username, role: roleName }]);
+            setMembers([...members, {username, role: roleName}]);
             setUsername("");
             setRoleName("");
         }
@@ -129,21 +129,22 @@ function CreateProject() {
         <>
             <Helmet>
                 <title>Создание проекта</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.createProjectPage}>
                 <div className={styles.createProjectContainer}>
                     <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon />
+                        <GoBackIcon/>
                     </button>
                     <h2 className={styles.formTitle}>Создание проекта</h2>
                     <form className={styles.createProjectForm} onSubmit={handleSubmit}>
                         <div className={styles.formGroup}>
                             <label htmlFor="projectLogo" className={styles.centerLabel}>Логотип проекта</label>
                             <div className={styles.logoPreview}>
-                                {projectLogo && <img src={URL.createObjectURL(projectLogo)} alt="Project Logo Preview" />}
+                                {projectLogo &&
+                                    <img src={URL.createObjectURL(projectLogo)} alt="Project Logo Preview"/>}
                                 <button
                                     type="button"
                                     className={styles.uploadButton}
@@ -156,7 +157,7 @@ function CreateProject() {
                                     ref={fileInputRef}
                                     id="logoUpload"
                                     accept="image/*"
-                                    style={{ display: 'none' }}
+                                    style={{display: 'none'}}
                                     onChange={(e) => setProjectLogo(e.target.files[0])}
                                 />
                             </div>

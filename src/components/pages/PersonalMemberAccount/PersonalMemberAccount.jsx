@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import styles from './PersonalMemberAccount.module.css';
-import NavigationBar from '../../navigation_bar/NavigationBar';
-import { Helmet } from "react-helmet";
+import Menu from '../../menu/Menu';
+import {Helmet} from "react-helmet";
 import config from '../../../config';
 
 function PersonalMemberAccount() {
@@ -24,6 +24,8 @@ function PersonalMemberAccount() {
     const [specialization, setSpecialization] = useState('');
     const [profileHiddenFlag, setProfileHiddenFlag] = useState(false);
     const [specializations, setSpecializations] = useState([]);
+    const [profileError, setProfileError] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetch(`${config.USER_SERVICE}/members/me/personal_info`, {
@@ -35,7 +37,7 @@ function PersonalMemberAccount() {
         })
             .then(response => {
                 if (response.status !== 200) {
-                    throw new Error('Failed to fetch personal information');
+                    throw new Error('Не удалось загрузить профиль');
                 }
                 return response.json();
             })
@@ -49,8 +51,13 @@ function PersonalMemberAccount() {
                 setAbout(data.about);
                 setAvatar(`${config.FILE_SERVER}${data.avatarUrl}` || "/default_user_avatar.jpg");
                 setProfileHiddenFlag(data.profileHiddenFlag);
+                setIsLoading(false);
             })
-            .catch(error => console.error('Fetch error:', error));
+            .catch(error => {
+                console.error('Fetch error:', error);
+                setProfileError(error.message);
+                setIsLoading(false);
+            });
     }, [authorizationToken]);
 
     useEffect(() => {
@@ -96,11 +103,7 @@ function PersonalMemberAccount() {
     const handleProfileHiddenChange = (event) => {
         const newProfileHiddenFlag = event.target.checked;
         setProfileHiddenFlag(newProfileHiddenFlag);
-
-        const requestBody = JSON.stringify({
-            profileHiddenFlag: newProfileHiddenFlag
-        });
-
+        const requestBody = JSON.stringify({profileHiddenFlag: newProfileHiddenFlag});
         fetch(`${config.USER_SERVICE}/members/me/profile_hidden_flag`, {
             method: 'PATCH',
             headers: {
@@ -129,7 +132,6 @@ function PersonalMemberAccount() {
             alert('Please enter a valid email address.');
             return;
         }
-
         fetch(`${config.USER_SERVICE}/members/me/personal_info`, {
             method: 'PATCH',
             headers: {
@@ -173,7 +175,6 @@ function PersonalMemberAccount() {
             alert('The new password must be at least 8 characters long.');
             return;
         }
-
         fetch(`${config.USER_SERVICE}/members/me/password`, {
             method: 'PATCH',
             headers: {
@@ -234,7 +235,6 @@ function PersonalMemberAccount() {
     const handleSubmitUpload = (file) => {
         const formData = new FormData();
         formData.append('file', file);
-
         fetch(`${config.FILE_SERVER}/members/me/avatar`, {
             method: 'POST',
             body: formData,
@@ -247,7 +247,6 @@ function PersonalMemberAccount() {
             })
             .then(data => {
                 const avatarUrl = data.url;
-                console.log('Upload success:', avatarUrl);
                 return sendAvatarUrlToBackend(avatarUrl);
             })
             .catch(error => {
@@ -262,7 +261,7 @@ function PersonalMemberAccount() {
                 'Content-Type': 'application/json',
                 'Authorization': authorizationToken ? ` ${authorizationToken}` : ''
             },
-            body: JSON.stringify({ avatarUrl: avatarUrl })
+            body: JSON.stringify({avatarUrl: avatarUrl})
         })
             .then(response => {
                 if (!response.ok) {
@@ -271,7 +270,6 @@ function PersonalMemberAccount() {
                 return response.json();
             })
             .then(data => {
-                console.log('Avatar URL update success:', data);
                 window.location.reload();
             })
             .catch(error => {
@@ -290,143 +288,100 @@ function PersonalMemberAccount() {
             <Helmet>
                 <title>Личный кабинет</title>
             </Helmet>
-            <NavigationBar />
-            <div className={styles.profileCard}>
-                <div className={styles.profileCardHeader}>
-                    <div className={styles.hideProfileWrapper}>
-                        <span className={styles.label}>Скрыть профиль</span>
-                        <input
-                            type="checkbox"
-                            className={styles.infoInput}
-                            checked={profileHiddenFlag}
-                            onChange={handleProfileHiddenChange}
-                        />
-                    </div>
-                    <img src={`${avatar}`} alt="User Avatar" className={styles.avatar}/>
-                    <input
-                        type="file"
-                        className={styles.uploadInput}
-                        onChange={handleFileUpload}
-                        ref={fileInputRef}
-                        style={{display: 'none'}}
-                    />
-                    <div className={styles.username}>{username}</div>
-                    <button
-                        className={styles.uploadBtn}
-                        onClick={handleUploadClick}>
-                        Загрузить фото
-                    </button>
+            <Menu/>
+            {isLoading ? null : profileError ? (
+                <div className={styles.errorContainer}>
+                    <h2>Не удалось загрузить профиль</h2>
                 </div>
-                <div className={styles.infoSection}>
-                    <div className={styles.infoItem}>
-                        <span className={styles.label}>Имя:</span>
-                        <input
-                            type="text"
-                            className={styles.infoInput}
-                            value={name}
-                            onChange={handleNameChange}
-                        />
-                    </div>
-                    <div className={styles.infoItem}>
-                        <span className={styles.label}>Телефон:</span>
-                        <input
-                            type="text"
-                            className={styles.infoInput}
-                            value={phone}
-                            onChange={handlePhoneChange}
-                        />
-                    </div>
-                    <div className={styles.infoItem}>
-                        <span className={styles.label}>Email:</span>
-                        <input
-                            type="email"
-                            className={styles.infoInput}
-                            value={email}
-                            onChange={handleEmailChange}
-                        />
-                    </div>
-                    <div className={styles.infoItem}>
-                        <span className={styles.label}>Дата рождения:</span>
-                        <input
-                            type="date"
-                            className={styles.infoInput}
-                            value={birthday}
-                            onChange={handleBirthdayChange}
-                        />
-                    </div>
-                    <div className={styles.infoItem}>
-                        <span className={styles.label}>Специализация:</span>
-                        <select
-                            className={styles.infoInput}
-                            value={specialization}
-                            onChange={e => setSpecialization(e.target.value)}
-                        >
-                            <option value="">Выберите специализацию</option>
-                            {specializations.map(spec => (
-                                <option key={spec.id} value={spec.id}>{spec.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className={styles.infoItem}>
-                        <span className={styles.label}>О себе:</span>
-                        <textarea
-                            className={styles.infoInputTextArea}
-                            value={about}
-                            onChange={handleAboutChange}
-                            placeholder="Расскажите о себе..."
-                        />
-                    </div>
-                    <button
-                        className={styles.editBtn}
-                        onClick={handleSave}
-                    >
-                        Редактировать
-                    </button>
-                </div>
-                <div className={styles.passwordSection}>
-                    <div className={styles.passwordItem}>
-                        <span className={styles.label}>Текущий пароль:</span>
-                        <input
-                            type="password"
-                            className={styles.passwordInput}
-                            value={currentPassword}
-                            onChange={handleCurrentPasswordChange}
-                        />
-                    </div>
-                    <div className={styles.passwordItem}>
-                        <span className={styles.label}>Новый пароль:</span>
-                        <input
-                            type="password"
-                            className={styles.passwordInput}
-                            value={newPassword}
-                            onChange={handleNewPasswordChange}
-                        />
-                    </div>
-                    <button
-                        className={styles.changePasswordBtn}
-                        onClick={handleChangePassword}
-                    >
-                        Сменить пароль
-                    </button>
-                </div>
-                <div className={styles.actionsSection}>
-                    <div className={styles.buttonWrapper}>
-                        <button className={styles.logoutBtn} onClick={handleLogout}>Выйти</button>
-                        <button className={styles.deleteAccountBtn} onClick={handleOpenDeleteModal}>Удалить аккаунт
+            ) : (
+                <div className={styles.profileCard}>
+                    <div className={styles.profileCardHeader}>
+                        <div className={styles.hideProfileWrapper}>
+                            <span className={styles.label}>Скрыть профиль</span>
+                            <input type="checkbox" className={styles.infoInput} checked={profileHiddenFlag}
+                                   onChange={handleProfileHiddenChange}/>
+                        </div>
+                        <img src={`${avatar}`} alt="User Avatar" className={styles.avatar}/>
+                        <input type="file" className={styles.uploadInput} onChange={handleFileUpload} ref={fileInputRef}
+                               style={{display: 'none'}}/>
+                        <div className={styles.username}>{username}</div>
+                        <button className={styles.uploadBtn} onClick={handleUploadClick}>
+                            Загрузить фото
                         </button>
                     </div>
+                    <div className={styles.infoSection}>
+                        <div className={styles.infoItem}>
+                            <span className={styles.label}>Имя:</span>
+                            <input type="text" className={styles.infoInput} value={name} onChange={handleNameChange}/>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <span className={styles.label}>Телефон:</span>
+                            <input type="text" className={styles.infoInput} value={phone} onChange={handlePhoneChange}/>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <span className={styles.label}>Email:</span>
+                            <input type="email" className={styles.infoInput} value={email}
+                                   onChange={handleEmailChange}/>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <span className={styles.label}>Дата рождения:</span>
+                            <input type="date" className={styles.infoInput} value={birthday}
+                                   onChange={handleBirthdayChange}/>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <span className={styles.label}>Специализация:</span>
+                            <select className={styles.infoInput} value={specialization}
+                                    onChange={e => setSpecialization(e.target.value)}>
+                                <option value="">Выберите специализацию</option>
+                                {specializations.map(spec => (
+                                    <option key={spec.id} value={spec.id}>{spec.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className={styles.infoItem}>
+                            <span className={styles.label}>О себе:</span>
+                            <textarea className={styles.infoInputTextArea} value={about} onChange={handleAboutChange}
+                                      placeholder="Расскажите о себе..."/>
+                        </div>
+                        <button className={styles.editBtn} onClick={handleSave}>
+                            Редактировать
+                        </button>
+                    </div>
+                    <div className={styles.passwordSection}>
+                        <div className={styles.passwordItem}>
+                            <span className={styles.label}>Текущий пароль:</span>
+                            <input type="password" className={styles.passwordInput} value={currentPassword}
+                                   onChange={handleCurrentPasswordChange}/>
+                        </div>
+                        <div className={styles.passwordItem}>
+                            <span className={styles.label}>Новый пароль:</span>
+                            <input type="password" className={styles.passwordInput} value={newPassword}
+                                   onChange={handleNewPasswordChange}/>
+                        </div>
+                        <button className={styles.changePasswordBtn} onClick={handleChangePassword}>
+                            Сменить пароль
+                        </button>
+                    </div>
+                    <div className={styles.actionsSection}>
+                        <div className={styles.buttonWrapper}>
+                            <button className={styles.logoutBtn} onClick={handleLogout}>Выйти</button>
+                            <button className={styles.deleteAccountBtn} onClick={handleOpenDeleteModal}>
+                                Удалить аккаунт
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
             {isModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
                         <p>Вы уверены, что хотите удалить аккаунт?</p>
                         <div>
-                            <button className={`${styles.confirmButton} ${styles.confirmButton}`}
-                                    onClick={handleDeleteAccount}>Удалить
+                            <button className={styles.confirmButton} onClick={handleDeleteAccount}>
+                                Удалить
                             </button>
-                            <button className={`${styles.cancelButton} ${styles.cancelButton}`}
-                                    onClick={handleCancelDelete}>Отмена
+                            <button className={styles.cancelButton} onClick={handleCancelDelete}>
+                                Отмена
                             </button>
                         </div>
                     </div>

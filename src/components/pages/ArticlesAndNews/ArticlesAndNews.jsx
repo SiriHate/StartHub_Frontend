@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Helmet} from "react-helmet";
+import {useNavigate} from "react-router-dom";
 import styles from "./ArticlesAndNews.module.css";
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import Menu from "../../menu/Menu";
+import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
 
 const ArticlesAndNews = () => {
@@ -36,7 +37,7 @@ const ArticlesAndNews = () => {
         try {
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles/search" : "news/search"}?page=${page}&size=10${categoryParam}${queryParam}`;
+            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles/search" : "news/search"}?page=${page}&size=1${categoryParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -119,10 +120,10 @@ const ArticlesAndNews = () => {
         <>
             <Helmet>
                 <title>{currentTab}</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.articlesAndNewsPage}>
                 <div className={styles.sidebar}>
                     <div className={styles.categories}>
@@ -140,10 +141,12 @@ const ArticlesAndNews = () => {
                 </div>
                 <div className={styles.content}>
                     <div className={styles.controls}>
-                        <button onClick={() => handleTabChange("Новости")} className={`${styles.tabButton} ${currentTab === "Новости" ? styles.activeTab : ''}`}>
+                        <button onClick={() => handleTabChange("Новости")}
+                                className={`${styles.tabButton} ${currentTab === "Новости" ? styles.activeTab : ''}`}>
                             Новости
                         </button>
-                        <button onClick={() => handleTabChange("Статьи")} className={`${styles.tabButton} ${currentTab === "Статьи" ? styles.activeTab : ''}`}>
+                        <button onClick={() => handleTabChange("Статьи")}
+                                className={`${styles.tabButton} ${currentTab === "Статьи" ? styles.activeTab : ''}`}>
                             Статьи
                         </button>
                         <div className={styles.searchBar}>
@@ -178,15 +181,14 @@ const ArticlesAndNews = () => {
                             ))
                         )}
                     </div>
-                    <div className={styles.paginationControls}>
-                        <button onClick={handlePreviousPage} disabled={page === 0} className={styles.pageButton}>
-                            Предыдущая
-                        </button>
-                        <span className={styles.pageNumber}>Страница {page + 1}</span>
-                        <button onClick={handleNextPage} disabled={page === totalPages - 1} className={styles.pageButton}>
-                            Следующая
-                        </button>
-                    </div>
+                    {items.length > 0 && (
+                        <Pagination
+                            page={page}
+                            totalPages={totalPages}
+                            onPreviousPage={handlePreviousPage}
+                            onNextPage={handleNextPage}
+                        />
+                    )}
                 </div>
             </div>
         </>

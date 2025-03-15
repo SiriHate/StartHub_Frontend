@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Helmet} from "react-helmet";
+import {useNavigate} from "react-router-dom";
 import styles from "./PeopleAndProjects.module.css";
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import Menu from "../../menu/Menu";
+import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
 
 const PeopleAndProjects = () => {
@@ -39,7 +40,7 @@ const PeopleAndProjects = () => {
             const serviceUrl = currentTab === "project" ? config.MAIN_SERVICE : config.USER_SERVICE;
             const filterParam = filter ? (currentTab === "project" ? `&category=${filter}` : `&specialization=${filter}`) : "";
             const queryParam = searchQuery ? (currentTab === "project" ? `&query=${searchQuery}` : `&username=${searchQuery}`) : "";
-            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=10${filterParam}${queryParam}`;
+            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=1${filterParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -55,17 +56,17 @@ const PeopleAndProjects = () => {
 
     useEffect(() => {
         fetchCategories(currentTab);
-        fetchItems("", "", currentTab, 0);  // Initial fetch with default values
+        fetchItems("", "", currentTab, 0);
     }, [currentTab]);
 
     const handleSearch = () => {
-        setPage(0);  // Reset page to 0 when performing a new search
+        setPage(0);
         fetchItems(searchQuery, appliedFilter, currentTab, 0);
     };
 
     const applyFilter = () => {
-        setPage(0);  // Reset page to 0 when applying filters
-        setSearchQuery("");  // Reset search query when applying filters
+        setPage(0);
+        setSearchQuery("");
         const filterToApply = selectedFilter === "Все" ? "" : selectedFilter;
         setAppliedFilter(filterToApply);
         fetchItems("", filterToApply, currentTab, 0);
@@ -113,7 +114,7 @@ const PeopleAndProjects = () => {
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
-        setPage(0);  // Reset page to 0 when switching tabs
+        setPage(0);
         fetchCategories(tab);
         fetchItems(searchQuery, appliedFilter, tab, 0);
     };
@@ -122,9 +123,9 @@ const PeopleAndProjects = () => {
         <>
             <Helmet>
                 <title>{currentTab === "project" ? "Проекты" : "Специалисты"}</title>
-                <body className={styles.body} />
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.peopleAndProjectsPage}>
                 <div className={styles.sidebar}>
                     <div className={styles.filters}>
@@ -167,7 +168,8 @@ const PeopleAndProjects = () => {
                             <div className={styles.emptyItems}>{getEmptyMessage()}</div>
                         ) : (
                             items.map(item => (
-                                <div key={item.id || item.username} className={styles.item} onClick={() => openItem(item.id || item.username)}>
+                                <div key={item.id || item.username} className={styles.item}
+                                     onClick={() => openItem(item.id || item.username)}>
                                     <img
                                         src={`${config.FILE_SERVER}${item.projectLogoUrl || item.avatarUrl || ''}`}
                                         alt={item.projectName || item.username}
@@ -186,15 +188,14 @@ const PeopleAndProjects = () => {
                             ))
                         )}
                     </div>
-                    <div className={styles.paginationControls}>
-                        <button onClick={handlePreviousPage} disabled={page === 0} className={styles.pageButton}>
-                            Предыдущая
-                        </button>
-                        <span className={styles.pageNumber}>Страница {page + 1}</span>
-                        <button onClick={handleNextPage} disabled={page === totalPages - 1} className={styles.pageButton}>
-                            Следующая
-                        </button>
-                    </div>
+                    {items.length > 0 && (
+                        <Pagination
+                            page={page}
+                            totalPages={totalPages}
+                            onPreviousPage={handlePreviousPage}
+                            onNextPage={handleNextPage}
+                        />
+                    )}
                 </div>
             </div>
         </>

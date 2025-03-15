@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import styles from "./AdminPanel.module.css";
-import { Helmet } from "react-helmet";
+import {Helmet} from "react-helmet";
 import config from "../../../config";
 
 const AdminPanel = () => {
@@ -211,7 +211,8 @@ const AdminPanel = () => {
                                     </div>
                                     <div className={styles.actions}>
                                         <button className={styles.editButton}
-                                                onClick={() => handleEditButtonClick(moderator)}>Изменить</button>
+                                                onClick={() => handleEditButtonClick(moderator)}>Изменить
+                                        </button>
                                         <button className={styles.deleteButton}
                                                 onClick={() => handleDeleteButtonClick(moderator.id)}>Удалить
                                         </button>
@@ -222,7 +223,9 @@ const AdminPanel = () => {
                     </div>
                 </div>
                 <div className={styles.footerContainer}>
-                    <button className={`${styles.button} ${styles.createButton}`} onClick={handleCreateButtonClick}>Создать модератора</button>
+                    <button className={`${styles.button} ${styles.createButton}`}
+                            onClick={handleCreateButtonClick}>Создать модератора
+                    </button>
                 </div>
             </div>
 

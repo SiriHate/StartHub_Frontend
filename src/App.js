@@ -9,7 +9,6 @@ import AdminPanel from "./components/pages/AdminPanel/AdminPanel";
 import ArticlesAndNews from "./components/pages/ArticlesAndNews/ArticlesAndNews";
 import ConfirmRegistrationPage from "./components/pages/ConfirmRegistrationPage/ConfirmRegistrationPage";
 import MemberProfilePage from "./components/pages/MemberProfile/MemberProfile";
-import EventsCalendarPage from "./components/pages/EventsCalendarPage/EventsCalendarPage";
 import PeopleAndProjects from "./components/pages/PeopleAndProjects/PeopleAndProjects";
 import MySpace from "./components/pages/MySpace/MySpace";
 import CreateProject from "./components/pages/CreateProject/CreateProject";
@@ -19,7 +18,6 @@ import CreateArticle from "./components/pages/CreateArticle/CreateArticle";
 import CreateNews from "./components/pages/CreateNews/CreateNews";
 import NewsPage from "./components/pages/NewsPage/NewsPage";
 import ArticlePage from "./components/pages/ArticlePage/ArticlePage";
-import MyChatsPage from "./components/pages/MyChatsPage/MyChatsPage";
 import ManageProject from "./components/pages/ManageProject/ManageProject";
 import ProjectStatistic from "./components/pages/ProjectStatistics/ProjectStatistics";
 import ManageArticle from "./components/pages/ManageArticle/ManageArticle";
@@ -44,14 +42,12 @@ const App = () => {
                 <Route path="/news/:newsId" element={<NewsPage/>}/>
                 <Route path="/manage_news/:newsId" element={<ManageNews/>}/>
                 <Route path="/confirm-registration" element={<ConfirmRegistrationPage/>}/>
-                <Route path="/events_calendar" element={<EventsCalendarPage/>}/>
                 <Route path="/people_and_projects" element={<PeopleAndProjects/>}/>
                 <Route path="/my_space" element={<MySpace/>}/>
                 <Route path="/create_project" element={<CreateProject/>}/>
                 <Route path="/project/:projectId" element={<ProjectDetails/>}/>
                 <Route path="/project/:projectId/statistics" element={<ProjectStatistic/>}/>
                 <Route path="/manage_project/:projectId" element={<ManageProject/>}/>
-                <Route path="/my_chats" element={<MyChatsPage/>}/>
                 <Route path="*" element={<NotFoundPage/>}/>
             </Routes>
         </Router>

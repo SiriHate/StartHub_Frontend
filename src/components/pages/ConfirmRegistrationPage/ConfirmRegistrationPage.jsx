@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 import {Helmet} from "react-helmet";
 import styles from "./ConfirmRegistrationPage.css";
 import config from "../../../config";
@@ -24,7 +24,7 @@ const ConfirmRegistrationPage = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ token }),
+                    body: JSON.stringify({token}),
                 });
 
                 if (response.ok) {

@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Helmet } from "react-helmet";
+import React, {useEffect, useRef, useState} from "react";
+import {Helmet} from "react-helmet";
 import "quill/dist/quill.snow.css";
 import styles from "./CreateNews.module.css";
-import NavigationBar from "../../navigation_bar/NavigationBar";
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
 import RichTextEditor from "../../editor/RichTextEditor";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import config from "../../../config";
 
 const CreateNews = () => {
@@ -98,10 +98,10 @@ const CreateNews = () => {
         <>
             <Helmet>
                 <title>Создать новость</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.createNewsPage}>
                 <div className={styles.createNewsContainer}>
                     <button onClick={() => navigate(-1)} className={styles.goBackButton}>

@@ -1,8 +1,20 @@
-import React, { useEffect } from 'react';
-import { Chart, LineController, BarController, PieController, LineElement, BarElement, PointElement, LinearScale, Title, CategoryScale, ArcElement } from 'chart.js';
+import React, {useEffect} from 'react';
+import {
+    ArcElement,
+    BarController,
+    BarElement,
+    CategoryScale,
+    Chart,
+    LinearScale,
+    LineController,
+    LineElement,
+    PieController,
+    PointElement,
+    Title
+} from 'chart.js';
 import styles from './ProjectStatistics.module.css';
-import { Helmet } from "react-helmet";
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import {Helmet} from "react-helmet";
+import Menu from "../../menu/Menu";
 
 // Registering necessary components
 Chart.register(LineController, BarController, PieController, LineElement, BarElement, PointElement, LinearScale, Title, CategoryScale, ArcElement);
@@ -91,9 +103,9 @@ const ProjectStatistics = () => {
         <>
             <Helmet>
                 <title>Статистика проекта</title>
-                <body className={styles.body} />
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.statisticsPage}>
                 <h2 className={styles.title}>Статистика проекта</h2>
                 <div className={styles.statisticsContainer}>

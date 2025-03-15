@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Helmet} from 'react-helmet';
+import {useLocation, useNavigate} from 'react-router-dom';
 import styles from "./ChangePasswordPage.module.css";
 import config from "../../../config";
 
@@ -101,7 +101,8 @@ const PasswordChangePage = () => {
                             </div>
                             <div className="field">
                                 <input type="password" id="confirm-new-password" name="confirm-new-password"
-                                       value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                       value={confirmNewPassword}
+                                       onChange={(e) => setConfirmNewPassword(e.target.value)}
                                        required/>
                                 <label htmlFor="confirm-new-password">Подтверждение пароля</label>
                             </div>

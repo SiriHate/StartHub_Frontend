@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Helmet } from "react-helmet";
+import React, {useEffect, useRef, useState} from "react";
+import {Helmet} from "react-helmet";
 import styles from "./ManageArticle.module.css";
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
 import RichTextEditor from "../../editor/RichTextEditor";
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import config from "../../../config";
 
 const ManageArticle = () => {
@@ -18,7 +18,7 @@ const ManageArticle = () => {
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
     const navigate = useNavigate();
-    const { articleId } = useParams();
+    const {articleId} = useParams();
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -116,14 +116,14 @@ const ManageArticle = () => {
         <>
             <Helmet>
                 <title>Редактировать статью</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.editArticlePage}>
                 <div className={styles.editArticleContainer}>
                     <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon />
+                        <GoBackIcon/>
                     </button>
                     <h2 className={styles.formTitle}>Редактирование статьи</h2>
                     <form className={styles.editArticleForm} onSubmit={handleSubmit}>
@@ -146,7 +146,7 @@ const ManageArticle = () => {
                                     ref={fileInputRef}
                                     id="logoUpload"
                                     accept="image/*"
-                                    style={{ display: "none" }}
+                                    style={{display: "none"}}
                                     onChange={(e) => setArticleLogo(e.target.files[0])}
                                 />
                             </div>
@@ -178,7 +178,7 @@ const ManageArticle = () => {
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="articleContent">Содержание статьи</label>
-                            <RichTextEditor content={articleContent} setContent={setArticleContent} />
+                            <RichTextEditor content={articleContent} setContent={setArticleContent}/>
                         </div>
                         <button type="submit" className={styles.submitButton}>
                             Редактировать статью
