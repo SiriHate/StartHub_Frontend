@@ -315,7 +315,7 @@
     background-color: #914444;
 }
 
-.scheduleMeetingButton, .deleteProjectButton, .statisticsButton {
+.deleteProjectButton, .feedbackButton {
     width: 100%;
     padding: 12px 20px;
     margin-top: 15px;
@@ -327,19 +327,13 @@
     transition: background 0.3s;
 }
 
-.scheduleMeetingButton {
-    background-color: #4a86e8; /* Blue for scheduling */
-}
 
-.scheduleMeetingButton:hover {
-    background-color: #357abD;
-}
 
-.statisticsButton {
+.feedbackButton {
     background-color: #3a86ff;
 }
 
-.statisticsButton:hover {
+.feedbackButton:hover {
     background-color: #3a86ff;
 }
 

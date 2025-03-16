@@ -132,11 +132,7 @@ function ManageProject() {
         }
     };
 
-    const handleCreateMeeting = () => {
-        navigate('/schedule_meeting');
-    };
-
-    const handleViewStatistics = () => {
+    const handleViewFeedback = () => {
         navigate(`/project/${projectId}/statistics`);
     };
 
@@ -257,9 +253,7 @@ function ManageProject() {
                                 <div className={styles.emptyMessage}>Пока не добавлено ни одного участника</div>)}
                         </div>
                         <button type="submit" className={styles.submitButton}>Применить изменения</button>
-                        <button onClick={handleCreateMeeting} className={styles.scheduleMeetingButton}>Создать встречу
-                        </button>
-                        <button onClick={handleViewStatistics} className={styles.statisticsButton}>Просмотр статистики
+                        <button onClick={handleViewFeedback} className={styles.feedbackButton}>Просмотр обратной связи
                         </button>
                         <button onClick={handleDeleteProject} className={styles.deleteProjectButton}>Удалить проект
                         </button>

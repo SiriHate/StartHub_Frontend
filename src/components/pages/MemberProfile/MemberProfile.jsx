@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {Navigate, useNavigate, useParams} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import styles from './MemberProfile.module.css';
-import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
-import Menu from '../../menu/Menu';
-import {Helmet} from "react-helmet";
+import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
+import NavigationBar from '../../menu/Menu';
+import { Helmet } from "react-helmet";
 import config from '../../../config';
 
 function MemberProfile() {
-    const {userId} = useParams();
+    const { userId } = useParams();
     const [username, setUsername] = useState('');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
@@ -54,27 +54,26 @@ function MemberProfile() {
     };
 
     if (redirect) {
-        return <Navigate to="/not-found" replace/>;
+        return <Navigate to="/not-found" replace />;
     }
 
     return (
         <div>
-            <Menu/>
+            <NavigationBar />
             <div className={styles.profilePage}>
                 <Helmet>
                     <title>Профиль пользователя - {username}</title>
-                    <html className={styles.html}/>
-                    <body className={styles.body}/>
+                    <html className={styles.html} />
+                    <body className={styles.body} />
                 </Helmet>
                 <div className={styles.profileCard}>
                     <button onClick={() => navigate('/people_and_projects')} className={styles.goBackButton}>
-                        <GoBackIcon/>
+                        <GoBackIcon />
                     </button>
                     <div className={styles.profileCardHeader}>
-                        <img src={avatar} alt="Аватар пользователя" className={styles.avatar}/>
+                        <img src={avatar} alt="Аватар пользователя" className={styles.avatar} />
                         <div className={styles.username}>{username}</div>
-                        <button onClick={handleSendMessage} className={styles.sendMessageButton}>Отправить сообщение
-                        </button>
+                        <button onClick={handleSendMessage} className={styles.sendMessageButton}>Отправить сообщение</button>
                     </div>
                     <div className={styles.infoSection}>
                         <div className={styles.infoItem}>

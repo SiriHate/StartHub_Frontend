@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet";
 import {useNavigate} from "react-router-dom";
 import styles from "./ArticlesAndNews.module.css";
 import Menu from "../../menu/Menu";
-import Pagination from "../../pagination/Pagination";
+import Pagination from "../../Pagination/Pagination";
 import config from "../../../config";
 
 const ArticlesAndNews = () => {
@@ -15,6 +15,7 @@ const ArticlesAndNews = () => {
     const [appliedCategory, setAppliedCategory] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
+    const [size, setSize] = useState(1);
     const navigate = useNavigate();
 
     const fetchCategories = async (tab) => {
@@ -33,11 +34,11 @@ const ArticlesAndNews = () => {
         }
     };
 
-    const fetchItems = async (searchQuery, category, currentTab, page) => {
+    const fetchItems = async (searchQuery, category, currentTab, page, size) => {
         try {
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles/search" : "news/search"}?page=${page}&size=1${categoryParam}${queryParam}`;
+            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles/search" : "news/search"}?page=${page}&size=${size}${categoryParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -53,12 +54,12 @@ const ArticlesAndNews = () => {
 
     useEffect(() => {
         fetchCategories(currentTab);
-        fetchItems("", "", currentTab, 0);
-    }, [currentTab]);
+        fetchItems("", "", currentTab, 0, size);
+    }, [currentTab, size]);
 
     const handleSearch = () => {
         setPage(0);
-        fetchItems(searchQuery, appliedCategory, currentTab, 0);
+        fetchItems(searchQuery, appliedCategory, currentTab, 0, size);
     };
 
     const applyCategoryFilter = () => {
@@ -66,7 +67,7 @@ const ArticlesAndNews = () => {
         setSearchQuery("");
         const categoryToApply = selectedCategory === "Все" ? "" : selectedCategory;
         setAppliedCategory(categoryToApply);
-        fetchItems("", categoryToApply, currentTab, 0);
+        fetchItems("", categoryToApply, currentTab, 0, size);
     };
 
     const selectCategory = (category) => {
@@ -97,7 +98,7 @@ const ArticlesAndNews = () => {
         if (page < totalPages - 1) {
             const newPage = page + 1;
             setPage(newPage);
-            fetchItems(searchQuery, appliedCategory, currentTab, newPage);
+            fetchItems(searchQuery, appliedCategory, currentTab, newPage, size);
         }
     };
 
@@ -105,15 +106,24 @@ const ArticlesAndNews = () => {
         if (page > 0) {
             const newPage = page - 1;
             setPage(newPage);
-            fetchItems(searchQuery, appliedCategory, currentTab, newPage);
+            fetchItems(searchQuery, appliedCategory, currentTab, newPage, size);
         }
+    };
+
+    const handleSizeChange = (event) => {
+        const newSize = parseInt(event.target.value, 10);
+        setSize((prevSize) => {
+            fetchItems(searchQuery, appliedCategory || (selectedCategory === "Все" ? "" : selectedCategory), currentTab, 0, newSize);
+            return newSize;
+        });
+        setPage(0);
     };
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
         setPage(0);
         fetchCategories(tab);
-        fetchItems(searchQuery, appliedCategory, tab, 0);
+        fetchItems(searchQuery, appliedCategory, tab, 0, size);
     };
 
     return (
@@ -185,8 +195,10 @@ const ArticlesAndNews = () => {
                         <Pagination
                             page={page}
                             totalPages={totalPages}
+                            size={size}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
+                            onSizeChange={handleSizeChange}
                         />
                     )}
                 </div>

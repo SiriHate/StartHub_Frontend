@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {Helmet} from "react-helmet";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
+import { useNavigate } from "react-router-dom";
 import styles from "./PeopleAndProjects.module.css";
 import Menu from "../../menu/Menu";
-import Pagination from "../../pagination/Pagination";
+import Pagination from "../../Pagination/Pagination";
 import config from "../../../config";
 
 const PeopleAndProjects = () => {
@@ -15,6 +15,7 @@ const PeopleAndProjects = () => {
     const [appliedFilter, setAppliedFilter] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
+    const [size, setSize] = useState(1); // Количество элементов на странице
     const navigate = useNavigate();
 
     const fetchCategories = async (tab) => {
@@ -24,7 +25,7 @@ const PeopleAndProjects = () => {
                 : `${config.USER_SERVICE}/specialist_specializations`;
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error("Network response was not ok");
             }
             const data = await response.json();
             const categoryNames = data.map(category => category.name);
@@ -35,15 +36,15 @@ const PeopleAndProjects = () => {
         }
     };
 
-    const fetchItems = async (searchQuery, filter, currentTab, page) => {
+    const fetchItems = async (searchQuery, filter, currentTab, page, size) => {
         try {
             const serviceUrl = currentTab === "project" ? config.MAIN_SERVICE : config.USER_SERVICE;
             const filterParam = filter ? (currentTab === "project" ? `&category=${filter}` : `&specialization=${filter}`) : "";
             const queryParam = searchQuery ? (currentTab === "project" ? `&query=${searchQuery}` : `&username=${searchQuery}`) : "";
-            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=1${filterParam}${queryParam}`;
+            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=${size}${filterParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error("Network response was not ok");
             }
             const data = await response.json();
             setItems(data.content);
@@ -56,12 +57,12 @@ const PeopleAndProjects = () => {
 
     useEffect(() => {
         fetchCategories(currentTab);
-        fetchItems("", "", currentTab, 0);
-    }, [currentTab]);
+        fetchItems("", "", currentTab, 0, size);
+    }, [currentTab, size]);
 
     const handleSearch = () => {
         setPage(0);
-        fetchItems(searchQuery, appliedFilter, currentTab, 0);
+        fetchItems(searchQuery, appliedFilter, currentTab, 0, size);
     };
 
     const applyFilter = () => {
@@ -69,7 +70,7 @@ const PeopleAndProjects = () => {
         setSearchQuery("");
         const filterToApply = selectedFilter === "Все" ? "" : selectedFilter;
         setAppliedFilter(filterToApply);
-        fetchItems("", filterToApply, currentTab, 0);
+        fetchItems("", filterToApply, currentTab, 0, size);
     };
 
     const selectFilter = (filter) => {
@@ -100,7 +101,7 @@ const PeopleAndProjects = () => {
         if (page < totalPages - 1) {
             const newPage = page + 1;
             setPage(newPage);
-            fetchItems(searchQuery, appliedFilter, currentTab, newPage);
+            fetchItems(searchQuery, appliedFilter, currentTab, newPage, size);
         }
     };
 
@@ -108,31 +109,40 @@ const PeopleAndProjects = () => {
         if (page > 0) {
             const newPage = page - 1;
             setPage(newPage);
-            fetchItems(searchQuery, appliedFilter, currentTab, newPage);
+            fetchItems(searchQuery, appliedFilter, currentTab, newPage, size);
         }
+    };
+
+    const handleSizeChange = (event) => {
+        const newSize = parseInt(event.target.value, 10);
+        setSize((prevSize) => {
+            fetchItems(searchQuery, appliedFilter || (selectedFilter === "Все" ? "" : selectedFilter), currentTab, 0, newSize);
+            return newSize;
+        });
+        setPage(0);
     };
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
         setPage(0);
         fetchCategories(tab);
-        fetchItems(searchQuery, appliedFilter, tab, 0);
+        fetchItems(searchQuery, appliedFilter, tab, 0, size);
     };
 
     return (
         <>
             <Helmet>
                 <title>{currentTab === "project" ? "Проекты" : "Специалисты"}</title>
-                <body className={styles.body}/>
+                <body className={styles.body} />
             </Helmet>
-            <Menu/>
+            <Menu />
             <div className={styles.peopleAndProjectsPage}>
                 <div className={styles.sidebar}>
                     <div className={styles.filters}>
                         {filters.map(filter => (
                             <div
                                 key={filter}
-                                className={`${styles.filter} ${selectedFilter === filter ? styles.activeFilter : ''}`}
+                                className={`${styles.filter} ${selectedFilter === filter ? styles.activeFilter : ""}`}
                                 onClick={() => selectFilter(filter)}
                             >
                                 {filter}
@@ -144,11 +154,11 @@ const PeopleAndProjects = () => {
                 <div className={styles.content}>
                     <div className={styles.controls}>
                         <button onClick={() => handleTabChange("project")}
-                                className={`${styles.tabButton} ${currentTab === "project" ? styles.activeTab : ''}`}>
+                                className={`${styles.tabButton} ${currentTab === "project" ? styles.activeTab : ""}`}>
                             Проекты
                         </button>
                         <button onClick={() => handleTabChange("member")}
-                                className={`${styles.tabButton} ${currentTab === "member" ? styles.activeTab : ''}`}>
+                                className={`${styles.tabButton} ${currentTab === "member" ? styles.activeTab : ""}`}>
                             Специалисты
                         </button>
                         <div className={styles.searchBar}>
@@ -171,7 +181,7 @@ const PeopleAndProjects = () => {
                                 <div key={item.id || item.username} className={styles.item}
                                      onClick={() => openItem(item.id || item.username)}>
                                     <img
-                                        src={`${config.FILE_SERVER}${item.projectLogoUrl || item.avatarUrl || ''}`}
+                                        src={`${config.FILE_SERVER}${item.projectLogoUrl || item.avatarUrl || ""}`}
                                         alt={item.projectName || item.username}
                                         className={styles.itemImage}
                                         onError={(e) => {
@@ -192,8 +202,10 @@ const PeopleAndProjects = () => {
                         <Pagination
                             page={page}
                             totalPages={totalPages}
+                            size={size}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
+                            onSizeChange={handleSizeChange}
                         />
                     )}
                 </div>
