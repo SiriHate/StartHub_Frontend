@@ -30,7 +30,7 @@ const MySpace = () => {
             }
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const response = await fetch(`${url}?page=${page}&size=15${categoryParam}${queryParam}`, {
+            const response = await fetch(`${url}?page=${page}&size=1${categoryParam}${queryParam}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

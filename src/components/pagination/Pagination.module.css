@@ -1,0 +1,27 @@
+.paginationControls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pageNumber {
+    color: #fff;
+    margin: 0 10px;
+}
+
+.pageButton {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    background: #357abf;
+    border-radius: 5px;
+}
+
+.pageButton:disabled {
+    background: #999;
+    cursor: not-allowed;
+} 

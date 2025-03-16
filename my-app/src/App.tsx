@@ -25,7 +25,7 @@ import PersonalMemberAccount from "./components/pages/PersonalMemberAccount/Pers
 import ProjectStatistic from "./components/pages/ProjectStatistics/ProjectStatistics";
 import ManageProject from "./components/pages/ManageProject/ManageProject";
 
-const App = () => {
+const App: React.FC = () => {
     return (
         <AuthProvider>
             <Router>
@@ -54,6 +54,7 @@ const App = () => {
                         <Route path="/project/:projectId/statistics" element={<ProjectStatistic />} />
                         <Route path="/manage_project/:projectId" element={<ManageProject />} />
                     </Route>
+
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Router>
