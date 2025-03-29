@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import styles from './PasswordRecoveryPage.module.css';
-import { Helmet } from "react-helmet";
+import {Helmet} from "react-helmet";
 import config from '../../../config';
 
 const PasswordRecoveryPage = () => {
@@ -32,7 +32,7 @@ const PasswordRecoveryPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({email}),
             });
 
             const result = await response.json();
@@ -59,11 +59,12 @@ const PasswordRecoveryPage = () => {
                     </div>
                     <form onSubmit={handleSubmit}>
                         <div className={styles.field}>
-                            <input type="text" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                            <input type="text" id="email" name="email" value={email}
+                                   onChange={(e) => setEmail(e.target.value)} required/>
                             <label htmlFor="email">Email</label>
                         </div>
                         <div className={styles.field}>
-                            <input type="submit" value="Восстановить пароль" />
+                            <input type="submit" value="Восстановить пароль"/>
                         </div>
                         <div className={styles.signupLink}>
                             Перейти к <span onClick={() => navigate('/')} className={styles.linkText}>Авторизации</span>

@@ -174,31 +174,3 @@
     color: #e23b3b;
     margin-top: 50px;
 }
-
-.paginationControls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.pageButton {
-    padding: 10px 20px;
-    margin: 0 10px;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    background: #366dbf;
-    border-radius: 5px;
-}
-
-.pageButton:disabled {
-    background: #999;
-    cursor: not-allowed;
-}
-
-.pageNumber {
-    color: #fff;
-    margin: 0 10px;
-}

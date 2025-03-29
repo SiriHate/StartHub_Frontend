@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Helmet } from "react-helmet";
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import React, {useEffect, useState} from 'react';
+import {Helmet} from "react-helmet";
+import {Navigate, useNavigate, useParams} from 'react-router-dom';
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
 import styles from "./ProjectDetails.module.css";
 import config from '../../../config';
 
 function ProjectDetails() {
-    const { projectId } = useParams();
+    const {projectId} = useParams();
     const [project, setProject] = useState({
         projectName: "",
         category: "",
@@ -50,7 +50,7 @@ function ProjectDetails() {
     }, [projectId]);
 
     if (redirect) {
-        return <Navigate to="/not-found" replace />;
+        return <Navigate to="/not-found" replace/>;
     }
 
     return (
@@ -60,7 +60,7 @@ function ProjectDetails() {
                 <html className={styles.html}/>
                 <body className={styles.body}/>
             </Helmet>
-            <NavigationBar/>
+            <Menu/>
             <div className={styles.projectCard}>
                 <div className={styles.header}>
                     <div className={styles.titleContainer}>

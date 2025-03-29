@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Helmet} from 'react-helmet';
 import styles from './LoginPage.module.css';
@@ -23,6 +23,11 @@ const LoginPage = () => {
         }
     }, []);
 
+    // Новый эффект для прокрутки страницы вниз
+    useEffect(() => {
+        window.scrollTo({top: 50, behavior: 'smooth'});
+    }, []);
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
@@ -34,9 +39,11 @@ const LoginPage = () => {
 
         try {
             const response = await fetch(`${config.USER_SERVICE}/users/login`, {
-                method: 'POST', headers: {
+                method: 'POST',
+                headers: {
                     'Content-Type': 'application/json'
-                }, body: JSON.stringify({username, password})
+                },
+                body: JSON.stringify({username, password})
             });
 
             if (response.status === 401) {

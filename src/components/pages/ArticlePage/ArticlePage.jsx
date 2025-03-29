@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Helmet} from "react-helmet";
+import {Navigate, useNavigate, useParams} from "react-router-dom";
 import styles from "./ArticlePage.module.css";
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
 import config from "../../../config";
 
 const ArticlePage = () => {
-    const { articleId } = useParams();
+    const {articleId} = useParams();
     const navigate = useNavigate();
     const [article, setArticle] = useState({
         title: "",
@@ -51,17 +51,17 @@ const ArticlePage = () => {
     }
 
     if (redirect) {
-        return <Navigate to="/not-found" replace />;
+        return <Navigate to="/not-found" replace/>;
     }
 
     return (
         <>
             <Helmet>
                 <title>{article.title}</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.articleContainer}>
                 <button onClick={() => navigate(-1)} className={styles.goBackButton}>
                     <GoBackIcon/>

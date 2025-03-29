@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Helmet} from "react-helmet";
+import {Navigate, useNavigate, useParams} from "react-router-dom";
 import styles from "./NewsPage.module.css";
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
 import config from '../../../config';
 
 const NewsPage = () => {
-    const { newsId } = useParams();
+    const {newsId} = useParams();
     const navigate = useNavigate();
     const [news, setNews] = useState({
         title: "",
-        reporter: "",
+        owner: "",
         previewUrl: "",
         category: "",
         content: ""
@@ -27,7 +27,7 @@ const NewsPage = () => {
                     const data = await response.json();
                     setNews({
                         title: data.title,
-                        reporter: data.reporter,
+                        owner: data.owner,
                         previewUrl: `${config.FILE_SERVER}${data.previewUrl}`,
                         category: data.category,
                         content: data.content
@@ -51,24 +51,24 @@ const NewsPage = () => {
     }
 
     if (redirect) {
-        return <Navigate to="/not-found" replace />;
+        return <Navigate to="/not-found" replace/>;
     }
 
     return (
         <>
             <Helmet>
                 <title>{news.title}</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.newsContainer}>
                 <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                    <GoBackIcon />
+                    <GoBackIcon/>
                 </button>
                 <h1 className={styles.newsTitle}>{news.title}</h1>
                 <div className={styles.newsMetadata}>
-                    Автор: <span className={styles.newsReporter}>{news.reporter}</span> | Категория: <span
+                    Автор: <span className={styles.newsOwner}>{news.owner}</span> | Категория: <span
                     className={styles.newsCategory}>{news.category}</span>
                 </div>
                 <img src={news.previewUrl} alt="News preview" className={styles.newsPreview}/>

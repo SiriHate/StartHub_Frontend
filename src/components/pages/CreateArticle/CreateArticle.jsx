@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Helmet } from "react-helmet";
+import React, {useEffect, useRef, useState} from "react";
+import {Helmet} from "react-helmet";
 import styles from "./CreateArticle.module.css";
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
+import Menu from "../../menu/Menu";
 import RichTextEditor from "../../editor/RichTextEditor";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import config from "../../../config";
 
 const CreateArticle = () => {
@@ -58,7 +58,7 @@ const CreateArticle = () => {
                     title: articleTitle,
                     previewUrl: uploadResult.url,
                     content: articleContent,
-                    categoryId: articleCategory // Changed to send the category ID
+                    categoryId: articleCategory
                 };
 
                 const response = await fetch(`${config.MAIN_SERVICE}/articles`, {
@@ -95,14 +95,14 @@ const CreateArticle = () => {
         <>
             <Helmet>
                 <title>Создать статью</title>
-                <html className={styles.html} />
-                <body className={styles.body} />
+                <html className={styles.html}/>
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.createArticlePage}>
                 <div className={styles.createArticleContainer}>
                     <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon />
+                        <GoBackIcon/>
                     </button>
                     <h2 className={styles.formTitle}>Публикация статьи</h2>
                     <form className={styles.createArticleForm} onSubmit={handleSubmit}>
@@ -112,7 +112,7 @@ const CreateArticle = () => {
                             </label>
                             <div className={styles.logoPreview}>
                                 {articleLogo &&
-                                    <img src={URL.createObjectURL(articleLogo)} alt="Article Logo Preview" />}
+                                    <img src={URL.createObjectURL(articleLogo)} alt="Article Logo Preview"/>}
                                 <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
                                     Загрузить фото
                                 </button>
@@ -121,7 +121,7 @@ const CreateArticle = () => {
                                     ref={fileInputRef}
                                     id="logoUpload"
                                     accept="image/*"
-                                    style={{ display: "none" }}
+                                    style={{display: "none"}}
                                     onChange={(e) => setArticleLogo(e.target.files[0])}
                                 />
                             </div>
@@ -153,7 +153,7 @@ const CreateArticle = () => {
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="articleContent">Содержание статьи</label>
-                            <RichTextEditor content={articleContent} setContent={setArticleContent} />
+                            <RichTextEditor content={articleContent} setContent={setArticleContent}/>
                         </div>
                         <button type="submit" className={styles.submitButton}>
                             Опубликовать статью

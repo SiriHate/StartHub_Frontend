@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import styles from './MemberProfile.module.css';
 import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
-import NavigationBar from '../../navigation_bar/NavigationBar';
+import NavigationBar from '../../menu/Menu';
 import { Helmet } from "react-helmet";
 import config from '../../../config';
 
@@ -40,7 +40,7 @@ function MemberProfile() {
                 setBirthday(data.birthday);
                 setSpecialization(data.specialization);
                 setAbout(data.about);
-                const avatarSrc = data.avatarUrl ? `${config.FILE_SERVER}${data.avatarUrl}` : "/default_user_avatar.jpg";
+                const avatarSrc = data.avatarUrl ? `${config.FILE_SERVER}${data.avatarUrl}` : "/default_avatar.jpg";
                 setAvatar(avatarSrc);
             })
             .catch(error => {

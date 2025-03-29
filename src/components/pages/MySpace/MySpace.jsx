@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Helmet } from "react-helmet";
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from "react";
+import {Helmet} from "react-helmet";
+import {useNavigate} from 'react-router-dom';
 import styles from "./MySpace.module.css";
-import NavigationBar from "../../navigation_bar/NavigationBar";
+import Menu from "../../menu/Menu";
+import Pagination from "../../Pagination/Pagination";
 import config from '../../../config';
 
 const categories = ["Мои проекты", "Мои статьи", "Мои новости", "Мои мероприятия"];
@@ -29,7 +30,7 @@ const MySpace = () => {
             }
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const response = await fetch(`${url}?page=${page}&size=15${categoryParam}${queryParam}`, {
+            const response = await fetch(`${url}?page=${page}&size=1${categoryParam}${queryParam}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,8 +86,12 @@ const MySpace = () => {
     const manageItem = (itemId) => {
         if (selectedCategory === "Мои проекты") {
             navigate(`/manage_project/${itemId}`);
-        } else if (selectedCategory === "Мои статьи" || selectedCategory === "Мои новости" || selectedCategory === "Мои мероприятия") {
-            navigate(`/manage_publication/${itemId}`);
+        } else if (selectedCategory === "Мои статьи") {
+            navigate(`/manage_article/${itemId}`);
+        } else if (selectedCategory === "Мои новости") {
+            navigate(`/manage_news/${itemId}`);
+        } else if (selectedCategory === "Мои мероприятия") {
+            navigate(`/manage_event/${itemId}`);
         }
     };
 
@@ -134,9 +139,9 @@ const MySpace = () => {
         <>
             <Helmet>
                 <title>{selectedCategory}</title>
-                <body className={styles.body} />
+                <body className={styles.body}/>
             </Helmet>
-            <NavigationBar />
+            <Menu/>
             <div className={styles.mySpacePage}>
                 <div className={styles.sidebar}>
                     <div className={styles.categories}>
@@ -170,7 +175,9 @@ const MySpace = () => {
                     <h2 className={styles.mySpaceTitle}>{selectedCategory}</h2>
                     <div className={styles.itemsList}>
                         {items.length === 0 ? (
-                            <div className={styles.emptyItems}>Не найдено ни одного {selectedCategory.toLowerCase().split(" ")[1]}</div>
+                            <div className={styles.emptyItems}>
+                                Не найдено ни одного {selectedCategory.toLowerCase().split(" ")[1]}
+                            </div>
                         ) : (
                             items.map(item => (
                                 <div key={item.id} className={styles.item} onClick={() => openItem(item.id)}>
@@ -181,7 +188,8 @@ const MySpace = () => {
                                         onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                     />
                                     <div className={styles.itemContent}>
-                                        <div className={styles.itemName}>{item.title || item.projectName || item.eventName}</div>
+                                        <div
+                                            className={styles.itemName}>{item.title || item.projectName || item.eventName}</div>
                                         <div className={styles.itemDetail}>{item.category}</div>
                                     </div>
                                     <button
@@ -197,15 +205,14 @@ const MySpace = () => {
                             ))
                         )}
                     </div>
-                    <div className={styles.paginationControls}>
-                        <button onClick={handlePreviousPage} disabled={page === 0} className={styles.pageButton}>
-                            Предыдущая
-                        </button>
-                        <span className={styles.pageNumber}>Страница {page + 1}</span>
-                        <button onClick={handleNextPage} disabled={page === totalPages - 1} className={styles.pageButton}>
-                            Следующая
-                        </button>
-                    </div>
+                    {items.length > 0 && (
+                        <Pagination
+                            page={page}
+                            totalPages={totalPages}
+                            onPreviousPage={handlePreviousPage}
+                            onNextPage={handleNextPage}
+                        />
+                    )}
                 </div>
             </div>
         </>
