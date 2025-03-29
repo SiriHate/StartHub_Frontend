@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import styles from "./PeopleAndProjects.module.css";
 import Menu from "../../menu/Menu";
-import Pagination from "../../Pagination/Pagination";
+import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
 
 const PeopleAndProjects = () => {
