@@ -40,7 +40,7 @@ function MemberProfile() {
                 setBirthday(data.birthday);
                 setSpecialization(data.specialization);
                 setAbout(data.about);
-                const avatarSrc = data.avatarUrl ? `${config.FILE_SERVER}${data.avatarUrl}` : "/default_user_avatar.jpg";
+                const avatarSrc = data.avatarUrl ? `${config.FILE_SERVER}${data.avatarUrl}` : "/default_avatar.jpg";
                 setAvatar(avatarSrc);
             })
             .catch(error => {

@@ -21,13 +21,10 @@
 }
 
 .profilePage {
-    width: 100%;
-    height: auto;
+    margin-top: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
-    padding: 20px;
 }
 
 .profileCard {

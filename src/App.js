@@ -22,7 +22,6 @@ import MySpace from "./components/pages/MySpace/MySpace";
 import CreateProject from "./components/pages/CreateProject/CreateProject";
 import ProjectDetails from "./components/pages/ProjectDetails/ProjectDetails";
 import PersonalMemberAccount from "./components/pages/PersonalMemberAccount/PersonalMemberAccount";
-import ProjectStatistic from "./components/pages/ProjectStatistics/ProjectStatistics";
 import ManageProject from "./components/pages/ManageProject/ManageProject";
 
 const App = () => {
@@ -51,7 +50,6 @@ const App = () => {
                         <Route path="/my_space" element={<MySpace />} />
                         <Route path="/create_project" element={<CreateProject />} />
                         <Route path="/project/:projectId" element={<ProjectDetails />} />
-                        <Route path="/project/:projectId/statistics" element={<ProjectStatistic />} />
                         <Route path="/manage_project/:projectId" element={<ManageProject />} />
                     </Route>
                     <Route path="*" element={<NotFoundPage />} />
