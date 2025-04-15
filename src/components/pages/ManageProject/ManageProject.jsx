@@ -2,16 +2,16 @@ import React, {useEffect, useRef, useState} from "react";
 import {Helmet} from "react-helmet";
 import {useNavigate, useParams} from "react-router-dom";
 import styles from "./ManageProject.module.css";
-import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
 import Menu from "../../menu/Menu";
 import config from "../../../config";
 
 function ManageProject() {
     const [projectName, setProjectName] = useState("");
     const [projectDescription, setProjectDescription] = useState("");
-    const [category, setCategory] = useState("");
-    const [stage, setStage] = useState("");
+    const [category, setCategory] = useState(null);
     const [projectLogo, setProjectLogo] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [hasSurvey, setHasSurvey] = useState(false);
     const navigate = useNavigate();
     const fileInputRef = useRef();
     const [members, setMembers] = useState([]);
@@ -22,6 +22,24 @@ function ManageProject() {
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
     useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch(`${config.MAIN_SERVICE}/project_categories`);
+                const data = await response.json();
+                if (response.ok) {
+                    setCategories(data);
+                } else {
+                    throw new Error('Failed to fetch categories');
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`);
@@ -29,10 +47,12 @@ function ManageProject() {
                 if (response.ok) {
                     setProjectName(data.projectName);
                     setProjectDescription(data.projectDescription);
-                    setCategory(data.category);
-                    setStage(data.stage);
                     setMembers(data.members || []);
                     setProjectLogo(`${config.FILE_SERVER}${data.projectLogoUrl}`);
+                    setHasSurvey(data.hasSurvey);
+
+                    const matchingCategory = categories.find(cat => cat.name === data.category);
+                    setCategory(matchingCategory || null);
                 } else {
                     throw new Error('Failed to fetch project data');
                 }
@@ -41,7 +61,7 @@ function ManageProject() {
             }
         };
         fetchData();
-    }, [projectId]);
+    }, [projectId, categories]);
 
     const addMember = () => {
         if (username && role) {
@@ -58,37 +78,43 @@ function ManageProject() {
     const handleChange = async (e) => {
         e.preventDefault();
 
-        if (!projectName || !projectDescription || !category || !stage) {
+        if (!projectName || !projectDescription || !category) {
             console.error('Please fill out all required fields.');
             return;
         }
 
-        const logoFormData = new FormData();
-        logoFormData.append('file', projectLogo);
-
         try {
-            const logoUploadResponse = await fetch(`${config.FILE_SERVER}/upload/projectLogos`, {
-                method: 'POST', body: logoFormData,
-            });
+            let projectLogoUrl = projectLogo;
 
-            if (!logoUploadResponse.ok) {
-                throw new Error('Failed to upload project logo');
+            if (projectLogo instanceof File) {
+                const logoFormData = new FormData();
+                logoFormData.append('file', projectLogo);
+
+                const logoUploadResponse = await fetch(`${config.FILE_SERVER}/upload/projectLogos`, {
+                    method: 'POST',
+                    body: logoFormData,
+                });
+
+                if (!logoUploadResponse.ok) {
+                    throw new Error('Failed to upload project logo');
+                }
+
+                const logoUploadData = await logoUploadResponse.json();
+                projectLogoUrl = logoUploadData.url;
+            } else if (typeof projectLogo === 'string') {
+                projectLogoUrl = projectLogo.replace(config.FILE_SERVER, '');
             }
-
-            const logoUploadData = await logoUploadResponse.json();
-            const projectLogoUrl = logoUploadData.url;
 
             const projectData = {
                 projectLogoUrl: projectLogoUrl,
                 projectName: projectName,
                 projectDescription: projectDescription,
                 category: category,
-                stage: stage,
                 members: members
             };
 
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': authorizationToken ? ` ${authorizationToken}` : '',
@@ -132,8 +158,12 @@ function ManageProject() {
         }
     };
 
-    const handleViewFeedback = () => {
-        navigate(`/project/${projectId}/statistics`);
+    const handleFeedbackClick = () => {
+        if (hasSurvey) {
+            navigate(`/project/${projectId}/feedbacks`);
+        } else {
+            navigate(`/project/${projectId}/create_feedback`);
+        }
     };
 
     return (
@@ -146,32 +176,37 @@ function ManageProject() {
             <Menu/>
             <div className={styles.manageProjectPage}>
                 <div className={styles.manageProjectContainer}>
-                    <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon/>
+                    <button onClick={() => navigate(-1)} className={styles.backButton}>
+                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                        <span>Назад</span>
                     </button>
                     <h2 className={styles.formTitle}>Управление проектом</h2>
                     <form className={styles.manageProjectForm} onSubmit={handleChange}>
                         <div className={styles.formGroup}>
                             <label htmlFor="projectLogo" className={styles.centerLabel}>Логотип проекта</label>
                             <div className={styles.logoPreview}>
-                                {projectLogo &&
-                                    <img src={projectLogo} alt="Project Logo Preview"/>}
-                                <button
-                                    type="button"
-                                    className={styles.uploadButton}
-                                    onClick={handleLogoUploadClick}
-                                >
-                                    Загрузить фото
-                                </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    id="logoUpload"
-                                    accept="image/*"
-                                    style={{display: 'none'}}
-                                    onChange={(e) => setProjectLogo(e.target.files[0])}
+                                <img
+                                    src={projectLogo || '/default_list_element_logo.jpg'}
+                                    alt="Project Logo Preview"
+                                    className={styles.logoImage}
+                                    onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                 />
                             </div>
+                            <button
+                                type="button"
+                                className={styles.uploadButton}
+                                onClick={handleLogoUploadClick}
+                            >
+                                Загрузить фото
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                id="logoUpload"
+                                accept="image/*"
+                                style={{display: 'none'}}
+                                onChange={(e) => setProjectLogo(e.target.files[0])}
+                            />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="projectName">Название проекта</label>
@@ -196,30 +231,19 @@ function ManageProject() {
                             <label htmlFor="projectCategory">Категория проекта</label>
                             <select
                                 id="projectCategory"
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
+                                value={category ? category.id : ''}
+                                onChange={(e) => {
+                                    const selected = categories.find(c => c.id === Number(e.target.value));
+                                    setCategory(selected || null);
+                                }}
                                 required
                             >
                                 <option value="">Выберите категорию</option>
-                                <option value="Technology">Технологии</option>
-                                <option value="Science">Наука</option>
-                                <option value="Art">Искусство</option>
-                                <option value="Business">Бизнес</option>
-                            </select>
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="projectStage">Стадия проекта</label>
-                            <select
-                                id="projectStage"
-                                value={stage}
-                                onChange={(e) => setStage(e.target.value)}
-                                required
-                            >
-                                <option value="">Выберите стадию</option>
-                                <option value="Concept">Концепция</option>
-                                <option value="Development">Разработка</option>
-                                <option value="Testing">Тестирование</option>
-                                <option value="Production">Производство</option>
+                                {categories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <label htmlFor="projectStage">Команда проекта</label>
@@ -252,11 +276,17 @@ function ManageProject() {
                                 </div>))) : (
                                 <div className={styles.emptyMessage}>Пока не добавлено ни одного участника</div>)}
                         </div>
-                        <button type="submit" className={styles.submitButton}>Применить изменения</button>
-                        <button onClick={handleViewFeedback} className={styles.feedbackButton}>Просмотр обратной связи
-                        </button>
-                        <button onClick={handleDeleteProject} className={styles.deleteProjectButton}>Удалить проект
-                        </button>
+                        <div className={styles.buttonGroup}>
+                            <button type="submit" className={styles.submitButton}>Сохранить изменения</button>
+                            <button 
+                                type="button" 
+                                className={styles.feedbackButton}
+                                onClick={handleFeedbackClick}
+                            >
+                                {hasSurvey ? 'Посмотреть обратную связь' : 'Создать форму обратной связи'}
+                            </button>
+                            <button type="button" className={styles.deleteButton} onClick={handleDeleteProject}>Удалить проект</button>
+                        </div>
                     </form>
                 </div>
             </div>

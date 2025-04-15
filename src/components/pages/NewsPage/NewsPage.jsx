@@ -47,7 +47,7 @@ const NewsPage = () => {
     }, [newsId]);
 
     if (loading) {
-        return <div className={styles.loading}>Loading...</div>;
+        return <div className={styles.loading}>Загрузка...</div>;
     }
 
     if (redirect) {
@@ -63,16 +63,25 @@ const NewsPage = () => {
             </Helmet>
             <Menu/>
             <div className={styles.newsContainer}>
-                <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                    <GoBackIcon/>
+                <button onClick={() => navigate(-1)} className={styles.backButton}>
+                    <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                    <span>Назад</span>
                 </button>
-                <h1 className={styles.newsTitle}>{news.title}</h1>
-                <div className={styles.newsMetadata}>
-                    Автор: <span className={styles.newsOwner}>{news.owner}</span> | Категория: <span
-                    className={styles.newsCategory}>{news.category}</span>
+                <div className={styles.projectCardHeader}>
+                    <h1 className={styles.newsTitle}>{news.title}</h1>
+                    <img src={news.previewUrl} alt="News preview" className={styles.newsPreview}/>
                 </div>
-                <img src={news.previewUrl} alt="News preview" className={styles.newsPreview}/>
-                <div className={styles.newsText} dangerouslySetInnerHTML={{__html: news.content}}/>
+                <div className={styles.newsMetadata}>
+                    <div className={styles.projectCategory}>
+                        Автор: <span className={styles.newsOwner}>{news.owner}</span>
+                    </div>
+                    <div className={styles.projectCategory}>
+                        Категория: <span className={styles.categoryBadge}>{news.category}</span>
+                    </div>
+                </div>
+                <div className={styles.projectDescription}>
+                    <div className={styles.newsText} dangerouslySetInnerHTML={{__html: news.content}}/>
+                </div>
             </div>
         </>
     );

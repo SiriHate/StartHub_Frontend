@@ -104,8 +104,9 @@ const CreateNews = () => {
             <Menu/>
             <div className={styles.createNewsPage}>
                 <div className={styles.createNewsContainer}>
-                    <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon/>
+                    <button onClick={() => navigate(-1)} className={styles.backButton}>
+                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                        <span>Назад</span>
                     </button>
                     <h2 className={styles.formTitle}>Публикация новости</h2>
                     <form className={styles.createNewsForm} onSubmit={handleSubmit}>

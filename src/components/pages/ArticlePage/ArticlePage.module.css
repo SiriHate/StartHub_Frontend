@@ -14,53 +14,137 @@
     background-attachment: fixed;
 }
 
+.articleContainer {
+    position: relative;
+    width: 60%;
+    max-width: 960px;
+    margin: 50px auto;
+    background: linear-gradient(145deg, #2b2552, #1e1a40);
+    color: #f0f0f0;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+}
+
+.articleContainer:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+}
+
+.articleTitle {
+    font-size: 36px;
+    font-weight: 700;
+    color: #f0f0f0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.articleMetadata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 30px 0;
+    padding: 15px 20px;
+    background-color: #2e2a50;
+    border: 1px solid #3e3a6d;
+    border-radius: 12px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    color: #ddd;
+    font-size: 16px;
+}
+
+.projectCategory {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #ddd;
+}
+
+.articleAuthor {
+    font-weight: 600;
+    color: #f0f0f0;
+    margin: 0 5px;
+    font-size: 16px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.articleAuthor:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background-color: #1f8b3f;
+    border-radius: 50%;
+}
+
+.categoryBadge {
+    background-color: #4444aa;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
 .articlePreview {
-    width: 300px;
-    height: 300px;
+    width: 100%;
+    max-height: 400px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
+    border: 4px solid #fff;
+    margin: 20px 0;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    display: block;
-    margin: 20px auto;
     transition: transform 0.3s ease;
 }
 
 .articlePreview:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
-.goBackButton {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+.backButton {
     display: flex;
-    padding: 5px;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
+    background-color: rgba(46, 42, 80, 0.5);
+    color: #f0f0f0;
+    border: 1px solid rgba(62, 58, 109, 0.5);
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 
-.goBackButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.15);
+.backButton:hover {
+    background-color: rgba(46, 42, 80, 0.8);
+    transform: translateX(-3px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-.goBackButton svg {
-    transition: fill 0.3s ease;
+.backButton:active {
+    transform: translateX(1px);
 }
 
+.backIcon {
+    width: 16px;
+    height: 16px;
+}
 
 .articleText {
-    margin: 20px auto; /* Centers the text block horizontally */
-    background-color: #26243b;
-    padding: 20px;
+    margin: 30px 0;
+    background-color: #2e2a50;
+    padding: 25px;
     border-radius: 12px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     text-align: justify;
@@ -69,33 +153,25 @@
     font-size: 16px;
     line-height: 1.6;
     overflow-wrap: break-word;
+    border: 1px solid #3e3a6d;
 }
 
-.articleContainer {
-    position: relative;
-    width: 70%;
-    margin: 50px auto;
-    background-color: #1b1739;
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     color: #f0f0f0;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    font-size: 20px;
 }
 
-.articleTitle {
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
+.projectCardHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 30px;
 }
 
-.articleMetadata {
-    color: #b3b1d7;
-    font-size: 18px;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.articleAuthor, .articleCategory {
-    font-weight: bold;
+.projectDescription {
+    margin-bottom: 30px;
 }

@@ -13,31 +13,35 @@
     background-attachment: fixed;
 }
 
-.goBackButton {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+.backButton {
     display: flex;
-    padding: 5px;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
+    background-color: rgba(46, 42, 80, 0.5);
+    color: #f0f0f0;
+    border: 1px solid rgba(62, 58, 109, 0.5);
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 
-.goBackButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.15);
+.backButton:hover {
+    background-color: rgba(46, 42, 80, 0.8);
+    transform: translateX(-3px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-.goBackButton svg {
-    transition: fill 0.3s ease;
+.backButton:active {
+    transform: translateX(1px);
+}
+
+.backIcon {
+    width: 16px;
+    height: 16px;
 }
 
 .createArticlePage {
@@ -52,20 +56,29 @@
 .createArticleContainer {
     position: relative;
     width: 65%;
-    background-color: #1b1739;
+    background: rgba(27, 23, 57, 0.95);
     color: #f0f0f0;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.createArticleContainer:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .formTitle {
     margin-top: 15px;
     text-align: center;
     margin-bottom: 50px;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 600;
     color: #f0f0f0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .createArticleForm {
@@ -85,20 +98,34 @@
 }
 
 .formGroup label {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     color: #f0f0f0;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.5px;
 }
 
 .formGroup input[type="text"],
 .formGroup textarea,
 .formGroup select {
-    padding: 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     width: 100%;
     box-sizing: border-box;
-    background-color: #26243b;
+    background-color: rgba(38, 36, 59, 0.8);
     color: #f0f0f0;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.formGroup input[type="text"]:focus,
+.formGroup textarea:focus,
+.formGroup select:focus {
+    outline: none;
+    border-color: #4444aa;
+    box-shadow: 0 0 0 2px rgba(68, 68, 170, 0.2);
+    background-color: rgba(38, 36, 59, 0.95);
 }
 
 .formGroup input[type="file"] {
@@ -117,11 +144,17 @@
     justify-content: center;
     width: 300px;
     height: 300px;
-    margin: 0 auto 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
+    margin: 0 auto 20px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     overflow: hidden;
     position: relative;
+    transition: all 0.3s ease;
+}
+
+.logoPreview:hover {
+    border-color: rgba(68, 68, 170, 0.5);
+    background-color: rgba(38, 36, 59, 0.3);
 }
 
 .logoPreview img {
@@ -136,17 +169,23 @@
 }
 
 .uploadButton {
-    padding: 10px;
-    background-color: #4444aa;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #4444aa, #5555bb);
     color: #fff;
     text-align: center;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 15px;
     border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(68, 68, 170, 0.2);
 }
 
 .uploadButton:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(135deg, #5555bb, #6666cc);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(68, 68, 170, 0.3);
 }
 
 .uploadButton input[type="file"] {
@@ -154,18 +193,28 @@
 }
 
 .submitButton {
-    margin-top: 25px;
-    padding: 10px 15px;
+    margin-top: 30px;
+    padding: 14px 28px;
     border: none;
-    background-color: #4444aa;
+    background: linear-gradient(135deg, #4444aa, #5555bb);
     color: #fff;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
     font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(68, 68, 170, 0.2);
 }
 
 .submitButton:hover {
-    background-color: #5555bb;
+    background: linear-gradient(135deg, #5555bb, #6666cc);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(68, 68, 170, 0.3);
+}
+
+.submitButton:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(68, 68, 170, 0.2);
 }
 

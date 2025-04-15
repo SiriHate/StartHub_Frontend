@@ -7,7 +7,6 @@ import config from '../../../config';
 
 function PersonalMemberAccount() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [currentPassword, setCurrentPassword] = useState('');
@@ -46,10 +45,10 @@ function PersonalMemberAccount() {
                 setPhone(data.phone);
                 setEmail(data.email);
                 setBirthday(data.birthday);
-                setSpecialization(data.specializationId);
+                setSpecialization(data.specialization);
                 setUsername(data.username);
                 setAbout(data.about);
-                setAvatar(`${config.FILE_SERVER}${data.avatarUrl}` || "/default_user_avatar.jpg");
+                setAvatar(data.avatarUrl);
                 setProfileHiddenFlag(data.profileHiddenFlag);
                 setIsLoading(false);
             })
@@ -118,7 +117,6 @@ function PersonalMemberAccount() {
                         throw new Error(error.errorMessage || 'Failed to change profile visibility');
                     });
                 }
-                alert('Profile visibility updated successfully.');
             })
             .catch(error => console.error('Visibility update error:', error));
     };
@@ -132,6 +130,7 @@ function PersonalMemberAccount() {
             alert('Please enter a valid email address.');
             return;
         }
+        const selectedSpecialization = specializations.find(spec => spec.name === specialization);
         fetch(`${config.USER_SERVICE}/members/me/personal_info`, {
             method: 'PATCH',
             headers: {
@@ -143,7 +142,7 @@ function PersonalMemberAccount() {
                 phone: phone,
                 email: email,
                 birthday: birthday,
-                specializationId: Number(specialization),
+                specialization: selectedSpecialization || null,
                 about: about,
                 profileHiddenFlag: profileHiddenFlag
             }),
@@ -225,7 +224,6 @@ function PersonalMemberAccount() {
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
-            setSelectedFile(file);
             handleSubmitUpload(file);
         } else {
             alert('Please select a JPG or PNG image.');
@@ -269,7 +267,7 @@ function PersonalMemberAccount() {
                 }
                 return response.json();
             })
-            .then(data => {
+            .then(() => {
                 window.location.reload();
             })
             .catch(error => {
@@ -301,7 +299,12 @@ function PersonalMemberAccount() {
                             <input type="checkbox" className={styles.infoInput} checked={profileHiddenFlag}
                                    onChange={handleProfileHiddenChange}/>
                         </div>
-                        <img src={`${avatar}`} alt="User Avatar" className={styles.avatar}/>
+                        <img
+                            src={avatar}
+                            alt="User Avatar"
+                            onError={(e) => e.target.src = '/default_user_avatar.jpg'}
+                            className={styles.avatar}
+                        />
                         <input type="file" className={styles.uploadInput} onChange={handleFileUpload} ref={fileInputRef}
                                style={{display: 'none'}}/>
                         <div className={styles.username}>{username}</div>
@@ -334,7 +337,7 @@ function PersonalMemberAccount() {
                                     onChange={e => setSpecialization(e.target.value)}>
                                 <option value="">Выберите специализацию</option>
                                 {specializations.map(spec => (
-                                    <option key={spec.id} value={spec.id}>{spec.name}</option>
+                                    <option key={spec.id} value={spec.name}>{spec.name}</option>
                                 ))}
                             </select>
                         </div>

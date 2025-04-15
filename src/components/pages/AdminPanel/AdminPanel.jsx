@@ -102,7 +102,7 @@ const AdminPanel = () => {
 
     const updateModerator = (editModerator) => {
         fetch(`${config.USER_SERVICE}/moderators/${editModerator.id}`, {
-            method: "PUT",
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -232,13 +232,14 @@ const AdminPanel = () => {
             {isModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <p>Вы уверены, что хотите удалить модератора?</p>
+                        <h3 className={styles.modalTitle}>Удаление модератора</h3>
+                        <p>Вы уверены, что хотите удалить этого модератора?</p>
                         <div>
-                            <button className={`${styles.button} ${styles.confirmDeleteButton}`}
-                                    onClick={handleConfirmDelete}>Удалить
+                            <button className={`${styles.button} ${styles.confirmDeleteButton}`} onClick={handleConfirmDelete}>
+                                Удалить
                             </button>
-                            <button className={`${styles.button} ${styles.cancelButton}`}
-                                    onClick={handleCancelDelete}>Отмена
+                            <button className={`${styles.button} ${styles.cancelButton}`} onClick={handleCancelDelete}>
+                                Отмена
                             </button>
                         </div>
                     </div>
@@ -248,41 +249,51 @@ const AdminPanel = () => {
             {isCreateModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <div className={styles.modalTitle}>Создать модератора</div>
-                        <label className={styles.modalLabel}>Имя сотрудника</label>
-                        <input
-                            type="text"
-                            value={newModerator.name}
-                            onChange={(e) => setNewModerator({...newModerator, name: e.target.value})}
-                            className={styles.modalInput}
-                        />
-                        <label className={styles.modalLabel}>Имя пользователя</label>
-                        <input
-                            type="text"
-                            value={newModerator.username}
-                            onChange={(e) => setNewModerator({...newModerator, username: e.target.value})}
-                            className={styles.modalInput}
-                        />
-                        <label className={styles.modalLabel}>Пароль</label>
-                        <input
-                            type="password"
-                            value={newModerator.password}
-                            onChange={(e) => setNewModerator({...newModerator, password: e.target.value})}
-                            className={styles.modalInput}
-                        />
-                        <label className={styles.modalLabel}>Номер сотрудника</label>
-                        <input
-                            type="text"
-                            value={newModerator.employeeId}
-                            onChange={(e) => setNewModerator({...newModerator, employeeId: e.target.value})}
-                            className={styles.modalInput}
-                        />
+                        <h3 className={styles.modalTitle}>Создание модератора</h3>
+                        <div className={styles.modalForm}>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>Имя сотрудника:</label>
+                                <input
+                                    type="text"
+                                    className={styles.modalInput}
+                                    value={newModerator.name}
+                                    onChange={(e) => setNewModerator({...newModerator, name: e.target.value})}
+                                />
+                            </div>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>Логин:</label>
+                                <input
+                                    type="text"
+                                    className={styles.modalInput}
+                                    value={newModerator.username}
+                                    onChange={(e) => setNewModerator({...newModerator, username: e.target.value})}
+                                />
+                            </div>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>Пароль:</label>
+                                <input
+                                    type="password"
+                                    className={styles.modalInput}
+                                    value={newModerator.password}
+                                    onChange={(e) => setNewModerator({...newModerator, password: e.target.value})}
+                                />
+                            </div>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>ID сотрудника:</label>
+                                <input
+                                    type="text"
+                                    className={styles.modalInput}
+                                    value={newModerator.employeeId}
+                                    onChange={(e) => setNewModerator({...newModerator, employeeId: e.target.value})}
+                                />
+                            </div>
+                        </div>
                         <div>
-                            <button className={`${styles.button} ${styles.confirmCreateButton}`}
-                                    onClick={handleCreateModerator}>Создать
+                            <button className={`${styles.button} ${styles.confirmCreateButton}`} onClick={handleCreateModerator}>
+                                Создать
                             </button>
-                            <button className={`${styles.button} ${styles.cancelButton}`}
-                                    onClick={handleCancelCreate}>Отмена
+                            <button className={`${styles.button} ${styles.cancelButton}`} onClick={handleCancelCreate}>
+                                Отмена
                             </button>
                         </div>
                     </div>
@@ -292,41 +303,51 @@ const AdminPanel = () => {
             {isEditModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <div className={styles.modalTitle}>Изменить модератора</div>
-                        <label className={styles.modalLabel}>Имя сотрудника</label>
-                        <input
-                            type="text"
-                            value={editModerator.name}
-                            onChange={(e) => setEditModerator({...editModerator, name: e.target.value})}
-                            className={styles.modalInput}
-                        />
-                        <label className={styles.modalLabel}>Имя пользователя</label>
-                        <input
-                            type="text"
-                            value={editModerator.username}
-                            onChange={(e) => setEditModerator({...editModerator, username: e.target.value})}
-                            className={styles.modalInput}
-                        />
-                        <label className={styles.modalLabel}>Пароль</label>
-                        <input
-                            type="password"
-                            value={editModerator.password}
-                            onChange={(e) => setEditModerator({...editModerator, password: e.target.value})}
-                            className={styles.modalInput}
-                        />
-                        <label className={styles.modalLabel}>Номер сотрудника</label>
-                        <input
-                            type="text"
-                            value={editModerator.employeeId}
-                            onChange={(e) => setEditModerator({...editModerator, employeeId: e.target.value})}
-                            className={styles.modalInput}
-                        />
+                        <h3 className={styles.modalTitle}>Редактирование модератора</h3>
+                        <div className={styles.modalForm}>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>Имя</label>
+                                <input
+                                    type="text"
+                                    className={styles.modalInput}
+                                    value={editModerator.name}
+                                    onChange={(e) => setEditModerator({...editModerator, name: e.target.value})}
+                                />
+                            </div>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>Логин</label>
+                                <input
+                                    type="text"
+                                    className={styles.modalInput}
+                                    value={editModerator.username}
+                                    onChange={(e) => setEditModerator({...editModerator, username: e.target.value})}
+                                />
+                            </div>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>Пароль</label>
+                                <input
+                                    type="password"
+                                    className={styles.modalInput}
+                                    value={editModerator.password}
+                                    onChange={(e) => setEditModerator({...editModerator, password: e.target.value})}
+                                />
+                            </div>
+                            <div className={styles.modalFormGroup}>
+                                <label className={styles.modalLabel}>ID сотрудника</label>
+                                <input
+                                    type="text"
+                                    className={styles.modalInput}
+                                    value={editModerator.employeeId}
+                                    onChange={(e) => setEditModerator({...editModerator, employeeId: e.target.value})}
+                                />
+                            </div>
+                        </div>
                         <div>
-                            <button className={`${styles.button} ${styles.confirmCreateButton}`}
-                                    onClick={handleEditModerator}>Изменить
+                            <button className={`${styles.button} ${styles.confirmCreateButton}`} onClick={handleEditModerator}>
+                                Сохранить
                             </button>
-                            <button className={`${styles.button} ${styles.cancelButton}`}
-                                    onClick={handleCancelEdit}>Отмена
+                            <button className={`${styles.button} ${styles.cancelButton}`} onClick={handleCancelEdit}>
+                                Отмена
                             </button>
                         </div>
                     </div>

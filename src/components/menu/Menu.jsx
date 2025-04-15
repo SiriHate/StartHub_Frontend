@@ -32,7 +32,7 @@ const Menu = () => {
                         <li className={styles.navItem}>
                             <Link to="/members/personal-account"
                                   className={getActiveClass("/members/personal-account")}>
-                                <i className={`fas fa-user ${styles.faUser}`}/> Личный кабинет
+                                <i className={`fas fa-user ${styles.faUser}`}/> Мой профиль
                             </Link>
                         </li>
                     </ul>

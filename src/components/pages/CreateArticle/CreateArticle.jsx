@@ -101,8 +101,9 @@ const CreateArticle = () => {
             <Menu/>
             <div className={styles.createArticlePage}>
                 <div className={styles.createArticleContainer}>
-                    <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon/>
+                    <button onClick={() => navigate(-1)} className={styles.backButton}>
+                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                        <span>Назад</span>
                     </button>
                     <h2 className={styles.formTitle}>Публикация статьи</h2>
                     <form className={styles.createArticleForm} onSubmit={handleSubmit}>

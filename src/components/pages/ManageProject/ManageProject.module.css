@@ -84,31 +84,35 @@
     height: 100px;
 }
 
-.goBackButton {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+.backButton {
     display: flex;
-    padding: 5px;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
+    background-color: rgba(46, 42, 80, 0.5);
+    color: #f0f0f0;
+    border: 1px solid rgba(62, 58, 109, 0.5);
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 
-.goBackButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.15);
+.backButton:hover {
+    background-color: rgba(46, 42, 80, 0.8);
+    transform: translateX(-3px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-.goBackButton svg {
-    transition: fill 0.3s ease;
+.backButton:active {
+    transform: translateX(1px);
+}
+
+.backIcon {
+    width: 16px;
+    height: 16px;
 }
 
 .submitButton {
@@ -116,22 +120,17 @@
     width: 100%;
     padding: 12px 20px;
     border: none;
-    background-color: #4444aa;
-    color: #fff;
+    background-color: #2E7D32;
+    color: white;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
     font-weight: 600;
     font-size: 16px;
 }
 
 .submitButton:hover {
-    background-color: #5555bb;
-}
-
-.goBackButton:hover {
-    background-color: #484391;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: #1B5E20;
 }
 
 .logoPreview {
@@ -142,10 +141,11 @@
     width: 300px;
     height: 300px;
     margin: 0 auto 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
+    border: 2px dashed #444;
+    border-radius: 10px;
     overflow: hidden;
     position: relative;
+    background-color: #26243b;
 }
 
 .logoPreview img {
@@ -157,20 +157,24 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    object-fit: contain;
 }
 
 .uploadButton {
-    padding: 10px;
+    padding: 10px 20px;
     background-color: #4444aa;
     color: #fff;
     text-align: center;
     cursor: pointer;
     margin-top: 10px;
     border: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
 .uploadButton:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: #5555bb;
 }
 
 .uploadButton input[type="file"] {
@@ -315,34 +319,49 @@
     background-color: #914444;
 }
 
-.deleteProjectButton, .feedbackButton {
+.buttonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 20px;
     width: 100%;
-    padding: 12px 20px;
-    margin-top: 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
 }
 
+.submitButton,
+.feedbackButton,
+.deleteButton {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    color: white;
+}
 
+.submitButton {
+    background-color: #2E7D32;
+}
+
+.submitButton:hover {
+    background-color: #1B5E20;
+}
 
 .feedbackButton {
-    background-color: #3a86ff;
+    background-color: #1565C0;
 }
 
 .feedbackButton:hover {
-    background-color: #3a86ff;
+    background-color: #0D47A1;
 }
 
-.deleteProjectButton {
-    background-color: #cc3f42;
+.deleteButton {
+    background-color: #C62828;
 }
 
-.deleteProjectButton:hover {
-    background-color: #aa5355;
+.deleteButton:hover {
+    background-color: #B71C1C;
 }
 
 @media screen and (max-width: 600px) {

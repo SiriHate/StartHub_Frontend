@@ -20,24 +20,31 @@
     height: 100vh;
     width: 100%;
     color: #e23b3b;
-    font-size: 24px;
+    font-size: 21.6px;
 }
 
 .profileCard {
-    margin-top: 50px;
-    background: #1b1739;
+    background: rgba(27, 23, 57, 0.95);
     color: #f0f0f0;
-    width: 70%;
-    max-width: 35%;
-    min-width: 35%;
-    border-radius: 10px;
+    width: 63%;
+    max-width: 31.5%;
+    min-width: 31.5%;
+    border-radius: 13.5px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 7.2px 28.8px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-    margin-bottom: 50px;
+    padding: 27px;
+    margin: 45px auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profileCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .profileCardHeader {
@@ -52,71 +59,89 @@
 }
 
 .avatar {
-    width: 120px;
-    height: 120px;
+    width: 135px;
+    height: 135px;
+    margin-top: 63px;
     border-radius: 50%;
-    border: 2px solid #444;
+    border: 2.7px solid #4444aa;
+    box-shadow: 0 3.6px 18px rgba(68, 68, 170, 0.3);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    object-fit: cover;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+    border-color: #5555bb;
 }
 
 .username {
-    font-size: 24px;
+    font-size: 21.6px;
     font-weight: 600;
     color: #f0f0f0;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 9px;
+    margin-bottom: 9px;
 }
 
 .uploadBtn,
 .editBtn,
 .changePasswordBtn {
-    font-size: 16px;
+    font-size: 14.4px;
     color: white;
-    background-color: #4444aa;
+    background: linear-gradient(135deg, #4444aa, #5555bb);
     border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
+    border-radius: 7.2px;
+    padding: 10.8px 21.6px;
     cursor: pointer;
-    transition: background 0.3s;
-    margin: 10px 0;
+    transition: all 0.3s ease;
+    margin: 9px 0;
+    box-shadow: 0 3.6px 13.5px rgba(68, 68, 170, 0.2);
 }
 
 .uploadBtn:hover,
 .editBtn:hover,
 .changePasswordBtn:hover {
-    background-color: #5555bb;
+    background: linear-gradient(135deg, #5555bb, #6666cc);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(68, 68, 170, 0.3);
 }
 
 .logoutBtn,
 .deleteAccountBtn {
     width: 100%;
-    font-size: 16px;
+    font-size: 14.4px;
     color: white;
     border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
+    border-radius: 7.2px;
+    padding: 10.8px 21.6px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    margin: 9px 0;
+    box-shadow: 0 3.6px 13.5px rgba(0, 0, 0, 0.2);
 }
 
 .logoutBtn {
-    background-color: #4169E1;
+    background: linear-gradient(135deg, #4169E1, #3B5CB3);
 }
 
 .logoutBtn:hover {
-    background-color: #3B5CB3;
+    background: linear-gradient(135deg, #3B5CB3, #3450A0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(65, 105, 225, 0.3);
 }
 
 .deleteAccountBtn {
-    background-color: #914444;
+    background: linear-gradient(135deg, #914444, #a15555);
 }
 
 .deleteAccountBtn:hover {
-    background-color: #a15555;
+    background: linear-gradient(135deg, #a15555, #b16666);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(145, 68, 68, 0.3);
 }
 
 .buttonWrapper {
     display: flex;
-    gap: 10px;
+    gap: 9px;
     width: 100%;
 }
 
@@ -130,51 +155,70 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
 }
 
 .modalContent {
-    background-color: #1f1f40;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    max-width: 300px;
-    width: 100%;
+    background: rgba(31, 31, 64, 0.95);
+    border-radius: 13.5px;
+    box-shadow: 0 7.2px 28.8px rgba(0, 0, 0, 0.3);
+    padding: 27px;
+    max-width: 360px;
+    width: 90%;
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modalContent p {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     color: #fff;
+    font-size: 16.2px;
+    line-height: 1.5;
 }
 
 .confirmButton,
 .cancelButton {
-    margin-top: 25px;
-    padding: 10px 20px;
-    font-size: 16px;
+    margin-top: 22.5px;
+    padding: 10.8px 21.6px;
+    font-size: 14.4px;
     border: none;
-    border-radius: 5px;
+    border-radius: 7.2px;
     cursor: pointer;
-    margin-right: 10px;
-    transition: background 0.3s ease;
-    width: calc(50% - 10px);
+    margin-right: 9px;
+    transition: all 0.3s ease;
+    width: calc(50% - 9px);
     box-sizing: border-box;
+    box-shadow: 0 3.6px 13.5px rgba(0, 0, 0, 0.2);
 }
 
 .cancelButton {
-    background: #aaa;
+    background: linear-gradient(135deg, #666, #888);
     color: #fff;
 }
 
 .confirmButton {
-    background: #e23b3b;
+    background: linear-gradient(135deg, #e23b3b, #d32f2f);
     color: #fff;
 }
 
 .confirmButton:hover,
 .cancelButton:hover {
-    opacity: 0.8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .hideProfileWrapper {
@@ -188,12 +232,13 @@
 .infoSection,
 .passwordSection,
 .actionsSection {
-    width: 90%;
-    padding: 20px 0;
+    width: 81%;
+    padding: 18px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-top: 1px solid #333;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 18px;
 }
 
 .infoItem,
@@ -201,8 +246,46 @@
     width: 100%;
     display: flex;
     justify-content: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: 18px;
     align-items: center;
+    gap: 15px;
+    white-space: nowrap;
+}
+
+.infoInput[type="checkbox"] {
+    width: 25px;
+    height: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    border: 2px solid #444;
+    border-radius: 3px;
+    background-color: #26243b;
+    outline: none;
+    display: inline-block;
+}
+
+.infoInput[type="checkbox"]:checked {
+    background-color: #4444aa;
+    border-color: #4444aa;
+}
+
+.infoInput[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 7px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.infoInput[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 3px 2px rgba(68, 68, 170, 0.5);
 }
 
 .label {
@@ -212,22 +295,58 @@
     min-width: 150px;
     margin-right: 10px;
     text-align: right;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 .infoInput,
 .passwordInput {
-    font-size: 16px;
-    font-weight: 400;
+    background: rgba(38, 36, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
     color: #f0f0f0;
-    flex: 2;
-    padding: 5px 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background-color: #26243b;
+    width: 100%;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
 }
 
-::placeholder {
-    color: #999;
+.infoInput:focus,
+.infoInputTextArea:focus {
+    border-color: #4444aa;
+    box-shadow: 0 0 0 2px rgba(68, 68, 170, 0.2);
+    outline: none;
+}
+
+.infoInputTextArea {
+    background: rgba(38, 36, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    color: #f0f0f0;
+    width: 100%;
+    min-height: 120px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    resize: vertical;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    line-height: 1.5;
+}
+
+.infoInputTextArea:focus {
+    border-color: #4444aa;
+    box-shadow: 0 0 0 2px rgba(68, 68, 170, 0.2);
+    outline: none;
+}
+
+.infoInputTextArea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 @media screen and (max-width: 600px) {
@@ -243,5 +362,91 @@
     .logoutBtn,
     .deleteAccountBtn {
         width: 100%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .profileCard {
+        width: 90%;
+        max-width: 90%;
+        min-width: 90%;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    .avatar {
+        width: 120px;
+        height: 120px;
+        margin-top: 50px;
+    }
+
+    .username {
+        font-size: 20px;
+    }
+
+    .buttonWrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .infoItem,
+    .passwordItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 15px;
+        white-space: normal;
+    }
+
+    .label {
+        text-align: left;
+        min-width: 100%;
+        margin-bottom: 5px;
+        height: auto;
+    }
+
+    .infoInputTextArea {
+        min-height: 100px;
+        font-size: 14px;
+    }
+
+    .modalContent {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .confirmButton,
+    .cancelButton {
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .profileCard {
+        width: 95%;
+        max-width: 95%;
+        min-width: 95%;
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        margin-top: 40px;
+    }
+
+    .username {
+        font-size: 18px;
+    }
+
+    .uploadBtn,
+    .editBtn,
+    .changePasswordBtn,
+    .logoutBtn,
+    .deleteAccountBtn {
+        padding: 10px 20px;
+        font-size: 14px;
     }
 }

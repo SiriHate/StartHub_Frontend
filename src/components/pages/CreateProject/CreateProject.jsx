@@ -9,9 +9,8 @@ import config from "../../../config";
 function CreateProject() {
     const [projectName, setProjectName] = useState("");
     const [projectDescription, setProjectDescription] = useState("");
-    const [categoryId, setCategoryId] = useState("");
-    const [stage, setStage] = useState("");
-    const [projectLogo, setProjectLogo] = useState(null);
+    const [category, setCategory] = useState(null);
+    const [projectLogo, setProjectLogo] = useState('/default_list_element_logo.jpg');
     const fileInputRef = useRef();
     const [members, setMembers] = useState([]);
     const [username, setUsername] = useState("");
@@ -63,7 +62,7 @@ function CreateProject() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!projectName || !projectDescription || !categoryId || !stage) {
+        if (!projectName || !projectDescription || !category) {
             console.error('Please fill out all required fields.');
             return;
         }
@@ -88,8 +87,7 @@ function CreateProject() {
                 projectLogoUrl: projectLogoUrl,
                 projectName: projectName,
                 projectDescription: projectDescription,
-                categoryId: categoryId,
-                stage: stage,
+                category: category,
                 members: members.map(member => ({
                     username: member.username,
                     role: member.role
@@ -135,32 +133,37 @@ function CreateProject() {
             <Menu/>
             <div className={styles.createProjectPage}>
                 <div className={styles.createProjectContainer}>
-                    <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon/>
+                    <button onClick={() => navigate(-1)} className={styles.backButton}>
+                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                        <span>Назад</span>
                     </button>
                     <h2 className={styles.formTitle}>Создание проекта</h2>
                     <form className={styles.createProjectForm} onSubmit={handleSubmit}>
                         <div className={styles.formGroup}>
                             <label htmlFor="projectLogo" className={styles.centerLabel}>Логотип проекта</label>
                             <div className={styles.logoPreview}>
-                                {projectLogo &&
-                                    <img src={URL.createObjectURL(projectLogo)} alt="Project Logo Preview"/>}
-                                <button
-                                    type="button"
-                                    className={styles.uploadButton}
-                                    onClick={handleLogoUploadClick}
-                                >
-                                    Загрузить фото
-                                </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    id="logoUpload"
-                                    accept="image/*"
-                                    style={{display: 'none'}}
-                                    onChange={(e) => setProjectLogo(e.target.files[0])}
+                                <img
+                                    src={projectLogo}
+                                    alt="Project Logo Preview"
+                                    className={styles.logoImage}
+                                    onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                 />
                             </div>
+                            <button
+                                type="button"
+                                className={styles.uploadButton}
+                                onClick={handleLogoUploadClick}
+                            >
+                                Загрузить фото
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                id="logoUpload"
+                                accept="image/*"
+                                style={{display: 'none'}}
+                                onChange={(e) => setProjectLogo(e.target.files[0])}
+                            />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="projectName">Название проекта</label>
@@ -185,29 +188,17 @@ function CreateProject() {
                             <label htmlFor="projectCategory">Категория проекта</label>
                             <select
                                 id="projectCategory"
-                                value={categoryId}
-                                onChange={(e) => setCategoryId(e.target.value)}
+                                value={category ? category.id : ''}
+                                onChange={(e) => {
+                                    const selected = categories.find(c => c.id === Number(e.target.value));
+                                    setCategory(selected || null);
+                                }}
                                 required
                             >
                                 <option value="">Выберите категорию</option>
                                 {categories.map(cat => (
                                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                                 ))}
-                            </select>
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="projectStage">Стадия проекта</label>
-                            <select
-                                id="projectStage"
-                                value={stage}
-                                onChange={(e) => setStage(e.target.value)}
-                                required
-                            >
-                                <option value="">Выберите стадию</option>
-                                <option value="Concept">Концепция</option>
-                                <option value="Development">Разработка</option>
-                                <option value="Testing">Тестирование</option>
-                                <option value="Production">Производство</option>
                             </select>
                         </div>
                         <label htmlFor="projectStage">Команда проекта</label>

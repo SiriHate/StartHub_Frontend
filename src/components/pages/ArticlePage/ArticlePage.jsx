@@ -47,7 +47,7 @@ const ArticlePage = () => {
     }, [articleId]);
 
     if (loading) {
-        return <div className={styles.loading}>Loading...</div>;
+        return <div className={styles.loading}>Загрузка...</div>;
     }
 
     if (redirect) {
@@ -63,16 +63,25 @@ const ArticlePage = () => {
             </Helmet>
             <Menu/>
             <div className={styles.articleContainer}>
-                <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                    <GoBackIcon/>
+                <button onClick={() => navigate(-1)} className={styles.backButton}>
+                    <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                    <span>Назад</span>
                 </button>
-                <h1 className={styles.articleTitle}>{article.title}</h1>
-                <div className={styles.articleMetadata}>
-                    Автор: <span className={styles.articleAuthor}>{article.owner}</span> | Категория: <span
-                    className={styles.articleCategory}>{article.category}</span>
+                <div className={styles.projectCardHeader}>
+                    <h1 className={styles.articleTitle}>{article.title}</h1>
+                    <img src={article.previewUrl} alt="Article preview" className={styles.articlePreview}/>
                 </div>
-                <img src={article.previewUrl} alt="Article preview" className={styles.articlePreview}/>
-                <div className={styles.articleText} dangerouslySetInnerHTML={{__html: article.content}}/>
+                <div className={styles.articleMetadata}>
+                    <div className={styles.projectCategory}>
+                        Автор: <span className={styles.articleAuthor}>{article.owner}</span>
+                    </div>
+                    <div className={styles.projectCategory}>
+                        Категория: <span className={styles.categoryBadge}>{article.category}</span>
+                    </div>
+                </div>
+                <div className={styles.projectDescription}>
+                    <div className={styles.articleText} dangerouslySetInnerHTML={{__html: article.content}}/>
+                </div>
             </div>
         </>
     );

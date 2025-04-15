@@ -36,7 +36,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     padding: 20px;
     font-family: 'Montserrat', sans-serif;
 }
@@ -52,46 +51,61 @@
 }
 
 .controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     width: 100%;
-    margin-bottom: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .searchBar {
     display: flex;
-    width: 75%;
+    width: 100%;
     gap: 10px;
-    flex-grow: 1;
 }
 
 .searchInput {
-    flex-grow: 1;
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #fff;
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    color: #18181A;
-    background: #fff;
-    outline: none;
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
 }
 
 .button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background: #366dbf;
+    flex-shrink: 0;
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
     border: none;
     border-radius: 5px;
-    color: #fff;
     cursor: pointer;
-    transition: background 0.3s ease;
-    width: 200px;
-    height: 50px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.createButton {
+    flex-shrink: 0;
+    padding: 12px 24px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.createButton:hover {
+    background-color: #218838;
 }
 
 .manageButton {
@@ -103,30 +117,27 @@
     background: #1f8b3f;
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .manageButton:hover {
     background: #145d2b;
-}
-
-.button:hover {
-    background: #25496b;
-}
-
-.createButton {
-    width: 250px;
-    margin-left: 10px;
-    background: #1f8b3f;
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .mySpaceTitle {
+    font-size: 24px;
     color: white;
-    margin-top: 25px;
-    margin-bottom: 25px;
+    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
 }
 
 .itemsList {
@@ -139,38 +150,74 @@
 .item {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 15px;
     background: #1f1f40;
-    border-radius: 5px;
+    border-radius: 8px;
     gap: 20px;
     position: relative;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: #252550;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .itemImage {
     width: 150px;
     height: 150px;
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .itemContent {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    flex: 1;
 }
 
 .itemName {
-    font-size: 18px;
+    font-size: 20px;
     color: #fff;
+    font-weight: 500;
+    margin-bottom: 4px;
 }
 
 .itemDetail {
     font-size: 14px;
-    color: #bbb;
+    color: #a0a0a0;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    max-width: fit-content;
 }
 
 .emptyItems {
     text-align: center;
     color: #e23b3b;
     margin-top: 50px;
+}
+
+.applyButton {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+
+.applyButton:hover {
+    background-color: #0056b3;
 }

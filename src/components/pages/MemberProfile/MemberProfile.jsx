@@ -67,8 +67,9 @@ function MemberProfile() {
                     <body className={styles.body} />
                 </Helmet>
                 <div className={styles.profileCard}>
-                    <button onClick={() => navigate('/people_and_projects')} className={styles.goBackButton}>
-                        <GoBackIcon />
+                    <button onClick={() => navigate('/people_and_projects')} className={styles.backButton}>
+                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                        <span>Назад</span>
                     </button>
                     <div className={styles.profileCardHeader}>
                         <img src={avatar} alt="Аватар пользователя" className={styles.avatar} />

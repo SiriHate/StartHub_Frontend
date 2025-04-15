@@ -1,36 +1,50 @@
-import React, {useEffect, useState} from "react";
-import {Helmet} from "react-helmet";
-import {useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
+import { useNavigate } from "react-router-dom";
 import styles from "./MySpace.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
-import config from '../../../config';
+import config from "../../../config";
 
-const categories = ["Мои проекты", "Мои статьи", "Мои новости", "Мои мероприятия"];
+const categories = ["Мои проекты", "Мои статьи", "Мои новости"];
 
 const MySpace = () => {
     const [items, setItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+    const [appliedCategory, setAppliedCategory] = useState("");
     const [page, setPage] = useState(0);
+    const [size, setSize] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
-    const fetchItems = async (category, searchQuery, page) => {
+    const fetchItems = async (category, query, page, size) => {
+        console.log("📡 [fetchItems] called with:", { category, query, page, size });
+
         try {
-            let url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
-            if (category === "Мои статьи") {
-                url = `${config.MAIN_SERVICE}/users/my/articles`;
-            } else if (category === "Мои новости") {
-                url = `${config.MAIN_SERVICE}/users/my/news`;
-            } else if (category === "Мои мероприятия") {
-                url = `${config.MAIN_SERVICE}/users/my/events`;
+            let url;
+            switch (category) {
+                case "Мои проекты":
+                    url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
+                    break;
+                case "Мои статьи":
+                    url = `${config.MAIN_SERVICE}/users/my/articles`;
+                    break;
+                case "Мои новости":
+                    url = `${config.MAIN_SERVICE}/users/my/news`;
+                    break;
+                default:
+                    url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
             }
-            const categoryParam = category ? `&category=${category}` : "";
-            const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const response = await fetch(`${url}?page=${page}&size=1${categoryParam}${queryParam}`, {
+
+            const queryParam = query ? `&query=${query}` : "";
+            const fullUrl = `${url}?page=${page}&size=${size}${queryParam}`;
+            console.log("🌐 [fetchItems] URL:", fullUrl);
+
+            const response = await fetch(fullUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,73 +52,74 @@ const MySpace = () => {
                 }
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                setItems(Array.isArray(data.content) ? data.content : []);
-                setTotalPages(data.totalPages || 1);
-            } else {
-                console.error('Failed to fetch items:', response.statusText);
+            if (!response.ok) {
+                console.error("❌ [fetchItems] Response Error:", response.statusText);
+                return;
             }
+
+            const data = await response.json();
+            console.log("✅ [fetchItems] Response data:", data);
+
+            setItems(Array.isArray(data.content) ? data.content : []);
+            setTotalPages(data.totalPages || 1);
         } catch (error) {
-            console.error('Error fetching items:', error);
+            console.error("🔥 [fetchItems] Exception:", error);
         }
     };
 
     useEffect(() => {
-        fetchItems(selectedCategory, searchQuery, 0);
-    }, [selectedCategory, searchQuery, page]);
+        fetchItems(appliedCategory, searchQuery, page, size);
+    }, [appliedCategory, searchQuery, page, size]);
 
     const handleSearch = () => {
-        setPage(0);  // Reset page to 0 when performing a new search
-        fetchItems(selectedCategory, searchQuery, 0);
+        console.log("🔍 [handleSearch] Search initiated:", searchQuery);
+        setPage(0);
+    };
+
+    const applyCategoryFilter = () => {
+        console.log("📦 [applyCategoryFilter] Applying category:", selectedCategory);
+        setSearchQuery("");
+        setAppliedCategory(selectedCategory);
+        setPage(0);
     };
 
     const handleCreateItem = () => {
-        if (selectedCategory === "Мои проекты") {
-            navigate('/create_project');
-        } else if (selectedCategory === "Мои статьи") {
-            navigate('/create_article');
-        } else if (selectedCategory === "Мои новости") {
-            navigate('/create_news');
-        } else if (selectedCategory === "Мои мероприятия") {
-            navigate('/create_event');
-        }
+        if (selectedCategory === "Мои проекты") navigate('/create_project');
+        if (selectedCategory === "Мои статьи") navigate('/create_article');
+        if (selectedCategory === "Мои новости") navigate('/create_news');
     };
 
-    const openItem = (itemId) => {
-        if (selectedCategory === "Мои проекты") {
-            navigate(`/project/${itemId}`);
-        } else if (selectedCategory === "Мои статьи") {
-            navigate(`/article/${itemId}`);
-        } else if (selectedCategory === "Мои новости") {
-            navigate(`/news/${itemId}`);
-        } else if (selectedCategory === "Мои мероприятия") {
-            navigate(`/event/${itemId}`);
-        }
+    const openItem = (id) => {
+        if (selectedCategory === "Мои проекты") navigate(`/project/${id}`);
+        if (selectedCategory === "Мои статьи") navigate(`/article/${id}`);
+        if (selectedCategory === "Мои новости") navigate(`/news/${id}`);
     };
 
-    const manageItem = (itemId) => {
-        if (selectedCategory === "Мои проекты") {
-            navigate(`/manage_project/${itemId}`);
-        } else if (selectedCategory === "Мои статьи") {
-            navigate(`/manage_article/${itemId}`);
-        } else if (selectedCategory === "Мои новости") {
-            navigate(`/manage_news/${itemId}`);
-        } else if (selectedCategory === "Мои мероприятия") {
-            navigate(`/manage_event/${itemId}`);
-        }
+    const manageItem = (id, e) => {
+        e.stopPropagation();
+        if (selectedCategory === "Мои проекты") navigate(`/manage_project/${id}`);
+        if (selectedCategory === "Мои статьи") navigate(`/manage_article/${id}`);
+        if (selectedCategory === "Мои новости") navigate(`/manage_news/${id}`);
     };
 
     const handleNextPage = () => {
-        if (page < totalPages - 1) {
-            setPage(page + 1);
-        }
+        if (page < totalPages - 1) setPage(prev => prev + 1);
     };
 
     const handlePreviousPage = () => {
-        if (page > 0) {
-            setPage(page - 1);
-        }
+        if (page > 0) setPage(prev => prev - 1);
+    };
+
+    const handleSizeChange = (event) => {
+        const newSize = parseInt(event.target.value, 10);
+        console.log("📐 [handleSizeChange] New size selected:", newSize);
+        setPage(0);
+        setSize(newSize);
+    };
+
+    const handlePageChange = (newPage) => {
+        console.log("📄 [handlePageChange] Page changed to:", newPage);
+        setPage(newPage);
     };
 
     const getSearchPlaceholder = () => {
@@ -112,10 +127,9 @@ const MySpace = () => {
             case "Мои проекты":
                 return "Введите название проекта";
             case "Мои статьи":
+                return "Введите название статьи";
             case "Мои новости":
                 return "Введите название публикации";
-            case "Мои мероприятия":
-                return "Введите название мероприятия";
             default:
                 return "Поиск";
         }
@@ -126,10 +140,9 @@ const MySpace = () => {
             case "Мои проекты":
                 return "Создать проект";
             case "Мои статьи":
+                return "Создать статью";
             case "Мои новости":
                 return "Создать публикацию";
-            case "Мои мероприятия":
-                return "Создать мероприятие";
             default:
                 return "Создать";
         }
@@ -138,41 +151,45 @@ const MySpace = () => {
     return (
         <>
             <Helmet>
-                <title>{selectedCategory}</title>
+                <title>Мое пространство - StartHub</title>
                 <body className={styles.body}/>
             </Helmet>
             <Menu/>
             <div className={styles.mySpacePage}>
                 <div className={styles.sidebar}>
-                    <div className={styles.categories}>
-                        {categories.map(category => (
-                            <div
-                                key={category}
-                                className={`${styles.category} ${selectedCategory === category ? styles.activeCategory : ''}`}
-                                onClick={() => setSelectedCategory(category)}
-                            >
-                                {category}
-                            </div>
-                        ))}
-                    </div>
+                    {categories.map((category) => (
+                        <div
+                            key={category}
+                            className={`${styles.category} ${selectedCategory === category ? styles.activeCategory : ''}`}
+                            onClick={() => setSelectedCategory(category)}
+                        >
+                            {category}
+                        </div>
+                    ))}
+                    <button className={styles.applyButton} onClick={applyCategoryFilter}>
+                        Применить
+                    </button>
                 </div>
                 <div className={styles.content}>
                     <div className={styles.controls}>
                         <div className={styles.searchBar}>
                             <input
                                 type="text"
+                                className={styles.searchInput}
                                 placeholder={getSearchPlaceholder()}
                                 value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                className={styles.searchInput}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                             />
-                            <button onClick={handleSearch} className={styles.button}>Поиск</button>
+                            <button className={styles.button} onClick={handleSearch}>
+                                Поиск
+                            </button>
+                            <button className={styles.createButton} onClick={handleCreateItem}>
+                                {getCreateButtonText()}
+                            </button>
                         </div>
-                        <button onClick={handleCreateItem} className={`${styles.button} ${styles.createButton}`}>
-                            {getCreateButtonText()}
-                        </button>
                     </div>
-                    <h2 className={styles.mySpaceTitle}>{selectedCategory}</h2>
+                    <h1 className={styles.mySpaceTitle}>{selectedCategory}</h1>
                     <div className={styles.itemsList}>
                         {items.length === 0 ? (
                             <div className={styles.emptyItems}>
@@ -188,16 +205,12 @@ const MySpace = () => {
                                         onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                     />
                                     <div className={styles.itemContent}>
-                                        <div
-                                            className={styles.itemName}>{item.title || item.projectName || item.eventName}</div>
+                                        <div className={styles.itemName}>{item.title || item.projectName || item.eventName}</div>
                                         <div className={styles.itemDetail}>{item.category}</div>
                                     </div>
                                     <button
                                         className={styles.manageButton}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            manageItem(item.id);
-                                        }}
+                                        onClick={(e) => manageItem(item.id, e)}
                                     >
                                         {selectedCategory === "Мои проекты" ? "Управление проектом" : "Управление публикацией"}
                                     </button>
@@ -209,8 +222,11 @@ const MySpace = () => {
                         <Pagination
                             page={page}
                             totalPages={totalPages}
+                            size={size}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
+                            onSizeChange={handleSizeChange}
+                            onPageChange={handlePageChange}
                         />
                     )}
                 </div>

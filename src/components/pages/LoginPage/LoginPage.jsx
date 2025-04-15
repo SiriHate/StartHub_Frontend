@@ -106,6 +106,7 @@ const LoginPage = () => {
                                 placeholder=" "
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
+                                autoComplete="username"
                             />
                             <label htmlFor="username" className={styles.fieldLabel}>Имя пользователя</label>
                         </div>
@@ -119,6 +120,7 @@ const LoginPage = () => {
                                 placeholder=" "
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
+                                autoComplete="current-password"
                             />
                             <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
                         </div>

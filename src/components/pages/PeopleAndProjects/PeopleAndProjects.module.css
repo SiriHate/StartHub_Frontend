@@ -24,7 +24,6 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
 .applyButton {
@@ -48,6 +47,7 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.2s ease;
+    margin: 2px 0;
 }
 
 .filter:hover, .activeFilter {
@@ -127,31 +127,53 @@
 .item {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 15px;
     background: #1f1f40;
-    border-radius: 5px;
+    border-radius: 8px;
     gap: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: #252550;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .itemImage {
     width: 150px;
     height: 150px;
-    border-radius: 5px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .itemContent {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.itemName {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 500;
+    margin-bottom: 4px;
 }
 
 .itemDetail {
     font-size: 14px;
-    color: #bbb;
-}
-
-.itemName {
-    font-size: 18px;
-    color: #fff;
+    color: #a0a0a0;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    max-width: fit-content;
 }
 
 .emptyItems {

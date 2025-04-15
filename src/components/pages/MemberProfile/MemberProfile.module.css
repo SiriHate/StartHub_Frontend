@@ -55,31 +55,35 @@
     padding: 20px;
 }
 
-.goBackButton {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+.backButton {
     display: flex;
-    padding: 5px;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
+    background-color: rgba(46, 42, 80, 0.5);
+    color: #f0f0f0;
+    border: 1px solid rgba(62, 58, 109, 0.5);
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 
-.goBackButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.15);
+.backButton:hover {
+    background-color: rgba(46, 42, 80, 0.8);
+    transform: translateX(-3px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-.goBackButton svg {
-    transition: fill 0.3s ease;
+.backButton:active {
+    transform: translateX(1px);
+}
+
+.backIcon {
+    width: 16px;
+    height: 16px;
 }
 
 .avatar {

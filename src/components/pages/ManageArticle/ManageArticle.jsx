@@ -44,7 +44,8 @@ const ManageArticle = () => {
                 setArticleTitle(data.title);
                 setExistingLogoUrl(`${config.FILE_SERVER}${data.previewUrl}`);
                 setArticleContent(data.content);
-                setArticleCategory(data.categoryId);
+                const matchingCategory = categories.find(cat => cat.id === data.categoryId);
+                setArticleCategory(matchingCategory || null);
             } catch (error) {
                 console.error("Failed to fetch article:", error);
             }
@@ -84,12 +85,12 @@ const ManageArticle = () => {
             title: articleTitle,
             previewUrl: logoUrl,
             content: articleContent,
-            categoryId: articleCategory
+            category: articleCategory
         };
 
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}`, {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': authorizationToken ? `Bearer ${authorizationToken}` : ''
@@ -122,8 +123,9 @@ const ManageArticle = () => {
             <Menu/>
             <div className={styles.editArticlePage}>
                 <div className={styles.editArticleContainer}>
-                    <button onClick={() => navigate(-1)} className={styles.goBackButton}>
-                        <GoBackIcon/>
+                    <button onClick={() => navigate(-1)} className={styles.backButton}>
+                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                        <span>Назад</span>
                     </button>
                     <h2 className={styles.formTitle}>Редактирование статьи</h2>
                     <form className={styles.editArticleForm} onSubmit={handleSubmit}>
@@ -165,8 +167,11 @@ const ManageArticle = () => {
                             <label htmlFor="articleCategory">Категория статьи</label>
                             <select
                                 id="articleCategory"
-                                value={articleCategory || ''}
-                                onChange={(e) => setArticleCategory(Number(e.target.value))}
+                                value={articleCategory ? articleCategory.id : ''}
+                                onChange={(e) => {
+                                    const selected = categories.find(cat => cat.id === Number(e.target.value));
+                                    setArticleCategory(selected || null);
+                                }}
                                 required
                                 className={styles.selectInput}
                             >

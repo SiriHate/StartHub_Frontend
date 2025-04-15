@@ -4,12 +4,13 @@
     padding: 0;
     box-sizing: border-box;
     overflow-x: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .body {
     height: 100%;
     box-sizing: border-box;
-    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background: #1a1a2e;
 }
 
 .adminPanelContainer {
@@ -17,76 +18,105 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 20px;
 }
 
 .adminPanel {
     display: flex;
     flex-direction: column;
-    max-width: 800px;
+    max-width: 1000px;
     width: 100%;
-    border: 2px solid #2a2a55;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
 }
 
 .headerContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
-    gap: 10px;
-    background: #4a90e2;
+    padding: 20px;
+    gap: 15px;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abf 100%);
     color: #fff;
     width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.headerContainer h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .searchBar {
     display: flex;
     width: 100%;
-    padding: 0 10px;
+    padding: 0 20px;
+    gap: 10px;
 }
 
 .searchInput {
     flex-grow: 1;
-    padding: 10px;
-    margin-right: 10px;
+    padding: 12px 20px;
     font-size: 16px;
-    border: 2px solid #fff;
-    border-radius: 5px;
+    border: none;
+    border-radius: 8px;
     color: #18181A;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.9);
     outline: none;
+    transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
 }
 
 .button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 16px;
-    background: #366dbf;
+    font-weight: 500;
+    background: #fff;
     border: none;
-    border-radius: 5px;
-    color: #fff;
+    border-radius: 8px;
+    color: #4a90e2;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .button:hover {
-    background: #25496b;
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .moderatorsListContainer {
     flex-grow: 1;
     overflow-y: auto;
     padding: 20px;
-    height: 70vh;
+    height: 65vh;
+    margin: 0 20px;
 }
 
 .moderator {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 5px;
-    background: #1f1f40;
-    border-radius: 5px;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.moderator:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .actions {
@@ -97,87 +127,130 @@
 .editButton,
 .deleteButton {
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 500;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .editButton {
-    background: #4a90e2;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abf 100%);
 }
 
 .editButton:hover {
-    background: #357abf;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
 }
 
 .deleteButton {
-    background: #e23b3b;
+    background: linear-gradient(135deg, #e23b3b 0%, #bf2d2d 100%);
 }
 
 .deleteButton:hover {
-    background: #bf2d2d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(226, 59, 59, 0.3);
 }
 
 .info {
-    font-size: 16px;
+    font-size: 14px;
     margin-top: 5px;
     color: #aaa;
 }
 
 .value {
     color: #fff;
+    font-weight: 500;
 }
-
-.modalTitle {
-    color: white;
-    font-size: 16px;
-    margin-top: 5px;
-    margin-bottom: 20px;
-}
-
 
 .modal {
     display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(26, 26, 46, 0.7);
 }
 
 .modalContent {
-    background-color: #1f1f40;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    max-width: 300px;
-    width: 100%;
+    background: rgba(31, 31, 64, 0.95);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 400px;
+    width: 90%;
     text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    animation: modalFadeIn 0.2s ease;
+}
+
+.modalTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modalContent p {
-    margin-bottom: 15px;
+    margin: 0 0 24px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.modalForm {
+    margin-bottom: 24px;
+}
+
+.modalFormGroup {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.modalLabel {
+    display: block;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.modalInput {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 14px;
     color: #fff;
+    background-color: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.modalInput:focus {
+    outline: none;
+    border-color: #4a90e2;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
 }
 
 .modalContent button {
-    margin-top: 25px;
     padding: 10px 20px;
-    font-size: 16px;
+    margin: 0 8px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    margin-right: 10px;
-    transition: background 0.3s ease;
-    width: calc(50% - 10px);
-    box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 .modalContent button:last-child {
@@ -185,68 +258,71 @@
 }
 
 .modalContent button.confirmDeleteButton {
-    background: #e23b3b;
-    color: #fff;
+    background: linear-gradient(135deg, #e23b3b 0%, #bf2d2d 100%);
+    color: white;
 }
 
 .modalContent button.confirmCreateButton {
-    background: #3cb043;
-    color: #fff;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abf 100%);
+    color: white;
 }
 
 .modalContent button.cancelButton {
-    background: #aaa;
-    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .modalContent button:hover {
-    opacity: 0.8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .createButton {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 16px;
+    font-weight: 500;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s;
-    background: #1f8b3f;
-    margin: 10px;
-    width: 100%;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #1f8b3f 0%, #1a7433 100%);
+    margin: 20px;
+    width: calc(100% - 40px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .createButton:hover {
-    background: #1f8b3f;
+    background: linear-gradient(135deg, #3cb043 0%, #2d8b33 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(60, 176, 67, 0.3);
 }
 
 .footerContainer {
     display: flex;
     justify-content: center;
-    padding: 10px;
+    padding: 20px;
     width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .emptyModerators {
     text-align: center;
     color: #e23b3b;
     margin-top: 50px;
+    font-size: 18px;
+    font-weight: 500;
 }
 
-.modalInput {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: 2px solid #fff;
-    background: #fff;
-    color: #18181A;
-    font-size: 16px;
-}
-
-.modalLabel {
-    display: block;
-    text-align: left;
-    color: #fff;
-    margin-bottom: 5px;
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

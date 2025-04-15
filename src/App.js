@@ -22,40 +22,52 @@ import MySpace from "./components/pages/MySpace/MySpace";
 import CreateProject from "./components/pages/CreateProject/CreateProject";
 import ProjectDetails from "./components/pages/ProjectDetails/ProjectDetails";
 import PersonalMemberAccount from "./components/pages/PersonalMemberAccount/PersonalMemberAccount";
+import CreateFeedbackForm from "./components/pages/CreateFeedbackForm/CreateFeedbackForm";
 import ManageProject from "./components/pages/ManageProject/ManageProject";
+import LeaveFeedback from "./components/pages/LeaveFeedback/LeaveFeedback";
+import FeedbackPanel from "./components/pages/FeedbackPanel/FeedbackPanel";
+import { LoadingProvider } from "./components/loading/LoadingContext";
+import GlobalLoader from "./components/loading/GlobalLoader";
 
 const App = () => {
     return (
-        <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<LoginPage />} />
-                    <Route path="/registration" element={<RegistrationPage />} />
-                    <Route path="/password-recovery" element={<PasswordRecoveryPage />} />
-                    <Route path="/change-password" element={<PasswordChangePage />} />
-                    <Route path="/confirm-registration" element={<ConfirmRegistrationPage />} />
-
-                    <Route element={<PrivateRoute />}>
+        <LoadingProvider>
+            <AuthProvider>
+                <Router>
+                    <GlobalLoader/>
+                    <Routes>
+                        <Route path="/" element={<LoginPage />} />
+                        <Route path="/registration" element={<RegistrationPage />} />
+                        <Route path="/password-recovery" element={<PasswordRecoveryPage />} />
+                        <Route path="/change-password" element={<PasswordChangePage />} />
+                        <Route path="/confirm-registration" element={<ConfirmRegistrationPage />} />
                         <Route path="/admin_panel" element={<AdminPanel />} />
-                        <Route path="/members/personal-account" element={<PersonalMemberAccount />} />
-                        <Route path="/members/profile/:userId" element={<MemberProfilePage />} />
-                        <Route path="/articles-and-news" element={<ArticlesAndNews />} />
-                        <Route path="/create_article" element={<CreateArticle />} />
-                        <Route path="/article/:articleId" element={<ArticlePage />} />
-                        <Route path="/manage_article/:articleId" element={<ManageArticle />} />
-                        <Route path="/create_news" element={<CreateNews />} />
-                        <Route path="/news/:newsId" element={<NewsPage />} />
-                        <Route path="/manage_news/:newsId" element={<ManageNews />} />
-                        <Route path="/people_and_projects" element={<PeopleAndProjects />} />
-                        <Route path="/my_space" element={<MySpace />} />
-                        <Route path="/create_project" element={<CreateProject />} />
-                        <Route path="/project/:projectId" element={<ProjectDetails />} />
-                        <Route path="/manage_project/:projectId" element={<ManageProject />} />
-                    </Route>
-                    <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-            </Router>
-        </AuthProvider>
+                        <Route path="/create_feedback_form" element={<CreateFeedbackForm/>} />
+                        <Route path="/feedback_panel" element={<FeedbackPanel/>} />
+                        <Route element={<PrivateRoute />}>
+                            <Route path="/members/personal-account" element={<PersonalMemberAccount />} />
+                            <Route path="/members/profile/:userId" element={<MemberProfilePage />} />
+                            <Route path="/articles-and-news" element={<ArticlesAndNews />} />
+                            <Route path="/create_article" element={<CreateArticle />} />
+                            <Route path="/article/:articleId" element={<ArticlePage />} />
+                            <Route path="/manage_article/:articleId" element={<ManageArticle />} />
+                            <Route path="/create_news" element={<CreateNews />} />
+                            <Route path="/news/:newsId" element={<NewsPage />} />
+                            <Route path="/manage_news/:newsId" element={<ManageNews />} />
+                            <Route path="/people_and_projects" element={<PeopleAndProjects />} />
+                            <Route path="/my_space" element={<MySpace />} />
+                            <Route path="/create_project" element={<CreateProject />} />
+                            <Route path="/project/:projectId" element={<ProjectDetails />} />
+                            <Route path="/project/:projectId/leave_feedback" element={<LeaveFeedback />} />
+                            <Route path="/manage_project/:projectId" element={<ManageProject />} />
+                            <Route path="/project/:projectId/create_feedback" element={<CreateFeedbackForm />} />
+                            <Route path="/project/:projectId/feedbacks" element={<FeedbackPanel />} />
+                        </Route>
+                        <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                </Router>
+            </AuthProvider>
+        </LoadingProvider>
     );
 };
 
