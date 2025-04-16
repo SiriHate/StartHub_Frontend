@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+.body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
+}
+
+.moderatorPanelPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.moderatorPanelContainer {
+    position: relative;
+    width: 80%;
+    background: rgba(27, 23, 57, 0.95);
+    color: #f0f0f0;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 40px;
+}
+
+.logoutButton {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    z-index: 1000;
+}
+
+.logoutButton:hover {
+    background-color: #c82333;
+}
+
+.panelTitle {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 600;
+    color: #f0f0f0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.panelTitle::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #4444aa, transparent);
+}
+
+.searchContainer {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.searchInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background-color: rgba(38, 36, 59, 0.8);
+    color: #f0f0f0;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #4444aa;
+    box-shadow: 0 0 0 2px rgba(68, 68, 170, 0.2);
+    background-color: rgba(38, 36, 59, 0.95);
+}
+
+.searchButton {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #4444aa, #5555bb);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.searchButton:hover {
+    background: linear-gradient(135deg, #5555bb, #6666cc);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(68, 68, 170, 0.3);
+}
+
+.tabsContainer {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.tab {
+    flex: 1;
+    padding: 12px 20px;
+    background: rgba(38, 36, 59, 0.4);
+    color: #f0f0f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 500;
+}
+
+.tab:hover {
+    background: rgba(38, 36, 59, 0.6);
+}
+
+.tab.active {
+    background: rgba(68, 68, 170, 0.3);
+    border-color: rgba(68, 68, 170, 0.5);
+}
+
+.statusFilter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.statusButton {
+    flex: 1;
+    padding: 12px 20px;
+    background: rgba(38, 36, 59, 0.4);
+    color: #f0f0f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 500;
+}
+
+.statusButton:hover {
+    background: rgba(38, 36, 59, 0.6);
+}
+
+.statusButton.active {
+    background: rgba(68, 68, 170, 0.3);
+    border-color: rgba(68, 68, 170, 0.5);
+}
+
+.listContainer {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.listItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(38, 36, 59, 0.4);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.listItem:hover {
+    background: rgba(38, 36, 59, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-color: rgba(68, 68, 170, 0.3);
+    box-shadow: 0 0 15px rgba(68, 68, 170, 0.3);
+}
+
+.itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.itemTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.name {
+    font-weight: 600;
+}
+
+.username {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.itemSubtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.specialization {
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.actionButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.blockButton {
+    background: linear-gradient(135deg, #e23b3b, #bf2d2d);
+    color: white;
+}
+
+.blockButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(226, 59, 59, 0.3);
+}
+
+.approveButton {
+    background: linear-gradient(135deg, #1f8b3f, #1a7433);
+    color: white;
+}
+
+.approveButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(31, 139, 63, 0.3);
+}
+
+.emptyState {
+    text-align: center;
+    color: #e23b3b;
+    margin-top: 50px;
+    font-size: 18px;
+    font-weight: 500;
+} 

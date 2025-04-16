@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Helmet} from "react-helmet";
 import styles from "./CreateArticle.module.css";
-import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
 import Menu from "../../menu/Menu";
 import RichTextEditor from "../../editor/RichTextEditor";
 import {useNavigate} from "react-router-dom";

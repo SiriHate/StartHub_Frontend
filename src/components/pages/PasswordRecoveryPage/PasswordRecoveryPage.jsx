@@ -67,7 +67,7 @@ const PasswordRecoveryPage = () => {
                             <input type="submit" value="Восстановить пароль"/>
                         </div>
                         <div className={styles.signupLink}>
-                            Перейти к <span onClick={() => navigate('/')} className={styles.linkText}>Авторизации</span>
+                            Вернуться к <span onClick={() => navigate('/')} className={styles.linkText}>Авторизации</span>
                         </div>
                     </form>
                 </div>

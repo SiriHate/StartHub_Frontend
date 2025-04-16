@@ -55,7 +55,9 @@
 
 .createArticleContainer {
     position: relative;
-    width: 65%;
+    width: 80%;
+    max-width: 50%;
+    min-width: 50%;
     background: rgba(27, 23, 57, 0.95);
     color: #f0f0f0;
     padding: 30px;

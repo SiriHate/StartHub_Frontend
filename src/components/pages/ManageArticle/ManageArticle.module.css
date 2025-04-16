@@ -55,7 +55,9 @@
 
 .editArticleContainer {
     position: relative;
-    width: 65%;
+    width: 80%;
+    max-width: 50%;
+    min-width: 50%;
     background-color: #1b1739;
     color: #f0f0f0;
     padding: 20px;

@@ -32,16 +32,16 @@
     margin-top: 50px;
     background: #1b1739;
     color: #f0f0f0;
-    width: 70%;
-    max-width: 35%;
-    min-width: 35%;
+    width: 80%;
+    max-width: 50%;
+    min-width: 50%;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 30px;
     margin-bottom: 50px;
 }
 
@@ -49,13 +49,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     background-color: #1b1739;
     width: 100%;
     padding: 20px;
 }
 
 .backButton {
+    position: absolute;
+    left: 20px;
+    top: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -67,8 +70,8 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    margin-bottom: 20px;
     transition: all 0.3s ease;
+    z-index: 1;
 }
 
 .backButton:hover {
@@ -87,14 +90,15 @@
 }
 
 .avatar {
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
-    border: 2px solid #444;
+    border: 3px solid #444;
+    margin-bottom: 20px;
 }
 
 .username {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 600;
     color: #f0f0f0;
     margin-top: 10px;
@@ -118,49 +122,51 @@
 }
 
 .infoSection {
-    width: 90%;
+    width: 100%;
     padding: 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-top: 1px solid #333;
+    margin-bottom: 20px;
 }
 
 .infoItem {
     width: 100%;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    padding: 0 20px;
 }
 
 .label {
     font-weight: 600;
     color: #f0f0f0;
-    flex: 1;
-    min-width: 150px;
-    margin-right: 10px;
+    width: 200px;
     text-align: right;
+    margin-right: 20px;
 }
 
 .aboutLabel {
     font-weight: 600;
     color: #f0f0f0;
-    flex: 1;
-    min-width: 150px;
-    margin-right: 10px;
+    width: 100%;
     text-align: center;
+    margin-bottom: 15px;
+    font-size: 18px;
 }
 
 .infoText {
+    flex: 1;
     font-size: 16px;
     font-weight: 400;
     color: #f0f0f0;
-    flex: 2;
-    padding: 5px 10px;
+    padding: 10px 15px;
     border-radius: 5px;
     background-color: #26243b;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    min-width: 300px;
 }
 
 .aboutSection {
@@ -168,19 +174,92 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    padding: 0 20px;
 }
 
 .aboutText {
-    width: 90%;
+    width: 100%;
     background-color: #26243b;
-    padding: 10px 15px;
+    padding: 15px 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     margin-top: 10px;
     text-align: justify;
-    min-height: 100px;
+    min-height: 120px;
     color: #f0f0f0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.actionsSection {
+    margin-top: 20px;
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.blockButton {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(139, 0, 0, 0.7);
+    color: #f0f0f0;
+    border: 1px solid rgba(178, 34, 34, 0.5);
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
     font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.blockButton:hover {
+    background-color: rgba(139, 0, 0, 0.9);
+    transform: translateX(3px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.blockButton:active {
+    transform: translateX(1px);
+}
+
+.blockButton:disabled {
+    background-color: rgba(139, 0, 0, 0.4);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+@media screen and (max-width: 768px) {
+    .profileCard {
+        width: 95%;
+        min-width: 95%;
+        padding: 20px;
+    }
+
+    .infoItem {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 10px;
+    }
+
+    .label {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+
+    .infoText {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .aboutText {
+        min-height: 100px;
+    }
 }
 
 @media screen and (max-width: 600px) {

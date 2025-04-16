@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./AdminPanel.module.css";
 import {Helmet} from "react-helmet";
 import config from "../../../config";
 
 const AdminPanel = () => {
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
     const [moderators, setModerators] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [deleteId, setDeleteId] = useState(null);
@@ -23,10 +26,6 @@ const AdminPanel = () => {
         password: "",
         employeeId: ""
     });
-
-    useEffect(() => {
-        fetchModerators();
-    }, []);
 
     const fetchModerators = () => {
         fetch(`${config.USER_SERVICE}/moderators`)
@@ -48,6 +47,45 @@ const AdminPanel = () => {
             })
             .catch(error => console.error("Fetch error:", error));
     };
+
+    useEffect(() => {
+        const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
+        const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+
+        // Проверка роли пользователя
+        fetch(`${config.USER_SERVICE}/users/me`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken
+            },
+        })
+            .then(response => {
+                if (response.status !== 200) {
+                    throw new Error('Failed to fetch user role');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('User data:', data);
+                if (data.role !== 'ADMIN') {
+                    console.log('User is not admin, redirecting...');
+                    navigate('/');
+                    return;
+                }
+                console.log('User is admin, loading moderators...');
+                setIsLoading(false);
+                fetchModerators();
+            })
+            .catch(error => {
+                console.error('Error fetching user role:', error);
+                navigate('/');
+            });
+    }, [navigate]);
+
+    if (isLoading) {
+        return <div className={styles.loading}>Загрузка...</div>;
+    }
 
     const searchModerators = () => {
         fetch(`${config.USER_SERVICE}/moderators/search-by-username?username=${searchQuery}`)
@@ -170,10 +208,15 @@ const AdminPanel = () => {
         setIsEditModalOpen(false);
     };
 
+    const handleLogout = () => {
+        document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        navigate('/');
+    };
+
     return (
         <div className={styles.adminPanelContainer}>
             <Helmet>
-                <title>Панель администратора</title>
+                <title>Панель администратора - StartHub</title>
                 <html className={styles.html}/>
                 <body className={styles.body}/>
             </Helmet>
@@ -191,6 +234,9 @@ const AdminPanel = () => {
                         />
                         <button onClick={searchModerators} className={styles.button}>Найти</button>
                     </div>
+                    <button className={styles.logoutButton} onClick={handleLogout}>
+                        Выйти
+                    </button>
                 </div>
                 <div className={styles.moderatorsListContainer}>
                     <div className={styles.moderatorsList}>

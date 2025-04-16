@@ -17,6 +17,11 @@ function CreateProject() {
     const [roleName, setRoleName] = useState("");
     const [categories, setCategories] = useState([]);
     const [specializations, setSpecializations] = useState([]);
+    const [searchResults, setSearchResults] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const searchTimeoutRef = useRef(null);
+    const dropdownRef = useRef(null);
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
     const navigate = useNavigate();
@@ -47,11 +52,18 @@ function CreateProject() {
             .catch(error => console.error('Error fetching specializations:', error));
     }, [authorizationToken]);
 
+    const handleUserSelect = (user) => {
+        setUsername(user.username);
+        setSelectedUser(user);
+        setShowDropdown(false);
+    };
+
     const addMember = () => {
-        if (username && roleName) {
-            setMembers([...members, {username, role: roleName}]);
+        if (selectedUser && roleName) {
+            setMembers([...members, {username: selectedUser.username, role: roleName}]);
             setUsername("");
             setRoleName("");
+            setSelectedUser(null);
         }
     };
 
@@ -122,6 +134,64 @@ function CreateProject() {
     const handleLogoUploadClick = () => {
         fileInputRef.current.click();
     };
+
+    const searchUsers = async (query) => {
+        if (query.length < 2) {
+            setSearchResults([]);
+            setShowDropdown(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${config.USER_SERVICE}/members/search?username=${query}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken ? `${authorizationToken}` : '',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Получаем массив пользователей из поля content
+                const users = data.content || [];
+                // Ограничиваем количество результатов до 5
+                setSearchResults(users.slice(0, 5));
+                setShowDropdown(true);
+            }
+        } catch (error) {
+            console.error('Ошибка при поиске пользователей:', error);
+            setSearchResults([]);
+            setShowDropdown(false);
+        }
+    };
+
+    const handleUsernameChange = (e) => {
+        const value = e.target.value;
+        setUsername(value);
+        setSelectedUser(null);
+        
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            searchUsers(value);
+        }, 300);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
         <>
@@ -203,13 +273,28 @@ function CreateProject() {
                         </div>
                         <label htmlFor="projectStage">Команда проекта</label>
                         <div className={styles.memberInputContainer}>
-                            <input
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Имя пользователя"
-                                className={styles.fullWidthInput}
-                            />
+                            <div className={styles.usernameInputContainer} ref={dropdownRef}>
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={handleUsernameChange}
+                                    placeholder="Имя пользователя"
+                                    className={styles.fullWidthInput}
+                                />
+                                {showDropdown && searchResults.length > 0 && (
+                                    <div className={styles.dropdown}>
+                                        {searchResults.map((user) => (
+                                            <div
+                                                key={user.id}
+                                                className={styles.dropdownItem}
+                                                onClick={() => handleUserSelect(user)}
+                                            >
+                                                {user.username}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                             <select
                                 value={roleName}
                                 onChange={(e) => setRoleName(e.target.value)}
@@ -220,7 +305,12 @@ function CreateProject() {
                                     <option key={spec.id} value={spec.name}>{spec.name}</option>
                                 ))}
                             </select>
-                            <button type="button" onClick={addMember} className={styles.addMemberButton}>+</button>
+                            <button 
+                                type="button" 
+                                onClick={addMember} 
+                                className={styles.addMemberButton}
+                                disabled={!selectedUser || !roleName}
+                            >+</button>
                         </div>
                         <div className={styles.membersList}>
                             {members.length > 0 ? (

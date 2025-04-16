@@ -4,7 +4,6 @@ import 'quill/dist/quill.snow.css';
 import styles from './RichTextEditor.module.css';
 
 const RichTextEditor = ({content, setContent}) => {
-
     const editorRef = useRef(null);
     const quillRef = useRef(null);
 
@@ -19,19 +18,21 @@ const RichTextEditor = ({content, setContent}) => {
 
     const modules = {
         toolbar: [
-            [{'header': [1, 2, 3, 4, 5, 6, false]}],
-            [{'font': []}],
-            [{'size': ['small', false, 'large', 'huge']}],
+            // Основное форматирование текста
             ['bold', 'italic', 'underline', 'strike'],
-            [{'color': []}, {'background': []}],
-            [{'script': 'sub'}, {'script': 'super'}],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            [{'indent': '-1'}, {'indent': '+1'}],
-            [{'align': []}],
-            ['link', 'image', 'video'],
+            // Заголовки и размеры
+            [{ 'header': [1, 2, 3, false] }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            // Цвета и выравнивание
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }],
+            // Списки и отступы
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            // Дополнительные элементы
             ['blockquote', 'code-block'],
-            ['clean'],
-            [{'table': true}]
+            ['link', 'image'],
+            ['clean']
         ],
         clipboard: {
             matchVisual: false,

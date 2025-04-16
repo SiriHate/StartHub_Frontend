@@ -52,8 +52,8 @@ const LoginPage = () => {
                 console.error('Network response was not ok');
                 setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
             } else {
-                const token = await response.text();
-                document.cookie = `Authorization=Bearer ${token}; path=/; SameSite=None; Secure`;
+                const data = await response.json();
+                document.cookie = `Authorization=Bearer ${data.token}; path=/; SameSite=None; Secure`;
 
                 if (rememberMe) {
                     localStorage.setItem('username', username);
@@ -64,7 +64,16 @@ const LoginPage = () => {
                     localStorage.removeItem('password');
                     localStorage.removeItem('rememberMe');
                 }
-                navigate('/articles-and-news');
+
+                // Проверяем роль пользователя и перенаправляем соответственно
+                const userRole = data.role;
+                if (userRole === 'MODERATOR') {
+                    navigate('/moderator_panel');
+                } else if (userRole === 'ADMIN') {
+                    navigate('/admin_panel');
+                } else {
+                    navigate('/articles-and-news');
+                }
             }
         } catch (error) {
             console.error('There has been a problem with your fetch operation:', error);
@@ -89,77 +98,79 @@ const LoginPage = () => {
                 <html className={styles.html}/>
                 <body className={styles.body}/>
             </Helmet>
-            <img src="/logo.png" alt="Логотип" className={styles.logo}/>
-            <div className={styles.formContainer}>
-                <div className={styles.wrapper}>
-                    <div className={styles.title}>
-                        Авторизация
-                    </div>
-                    <form onSubmit={handleLogin}>
-                        <div className={styles.field}>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                value={username}
-                                className={styles.fieldInput}
-                                placeholder=" "
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                                autoComplete="username"
-                            />
-                            <label htmlFor="username" className={styles.fieldLabel}>Имя пользователя</label>
+            <div className={styles.loginPageContainer}>
+                <img src="/logo.png" alt="Логотип" className={styles.logo}/>
+                <div className={styles.formContainer}>
+                    <div className={styles.wrapper}>
+                        <div className={styles.title}>
+                            Авторизация
                         </div>
-                        <div className={styles.field}>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={password}
-                                className={styles.fieldInput}
-                                placeholder=" "
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                autoComplete="current-password"
-                            />
-                            <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
-                        </div>
-                        {error && <div className={styles.errorMessage}>{error}</div>}
-                        <div className={styles.content}>
-                            <div className={styles.checkbox}>
+                        <form onSubmit={handleLogin}>
+                            <div className={styles.field}>
                                 <input
-                                    type="checkbox"
-                                    id="remember-me"
-                                    checked={rememberMe}
-                                    className={styles.checkboxInput}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    value={username}
+                                    className={styles.fieldInput}
+                                    placeholder=" "
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    required
+                                    autoComplete="username"
                                 />
-                                <label htmlFor="remember-me" className={styles.checkboxLabel}>Запомнить меня</label>
+                                <label htmlFor="username" className={styles.fieldLabel}>Имя пользователя</label>
                             </div>
-                            <div className={styles.passLink}>
+                            <div className={styles.field}>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    value={password}
+                                    className={styles.fieldInput}
+                                    placeholder=" "
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    autoComplete="current-password"
+                                />
+                                <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
+                            </div>
+                            {error && <div className={styles.errorMessage}>{error}</div>}
+                            <div className={styles.content}>
+                                <div className={styles.checkbox}>
+                                    <input
+                                        type="checkbox"
+                                        id="remember-me"
+                                        checked={rememberMe}
+                                        className={styles.checkboxInput}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                    />
+                                    <label htmlFor="remember-me" className={styles.checkboxLabel}>Запомнить меня</label>
+                                </div>
+                                <div className={styles.passLink}>
+                                    <button
+                                        onClick={handleForgotPassword}
+                                        id="forgot-password-link"
+                                        className={styles.linkButton}
+                                    >
+                                        Забыли пароль?
+                                    </button>
+                                </div>
+                            </div>
+                            <div className={styles.field}>
+                                <input type="submit" value="Войти" className={styles.submitButton}/>
+                            </div>
+                            <div className={styles.signupLink}>
+                                Еще нет аккаунта?{' '}
                                 <button
-                                    onClick={handleForgotPassword}
-                                    id="forgot-password-link"
+                                    onClick={redirectToRegistration}
+                                    id="registration-link"
                                     className={styles.linkButton}
                                 >
-                                    Забыли пароль?
+                                    Регистрация
                                 </button>
                             </div>
-                        </div>
-                        <div className={styles.field}>
-                            <input type="submit" value="Войти" className={styles.submitButton}/>
-                        </div>
-                        <div className={styles.signupLink}>
-                            Еще нет аккаунта?{' '}
-                            <button
-                                onClick={redirectToRegistration}
-                                id="registration-link"
-                                className={styles.linkButton}
-                            >
-                                Регистрация
-                            </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

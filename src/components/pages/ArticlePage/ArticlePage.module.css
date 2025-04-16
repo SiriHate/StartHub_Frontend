@@ -175,3 +175,70 @@
 .projectDescription {
     margin-bottom: 30px;
 }
+
+.moderatorActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
+.moderatorPanel {
+    width: 60%;
+    max-width: 960px;
+    margin: 20px auto 0;
+    background: linear-gradient(145deg, #2b2552, #1e1a40);
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.moderatorPanelTitle {
+    color: #f0f0f0;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.moderatorPanelActions {
+    display: flex;
+    gap: 10px;
+}
+
+.approveButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.approveButton:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.blockButton {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.blockButton:hover {
+    background-color: #da190b;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

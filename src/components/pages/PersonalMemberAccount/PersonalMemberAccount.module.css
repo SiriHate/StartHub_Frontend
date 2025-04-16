@@ -26,9 +26,9 @@
 .profileCard {
     background: rgba(27, 23, 57, 0.95);
     color: #f0f0f0;
-    width: 63%;
-    max-width: 31.5%;
-    min-width: 31.5%;
+    width: 80%;
+    max-width: 50%;
+    min-width: 50%;
     border-radius: 13.5px;
     overflow: hidden;
     box-shadow: 0 7.2px 28.8px rgba(0, 0, 0, 0.3);
@@ -39,11 +39,10 @@
     align-items: center;
     padding: 27px;
     margin: 45px auto;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease;
 }
 
 .profileCard:hover {
-    transform: translateY(-5px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 

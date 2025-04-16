@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import styles from './MemberProfile.module.css';
-import { ReactComponent as GoBackIcon } from '../../../icons/go_back.svg';
 import NavigationBar from '../../menu/Menu';
 import { Helmet } from "react-helmet";
 import config from '../../../config';
@@ -17,13 +16,41 @@ function MemberProfile() {
     const [specialization, setSpecialization] = useState('');
     const [about, setAbout] = useState('');
     const [redirect, setRedirect] = useState(false);
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [isModerator, setIsModerator] = useState(false);
     const navigate = useNavigate();
 
+    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
+    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+
     useEffect(() => {
+        // Проверка роли пользователя
+        fetch(`${config.USER_SERVICE}/users/me`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken
+            },
+        })
+            .then(response => {
+                if (response.status !== 200) {
+                    throw new Error('Failed to fetch user role');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setIsModerator(data.role === 'MODERATOR');
+            })
+            .catch(error => {
+                console.error('Error fetching user role:', error);
+            });
+
+        // Загрузка данных профиля
         fetch(`${config.USER_SERVICE}/members/${userId}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': authorizationToken
             },
         })
             .then(response => {
@@ -47,10 +74,28 @@ function MemberProfile() {
                 console.error('Fetch error:', error);
                 setRedirect(true);
             });
-    }, [userId]);
+    }, [userId, authorizationToken]);
 
-    const handleSendMessage = () => {
-        alert(`Message sent to ${username}`);
+    const handleBlockUser = async () => {
+        try {
+            const response = await fetch(`${config.USER_SERVICE}/members/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken
+                },
+            });
+
+            if (response.ok) {
+                setIsBlocked(true);
+                alert('Пользователь успешно заблокирован');
+            } else {
+                throw new Error('Не удалось заблокировать пользователя');
+            }
+        } catch (error) {
+            console.error('Ошибка при блокировке пользователя:', error);
+            alert('Произошла ошибка при блокировке пользователя');
+        }
     };
 
     if (redirect) {
@@ -71,22 +116,30 @@ function MemberProfile() {
                         <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
                         <span>Назад</span>
                     </button>
+                    {isModerator && (
+                        <button 
+                            onClick={handleBlockUser} 
+                            className={styles.blockButton}
+                            disabled={isBlocked}
+                        >
+                            {isBlocked ? 'Заблокирован' : 'Заблокировать'}
+                        </button>
+                    )}
                     <div className={styles.profileCardHeader}>
                         <img src={avatar} alt="Аватар пользователя" className={styles.avatar} />
                         <div className={styles.username}>{username}</div>
-                        <button onClick={handleSendMessage} className={styles.sendMessageButton}>Отправить сообщение</button>
                     </div>
                     <div className={styles.infoSection}>
                         <div className={styles.infoItem}>
-                            <span className={styles.label}>Имя:</span>
+                            <span className={styles.label}>Полное имя:</span>
                             <span className={styles.infoText}>{name}</span>
                         </div>
                         <div className={styles.infoItem}>
-                            <span className={styles.label}>Телефон:</span>
+                            <span className={styles.label}>Номер телефона:</span>
                             <span className={styles.infoText}>{phone}</span>
                         </div>
                         <div className={styles.infoItem}>
-                            <span className={styles.label}>Email:</span>
+                            <span className={styles.label}>Email-адрес:</span>
                             <span className={styles.infoText}>{email}</span>
                         </div>
                         <div className={styles.infoItem}>

@@ -32,6 +32,8 @@
     background-attachment: fixed;
     font-family: 'Montserrat', sans-serif;
     box-sizing: border-box;
+    padding-top: 15px;
+    padding-bottom: 30px;
 }
 
 ::selection {
@@ -50,13 +52,11 @@
 }
 
 .logo {
-    position: relative;
-    top: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
+    width: 250px;
     height: auto;
     z-index: 10;
+    margin: 10px auto;
+    display: block;
 }
 
 .formContainer {
@@ -67,21 +67,19 @@
 }
 
 .wrapper {
-    width: 380px;
+    width: 400px;
     background: #fff;
     border-radius: 15px;
     box-shadow: 0 15px 20px rgba(0, 0, 0, 0.1);
     position: relative;
-    overflow-y: hidden;
-    max-height: 90vh;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
 
 .title {
-    font-size: 35px;
+    font-size: 28px;
     font-weight: 600;
     text-align: center;
-    line-height: 100px;
+    line-height: 80px;
     color: #fff;
     user-select: none;
     border-radius: 15px 15px 0 0;
@@ -89,7 +87,7 @@
 }
 
 .form {
-    padding: 10px 30px 50px 30px;
+    padding: 10px 30px 40px 30px;
 }
 
 .field {

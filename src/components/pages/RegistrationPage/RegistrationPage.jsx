@@ -142,8 +142,8 @@ const RegistrationPage = () => {
                             <input type="submit" value="Зарегистрироваться" className={styles.submitButton}/>
                         </div>
                         <div className={styles.signupLink}>
-                            Перейти к <button onClick={() => navigate('/')}
-                                              className={styles.linkButton}>Авторизация</button>
+                            Вернуться к <button onClick={() => navigate('/')}
+                                              className={styles.linkButton}>Авторизации</button>
                         </div>
                     </form>
                 </div>

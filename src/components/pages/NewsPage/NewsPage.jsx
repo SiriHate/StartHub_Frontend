@@ -14,10 +14,38 @@ const NewsPage = () => {
         owner: "",
         previewUrl: "",
         category: "",
-        content: ""
+        content: "",
+        moderationPassed: false
     });
     const [loading, setLoading] = useState(true);
     const [redirect, setRedirect] = useState(false);
+    const [isMember, setIsMember] = useState(false);
+    const [isModerator, setIsModerator] = useState(false);
+
+    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
+    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+
+    useEffect(() => {
+        const checkUserRole = async () => {
+            try {
+                const response = await fetch(`${config.USER_SERVICE}/users/me`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authorizationToken
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsMember(data.role === 'MEMBER');
+                    setIsModerator(data.role === 'MODERATOR');
+                }
+            } catch (error) {
+                console.error('Ошибка при проверке роли пользователя:', error);
+            }
+        };
+
+        checkUserRole();
+    }, [authorizationToken]);
 
     useEffect(() => {
         const fetchNews = async () => {
@@ -30,7 +58,8 @@ const NewsPage = () => {
                         owner: data.owner,
                         previewUrl: `${config.FILE_SERVER}${data.previewUrl}`,
                         category: data.category,
-                        content: data.content
+                        content: data.content,
+                        moderationPassed: data.moderationPassed
                     });
                     setLoading(false);
                 } else {
@@ -45,6 +74,47 @@ const NewsPage = () => {
 
         fetchNews();
     }, [newsId]);
+
+    const handleApprove = async () => {
+        try {
+            const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}/moderationPassed`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken
+                },
+                body: JSON.stringify(true)
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при одобрении новости');
+            }
+
+            setNews(prev => ({...prev, moderationPassed: true}));
+        } catch (error) {
+            console.error('Ошибка при одобрении новости:', error);
+        }
+    };
+
+    const handleBlock = async () => {
+        try {
+            const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при блокировке новости');
+            }
+
+            navigate('/articles-and-news');
+        } catch (error) {
+            console.error('Ошибка при блокировке новости:', error);
+        }
+    };
 
     if (loading) {
         return <div className={styles.loading}>Загрузка...</div>;
@@ -61,7 +131,22 @@ const NewsPage = () => {
                 <html className={styles.html}/>
                 <body className={styles.body}/>
             </Helmet>
-            <Menu/>
+            {isMember && <Menu/>}
+            {isModerator && (
+                <div className={styles.moderatorPanel}>
+                    <h3 className={styles.moderatorPanelTitle}>Действия модератора</h3>
+                    <div className={styles.moderatorPanelActions}>
+                        {!news.moderationPassed && (
+                            <button onClick={handleApprove} className={styles.approveButton}>
+                                Одобрить
+                            </button>
+                        )}
+                        <button onClick={handleBlock} className={styles.blockButton}>
+                            Заблокировать
+                        </button>
+                    </div>
+                </div>
+            )}
             <div className={styles.newsContainer}>
                 <button onClick={() => navigate(-1)} className={styles.backButton}>
                     <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />

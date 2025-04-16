@@ -14,7 +14,40 @@ function ProjectDetails() {
     const [likes, setLikes] = useState(0);
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
+    const [isModerator, setIsModerator] = useState(false);
     const navigate = useNavigate();
+
+    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
+    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+
+    useEffect(() => {
+        const checkUserRole = async () => {
+            try {
+                const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
+                const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+
+                if (!authorizationToken) {
+                    return;
+                }
+
+                const response = await fetch(`${config.USER_SERVICE}/users/me`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authorizationToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsModerator(data.role === 'MODERATOR');
+                }
+            } catch (error) {
+                console.error('Ошибка при проверке роли пользователя:', error);
+            }
+        };
+
+        checkUserRole();
+    }, []);
 
     const fetchLikesCount = async () => {
         try {
@@ -130,6 +163,47 @@ function ProjectDetails() {
         }
     };
 
+    const handleApprove = async () => {
+        try {
+            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/moderationPassed`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken
+                },
+                body: JSON.stringify(true)
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при одобрении проекта');
+            }
+
+            setProject(prev => ({...prev, moderationPassed: true}));
+        } catch (error) {
+            console.error('Ошибка при одобрении проекта:', error);
+        }
+    };
+
+    const handleBlock = async () => {
+        try {
+            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при блокировке проекта');
+            }
+
+            navigate('/projects');
+        } catch (error) {
+            console.error('Ошибка при блокировке проекта:', error);
+        }
+    };
+
     if (loading) {
         return <div className={styles.loading}>Загрузка...</div>;
     }
@@ -146,9 +220,25 @@ function ProjectDetails() {
         <>
             <Helmet>
                 <title>{project.projectName} - Детали проекта</title>
+                <html className={styles.html} />
                 <body className={styles.body} />
             </Helmet>
-            <Menu />
+            {!isModerator && <Menu />}
+            {isModerator && (
+                <div className={styles.moderatorPanel}>
+                    <h3 className={styles.moderatorPanelTitle}>Действия модератора</h3>
+                    <div className={styles.moderatorPanelActions}>
+                        {!project.moderationPassed && (
+                            <button onClick={handleApprove} className={styles.approveButton}>
+                                Одобрить
+                            </button>
+                        )}
+                        <button onClick={handleBlock} className={styles.blockButton}>
+                            Заблокировать
+                        </button>
+                    </div>
+                </div>
+            )}
             <div className={styles.projectDetailsPage}>
                 <div className={styles.projectCard}>
                     <button className={styles.backButton} onClick={handleGoBack}>
@@ -211,65 +301,69 @@ function ProjectDetails() {
                         </div>
                     </div>
 
-                    <div className={styles.projectActionsCentered}>
-                        <div className={styles.actionButtonsContainer}>
-                            {project.hasSurvey && (
-                                <button 
-                                    className={styles.feedbackBtn}
-                                    onClick={handleFeedbackClick}
-                                >
-                                    <img src="/feedback.png" alt="Фидбек" className={styles.actionIcon}/>
-                                    <span>Обратная связь</span>
-                                </button>
+                    {!isModerator && (
+                        <>
+                            <div className={styles.projectActionsCentered}>
+                                <div className={styles.actionButtonsContainer}>
+                                    {project.hasSurvey && (
+                                        <button 
+                                            className={styles.feedbackBtn}
+                                            onClick={handleFeedbackClick}
+                                        >
+                                            <img src="/feedback.png" alt="Фидбек" className={styles.actionIcon}/>
+                                            <span>Обратная связь</span>
+                                        </button>
+                                    )}
+                                    <button className={styles.likeBtn} onClick={handleLike}>
+                                        <img src="/like.png" alt="Лайк" className={styles.actionIcon}/>
+                                        <span>Поддержать</span>
+                                    </button>
+                                </div>
+                                <div className={styles.likesInfo}>
+                                    <span className={styles.likesCount}>{likes}</span>
+                                    <span className={styles.likesText}>{getLikesText(likes)}</span>
+                                </div>
+                            </div>
+
+                            {feedbackVisible && (
+                                <div className={styles.feedbackForm}>
+                                    <h3>Форма обратной связи</h3>
+                                    <textarea
+                                        className={styles.feedbackInput}
+                                        placeholder="Ваш отзыв..."
+                                    ></textarea>
+                                    <button className={styles.submitFeedbackBtn}>Отправить</button>
+                                </div>
                             )}
-                            <button className={styles.likeBtn} onClick={handleLike}>
-                                <img src="/like.png" alt="Лайк" className={styles.actionIcon}/>
-                                <span>Поддержать</span>
-                            </button>
-                        </div>
-                        <div className={styles.likesInfo}>
-                            <span className={styles.likesCount}>{likes}</span>
-                            <span className={styles.likesText}>{getLikesText(likes)}</span>
-                        </div>
-                    </div>
 
-                    {feedbackVisible && (
-                        <div className={styles.feedbackForm}>
-                            <h3>Форма обратной связи</h3>
-                            <textarea
-                                className={styles.feedbackInput}
-                                placeholder="Ваш отзыв..."
-                            ></textarea>
-                            <button className={styles.submitFeedbackBtn}>Отправить</button>
-                        </div>
-                    )}
-
-                    <div className={styles.commentsSection}>
-                        <div className={styles.commentsWrapper}>
-                            <div className={styles.commentsDivider}>
-                                <span className={styles.dividerLine}></span>
-                                <span className={styles.dividerText}>Комментарии</span>
-                                <span className={styles.dividerLine}></span>
-                            </div>
-                            <form className={styles.commentForm} onSubmit={handleCommentSubmit}>
-                                <textarea
-                                    className={styles.commentInput}
-                                    value={newComment}
-                                    onChange={handleCommentChange}
-                                    placeholder="Добавьте комментарий..."
-                                ></textarea>
-                                <button type="submit" className={styles.submitCommentBtn}>Отправить комментарий</button>
-                            </form>
-                            <div className={styles.commentList}>
-                                {comments.map((comment) => (
-                                    <div key={comment.id} className={styles.comment}>
-                                        <strong>{comment.author}</strong>
-                                        <p>{comment.text}</p>
+                            <div className={styles.commentsSection}>
+                                <div className={styles.commentsWrapper}>
+                                    <div className={styles.commentsDivider}>
+                                        <span className={styles.dividerLine}></span>
+                                        <span className={styles.dividerText}>Комментарии</span>
+                                        <span className={styles.dividerLine}></span>
                                     </div>
-                                ))}
+                                    <form className={styles.commentForm} onSubmit={handleCommentSubmit}>
+                                        <textarea
+                                            className={styles.commentInput}
+                                            value={newComment}
+                                            onChange={handleCommentChange}
+                                            placeholder="Добавьте комментарий..."
+                                        ></textarea>
+                                        <button type="submit" className={styles.submitCommentBtn}>Отправить комментарий</button>
+                                    </form>
+                                    <div className={styles.commentList}>
+                                        {comments.map((comment) => (
+                                            <div key={comment.id} className={styles.comment}>
+                                                <strong>{comment.author}</strong>
+                                                <p>{comment.text}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </>
+                    )}
                 </div>
             </div>
         </>

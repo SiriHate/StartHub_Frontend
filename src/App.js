@@ -26,6 +26,7 @@ import CreateFeedbackForm from "./components/pages/CreateFeedbackForm/CreateFeed
 import ManageProject from "./components/pages/ManageProject/ManageProject";
 import LeaveFeedback from "./components/pages/LeaveFeedback/LeaveFeedback";
 import FeedbackPanel from "./components/pages/FeedbackPanel/FeedbackPanel";
+import ModeratorPanel from "./components/pages/ModeratorPanel/ModeratorPanel";
 import { LoadingProvider } from "./components/loading/LoadingContext";
 import GlobalLoader from "./components/loading/GlobalLoader";
 
@@ -41,13 +42,11 @@ const App = () => {
                         <Route path="/password-recovery" element={<PasswordRecoveryPage />} />
                         <Route path="/change-password" element={<PasswordChangePage />} />
                         <Route path="/confirm-registration" element={<ConfirmRegistrationPage />} />
-                        <Route path="/admin_panel" element={<AdminPanel />} />
-                        <Route path="/create_feedback_form" element={<CreateFeedbackForm/>} />
-                        <Route path="/feedback_panel" element={<FeedbackPanel/>} />
                         <Route element={<PrivateRoute />}>
                             <Route path="/members/personal-account" element={<PersonalMemberAccount />} />
                             <Route path="/members/profile/:userId" element={<MemberProfilePage />} />
                             <Route path="/articles-and-news" element={<ArticlesAndNews />} />
+                            <Route path="/moderator_panel" element={<ModeratorPanel />} />
                             <Route path="/create_article" element={<CreateArticle />} />
                             <Route path="/article/:articleId" element={<ArticlePage />} />
                             <Route path="/manage_article/:articleId" element={<ManageArticle />} />
@@ -60,8 +59,11 @@ const App = () => {
                             <Route path="/project/:projectId" element={<ProjectDetails />} />
                             <Route path="/project/:projectId/leave_feedback" element={<LeaveFeedback />} />
                             <Route path="/manage_project/:projectId" element={<ManageProject />} />
-                            <Route path="/project/:projectId/create_feedback" element={<CreateFeedbackForm />} />
-                            <Route path="/project/:projectId/feedbacks" element={<FeedbackPanel />} />
+                            <Route path="/project/:projectId/create_feedback" element={<CreateFeedbackForm/>} />
+                            <Route path="/project/:projectId/feedbacks" element={<FeedbackPanel/>} />
+                            <Route path="/create_feedback_form" element={<CreateFeedbackForm/>} />
+                            <Route path="/feedback_panel" element={<FeedbackPanel/>} />
+                            <Route path="/admin_panel" element={<AdminPanel/>} />
                         </Route>
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
