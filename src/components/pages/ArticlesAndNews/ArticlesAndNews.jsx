@@ -42,7 +42,7 @@ const ArticlesAndNews = () => {
         try {
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles/search" : "news/search"}?page=${page}&size=${size}${categoryParam}${queryParam}`;
+            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles/search" : "news/search"}?page=${page}&size=${size}&moderationPassed=true${categoryParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');

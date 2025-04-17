@@ -1,10 +1,12 @@
 .body {
-    height: 100%;
+    min-height: 100vh;
+    width: 100%;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     overflow-x: hidden;
     background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
 }
 
 .sidebar {
@@ -46,8 +48,11 @@
     align-items: flex-start;
     justify-content: flex-start;
     min-height: 100vh;
+    width: 100%;
     padding: 0;
     font-family: 'Montserrat', sans-serif;
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
 }
 
 .controls {

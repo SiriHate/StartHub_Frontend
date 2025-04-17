@@ -41,7 +41,8 @@ const PeopleAndProjects = () => {
             const serviceUrl = currentTab === "project" ? config.MAIN_SERVICE : config.USER_SERVICE;
             const filterParam = filter ? (currentTab === "project" ? `&category=${filter}` : `&specialization=${filter}`) : "";
             const queryParam = searchQuery ? (currentTab === "project" ? `&query=${searchQuery}` : `&username=${searchQuery}`) : "";
-            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=${size}${filterParam}${queryParam}`;
+            const moderationParam = currentTab === "project" ? "&moderationPassed=true" : "";
+            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=${size}${moderationParam}${filterParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error("Network response was not ok");

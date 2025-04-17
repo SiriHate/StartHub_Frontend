@@ -10,7 +10,7 @@ import config from "../../../config";
 
 const CreateNews = () => {
     const [newsTitle, setNewsTitle] = useState("");
-    const [newsLogo, setNewsLogo] = useState(null);
+    const [newsLogo, setNewsLogo] = useState('/default_list_element_logo.jpg');
     const fileInputRef = useRef();
     const [newsContent, setNewsContent] = useState('');
     const [newsCategory, setNewsCategory] = useState('');
@@ -60,7 +60,7 @@ const CreateNews = () => {
                     title: newsTitle,
                     previewUrl: uploadResult.url,
                     content: newsContent,
-                    categoryId: newsCategory // Changed to send the category ID
+                    category: categories.find(cat => cat.id === Number(newsCategory))
                 };
 
                 const response = await fetch(`${config.MAIN_SERVICE}/news`, {
@@ -75,7 +75,7 @@ const CreateNews = () => {
                 if (response.ok) {
                     console.log('Новость успешно создана!');
                     setNewsTitle('');
-                    setNewsLogo(null);
+                    setNewsLogo('/default_list_element_logo.jpg');
                     setNewsContent('');
                     setNewsCategory('');
                     navigate('/my_space'); // Redirect to /my_space
@@ -115,8 +115,11 @@ const CreateNews = () => {
                                 Логотип новостной публикации
                             </label>
                             <div className={styles.logoPreview}>
-                                {newsLogo &&
-                                    <img src={URL.createObjectURL(newsLogo)} alt="News Logo Preview"/>}
+                                {newsLogo && (
+                                    typeof newsLogo === 'string' 
+                                        ? <img src={newsLogo} alt="News Logo Preview"/>
+                                        : <img src={URL.createObjectURL(newsLogo)} alt="News Logo Preview"/>
+                                )}
                                 <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
                                     Загрузить фото
                                 </button>

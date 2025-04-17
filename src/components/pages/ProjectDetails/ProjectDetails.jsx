@@ -248,8 +248,8 @@ function ProjectDetails() {
                     <div className={styles.projectCardHeader}>
                         <h1 className={styles.projectTitle}>{project.projectName}</h1>
                         <img
-                            src={project.projectLogoUrl || "path_to_image.jpg"}
-                            alt="Фото проекта"
+                            src={`${config.FILE_SERVER}${project.projectLogoUrl}`}
+                            alt={project.projectName}
                             className={styles.projectImage}
                         />
                     </div>

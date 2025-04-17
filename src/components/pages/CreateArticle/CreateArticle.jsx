@@ -8,7 +8,7 @@ import config from "../../../config";
 
 const CreateArticle = () => {
     const [articleTitle, setArticleTitle] = useState("");
-    const [articleLogo, setArticleLogo] = useState(null);
+    const [articleLogo, setArticleLogo] = useState('/default_list_element_logo.jpg');
     const fileInputRef = useRef();
     const [articleContent, setArticleContent] = useState('');
     const [articleCategory, setArticleCategory] = useState(null);
@@ -56,9 +56,11 @@ const CreateArticle = () => {
                 const articleData = {
                     title: articleTitle,
                     previewUrl: uploadResult.url,
-                    content: articleContent,
-                    categoryId: articleCategory
+                    content: articleContent || '',
+                    category: categories.find(cat => cat.id === articleCategory)
                 };
+
+                console.log('Отправляемые данные:', articleData);
 
                 const response = await fetch(`${config.MAIN_SERVICE}/articles`, {
                     method: 'POST',
@@ -72,9 +74,10 @@ const CreateArticle = () => {
                 if (response.ok) {
                     console.log('Статья успешно создана!');
                     setArticleTitle('');
-                    setArticleLogo(null);
+                    setArticleLogo('/default_list_element_logo.jpg');
                     setArticleContent('');
                     setArticleCategory(null);
+                    navigate('/my_space');
                 } else {
                     throw new Error('Ошибка при создании статьи: ' + response.statusText);
                 }
@@ -111,8 +114,11 @@ const CreateArticle = () => {
                                 Логотип статьи
                             </label>
                             <div className={styles.logoPreview}>
-                                {articleLogo &&
-                                    <img src={URL.createObjectURL(articleLogo)} alt="Article Logo Preview"/>}
+                                {articleLogo && (
+                                    typeof articleLogo === 'string' 
+                                        ? <img src={articleLogo} alt="Article Logo Preview"/>
+                                        : <img src={URL.createObjectURL(articleLogo)} alt="Article Logo Preview"/>
+                                )}
                                 <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
                                     Загрузить фото
                                 </button>

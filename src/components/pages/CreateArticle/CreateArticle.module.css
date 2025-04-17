@@ -171,23 +171,26 @@
 }
 
 .uploadButton {
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #4444aa, #5555bb);
-    color: #fff;
-    text-align: center;
-    cursor: pointer;
-    margin-top: 15px;
-    border: none;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(46, 42, 80, 0.8);
+    color: #f0f0f0;
+    border: 1px solid rgba(62, 58, 109, 0.5);
     border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
     font-weight: 500;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(68, 68, 170, 0.2);
+    z-index: 1;
 }
 
 .uploadButton:hover {
-    background: linear-gradient(135deg, #5555bb, #6666cc);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(68, 68, 170, 0.3);
+    background-color: rgba(46, 42, 80, 1);
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .uploadButton input[type="file"] {
