@@ -158,11 +158,11 @@
     color: #fff;
     cursor: pointer;
     transition: background 0.3s ease;
-    background: #357abf; /* Reverting to a matching style */
+    background: #357abf;
 }
 
 .button:hover {
-    background: #25496b; /* Darker shade for hover state */
+    background: #25496b;
 }
 
 .publicationsTitle {

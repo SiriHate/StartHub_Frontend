@@ -88,7 +88,7 @@ const AdminPanel = () => {
     }
 
     const searchModerators = () => {
-        fetch(`${config.USER_SERVICE}/moderators/search-by-username?username=${searchQuery}`)
+        fetch(`${config.USER_SERVICE}/moderators?username=${searchQuery}`)
             .then(response => {
                 if (!response.ok) {
                     if (response.status === 404) {

@@ -183,6 +183,13 @@
     max-width: fit-content;
 }
 
+.itemUsername {
+    font-size: 0.9em;
+    color: #888;
+    font-weight: 300;
+    margin-left: 4px;
+}
+
 .emptyItems {
     text-align: center;
     color: #e23b3b;

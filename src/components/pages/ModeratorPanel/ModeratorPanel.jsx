@@ -200,31 +200,6 @@ const ModeratorPanel = () => {
         }
     }, [activeTab, currentPage, searchQuery, statusFilter, itemsPerPage]);
 
-    // Фейковые данные для других вкладок
-    const fakeProjects = [
-        { id: 1, title: 'Стартап 1', author: 'Иван Иванов', status: 'published' },
-        { id: 2, title: 'Стартап 2', author: 'Петр Петров', status: 'pending' },
-        { id: 3, title: 'Стартап 3', author: 'Анна Сидорова', status: 'published' },
-        { id: 4, title: 'Стартап 4', author: 'Мария Козлова', status: 'pending' },
-        { id: 5, title: 'Стартап 5', author: 'Алексей Смирнов', status: 'published' },
-    ];
-
-    const fakeNews = [
-        { id: 1, title: 'Новость 1', author: 'Иван Иванов', date: '2024-04-01', status: 'published' },
-        { id: 2, title: 'Новость 2', author: 'Петр Петров', date: '2024-04-02', status: 'pending' },
-        { id: 3, title: 'Новость 3', author: 'Анна Сидорова', date: '2024-04-03', status: 'published' },
-        { id: 4, title: 'Новость 4', author: 'Мария Козлова', date: '2024-04-04', status: 'pending' },
-        { id: 5, title: 'Новость 5', author: 'Алексей Смирнов', date: '2024-04-05', status: 'published' },
-    ];
-
-    const fakeArticles = [
-        { id: 1, title: 'Статья 1', author: 'Иван Иванов', date: '2024-04-01', status: 'published' },
-        { id: 2, title: 'Статья 2', author: 'Петр Петров', date: '2024-04-02', status: 'pending' },
-        { id: 3, title: 'Статья 3', author: 'Анна Сидорова', date: '2024-04-03', status: 'published' },
-        { id: 4, title: 'Статья 4', author: 'Мария Козлова', date: '2024-04-04', status: 'pending' },
-        { id: 5, title: 'Статья 5', author: 'Алексей Смирнов', date: '2024-04-05', status: 'published' },
-    ];
-
     const getCurrentData = () => {
         switch (activeTab) {
             case 'users':

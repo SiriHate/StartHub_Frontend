@@ -12,6 +12,81 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Загрузка скрипта Yandex ID
+        const script = document.createElement('script');
+        script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
+        script.async = true;
+        script.onload = () => {
+            // Инициализация кнопки Яндекс
+            const oauthQueryParams = {
+                client_id: '27bf5035494344dfa2fd25141af32af9',
+                response_type: 'token',
+                redirect_uri: `https://localhost/yandex-callback`
+            };
+
+            window.YaAuthSuggest.init(
+                oauthQueryParams,
+                window.location.origin,
+                {
+                    view: "button",
+                    parentId: "buttonContainerId",
+                    buttonSize: 'm',
+                    buttonView: 'icon',
+                    buttonTheme: 'light',
+                    buttonBorderRadius: "0",
+                    buttonIcon: 'ya',
+                }
+            )
+            .then(({handler}) => handler())
+            .then(async (data) => {
+                console.log('Получен токен от Яндекс:', data);
+                if (data && data.access_token) {
+                    try {
+                        const response = await fetch(`${config.USER_SERVICE}/users/auth/yandex`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                token: data.access_token,
+                                client_secret: '927df1cc8ccd4134bc55682f4dd8fc7e'
+                            })
+                        });
+
+                        if (response.ok) {
+                            const userData = await response.json();
+                            document.cookie = `Authorization=Bearer ${userData.token}; path=/; SameSite=None; Secure`;
+
+                            const userRole = userData.role;
+                            if (userRole === 'MODERATOR') {
+                                navigate('/moderator_panel');
+                            } else if (userRole === 'ADMIN') {
+                                navigate('/admin_panel');
+                            } else {
+                                navigate('/articles-and-news');
+                            }
+                        } else {
+                            setError('Ошибка авторизации через Яндекс');
+                        }
+                    } catch (error) {
+                        console.error('Ошибка при обработке токена:', error);
+                        setError('Ошибка авторизации через Яндекс');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка авторизации через Яндекс:', error);
+                setError('Ошибка авторизации через Яндекс');
+            });
+        };
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, [navigate]);
+
+    useEffect(() => {
         const savedUsername = localStorage.getItem('username') || '';
         const savedPassword = localStorage.getItem('password') || '';
         const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
@@ -158,6 +233,12 @@ const LoginPage = () => {
                             </div>
                             <div className={styles.field}>
                                 <input type="submit" value="Войти" className={styles.submitButton}/>
+                            </div>
+                            <div className={styles.socialLogin}>
+                                <div className={styles.divider}>
+                                    <span>или войти через</span>
+                                </div>
+                                <div id="buttonContainerId" className={styles.yandexButton}></div>
                             </div>
                             <div className={styles.signupLink}>
                                 Еще нет аккаунта?{' '}

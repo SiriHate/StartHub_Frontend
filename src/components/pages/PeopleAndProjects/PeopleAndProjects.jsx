@@ -42,7 +42,7 @@ const PeopleAndProjects = () => {
             const filterParam = filter ? (currentTab === "project" ? `&category=${filter}` : `&specialization=${filter}`) : "";
             const queryParam = searchQuery ? (currentTab === "project" ? `&query=${searchQuery}` : `&username=${searchQuery}`) : "";
             const moderationParam = currentTab === "project" ? "&moderationPassed=true" : "";
-            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members/visible/search"}?page=${page}&size=${size}${moderationParam}${filterParam}${queryParam}`;
+            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members"}?page=${page}&size=${size}${moderationParam}${filterParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -165,7 +165,7 @@ const PeopleAndProjects = () => {
                         <div className={styles.searchBar}>
                             <input
                                 type="text"
-                                placeholder={currentTab === "project" ? "Введите название проекта" : "Введите имя специалиста"}
+                                placeholder={currentTab === "project" ? "Введите название проекта" : "Введите имя пользователя"}
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                                 className={styles.searchInput}
@@ -190,7 +190,14 @@ const PeopleAndProjects = () => {
                                         }}
                                     />
                                     <div className={styles.itemContent}>
-                                        <div className={styles.itemName}>{item.projectName || item.name}</div>
+                                        <div className={styles.itemName}>
+                                            {currentTab === "project" ? item.projectName : (
+                                                <>
+                                                    {item.name}
+                                                    <span className={styles.itemUsername}> ({item.username})</span>
+                                                </>
+                                            )}
+                                        </div>
                                         <div className={styles.itemDetail}>
                                             {currentTab === "project" ? item.category : item.specialization}
                                         </div>

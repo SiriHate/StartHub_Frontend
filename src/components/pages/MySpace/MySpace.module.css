@@ -57,56 +57,49 @@
 
 .controls {
     width: 100%;
-    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
 .searchBar {
     display: flex;
+    gap: 5px;
+    flex-grow: 1;
     width: 100%;
-    gap: 10px;
+    margin: 0 auto;
 }
 
 .searchInput {
-    flex: 1;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid #ccc;
+    flex-grow: 1;
+    padding: 10px;
+    border: 2px solid #fff;
     border-radius: 5px;
-    font-size: 16px;
-    background-color: #fff;
-    color: #333;
+    outline: none;
+    width: 100%;
 }
 
 .button {
-    flex-shrink: 0;
-    padding: 12px 24px;
-    background-color: #007bff;
-    color: white;
+    margin-left: 5px;
+    width: 150px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    color: #fff;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease;
-    white-space: nowrap;
-}
-
-.button:hover {
-    background-color: #0056b3;
+    transition: background 0.3s ease;
+    background: #357abf;
+    border-radius: 5px;
 }
 
 .createButton {
-    flex-shrink: 0;
-    padding: 12px 24px;
-    background-color: #28a745;
-    color: white;
+    margin-left: 5px;
+    width: 240px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    color: #fff;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease;
-    white-space: nowrap;
+    transition: background 0.3s ease;
+    background-color: #28a745;
+    border-radius: 5px;
 }
 
 .createButton:hover {

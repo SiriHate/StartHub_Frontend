@@ -12,9 +12,10 @@ const MySpace = () => {
     const [items, setItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(categories[0]);
-    const [appliedCategory, setAppliedCategory] = useState("");
+    const [appliedCategory, setAppliedCategory] = useState(categories[0]);
+    const [tempCategory, setTempCategory] = useState(categories[0]);
     const [page, setPage] = useState(0);
-    const [size, setSize] = useState(5);
+    const [size, setSize] = useState(4);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
 
@@ -22,8 +23,6 @@ const MySpace = () => {
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
     const fetchItems = async (category, query, page, size) => {
-        console.log("📡 [fetchItems] called with:", { category, query, page, size });
-
         try {
             let url;
             switch (category) {
@@ -40,9 +39,19 @@ const MySpace = () => {
                     url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
             }
 
-            const queryParam = query ? `&query=${query}` : "";
-            const fullUrl = `${url}?page=${page}&size=${size}${queryParam}`;
+            const queryParams = new URLSearchParams();
+            queryParams.append('page', page);
+            queryParams.append('size', size);
+            if (query) {
+                queryParams.append('query', query);
+            }
+            if (category) {
+                queryParams.append('category', category);
+            }
+
+            const fullUrl = `${url}?${queryParams.toString()}`;
             console.log("🌐 [fetchItems] URL:", fullUrl);
+            console.log("📊 [fetchItems] Page:", page, "Size:", size);
 
             const response = await fetch(fullUrl, {
                 method: 'GET',
@@ -53,17 +62,18 @@ const MySpace = () => {
             });
 
             if (!response.ok) {
-                console.error("❌ [fetchItems] Response Error:", response.statusText);
+                console.error("❌ [fetchItems] Response not OK:", response.status);
                 return;
             }
 
             const data = await response.json();
-            console.log("✅ [fetchItems] Response data:", data);
+            console.log("📦 [fetchItems] Response data:", data);
 
             setItems(Array.isArray(data.content) ? data.content : []);
             setTotalPages(data.totalPages || 1);
+            console.log("📊 [fetchItems] Set items:", data.content?.length || 0, "Total pages:", data.totalPages || 1);
         } catch (error) {
-            console.error("🔥 [fetchItems] Exception:", error);
+            console.error("❌ [fetchItems] Exception:", error);
         }
     };
 
@@ -71,15 +81,18 @@ const MySpace = () => {
         fetchItems(appliedCategory, searchQuery, page, size);
     }, [appliedCategory, searchQuery, page, size]);
 
-    const handleSearch = () => {
+    const handleSearch = (e) => {
+        e.preventDefault();
         console.log("🔍 [handleSearch] Search initiated:", searchQuery);
+        console.log("🔍 [handleSearch] Current category:", selectedCategory);
+        setAppliedCategory(selectedCategory);
         setPage(0);
     };
 
     const applyCategoryFilter = () => {
-        console.log("📦 [applyCategoryFilter] Applying category:", selectedCategory);
         setSearchQuery("");
-        setAppliedCategory(selectedCategory);
+        setSelectedCategory(tempCategory);
+        setAppliedCategory(tempCategory);
         setPage(0);
     };
 
@@ -112,13 +125,11 @@ const MySpace = () => {
 
     const handleSizeChange = (event) => {
         const newSize = parseInt(event.target.value, 10);
-        console.log("📐 [handleSizeChange] New size selected:", newSize);
         setPage(0);
         setSize(newSize);
     };
 
     const handlePageChange = (newPage) => {
-        console.log("📄 [handlePageChange] Page changed to:", newPage);
         setPage(newPage);
     };
 
@@ -160,8 +171,8 @@ const MySpace = () => {
                     {categories.map((category) => (
                         <div
                             key={category}
-                            className={`${styles.category} ${selectedCategory === category ? styles.activeCategory : ''}`}
-                            onClick={() => setSelectedCategory(category)}
+                            className={`${styles.category} ${tempCategory === category ? styles.activeCategory : ''}`}
+                            onClick={() => setTempCategory(category)}
                         >
                             {category}
                         </div>
@@ -179,9 +190,18 @@ const MySpace = () => {
                                 placeholder={getSearchPlaceholder()}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleSearch(e);
+                                    }
+                                }}
                             />
-                            <button className={styles.button} onClick={handleSearch}>
+                            <button 
+                                className={styles.button} 
+                                onClick={handleSearch}
+                                type="button"
+                            >
                                 Поиск
                             </button>
                             <button className={styles.createButton} onClick={handleCreateItem}>
