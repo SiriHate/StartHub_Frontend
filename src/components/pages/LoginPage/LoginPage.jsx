@@ -19,7 +19,7 @@ const LoginPage = () => {
         script.onload = () => {
             // Инициализация кнопки Яндекс
             const oauthQueryParams = {
-                client_id: '27bf5035494344dfa2fd25141af32af9',
+                client_id: `${config.YANDEX_CLIENT_ID}`,
                 response_type: 'token',
                 redirect_uri: `https://localhost/yandex-callback`
             };
@@ -49,7 +49,7 @@ const LoginPage = () => {
                             },
                             body: JSON.stringify({
                                 token: data.access_token,
-                                client_secret: '927df1cc8ccd4134bc55682f4dd8fc7e'
+                                client_secret: `${config.YANDEX_SECRET_KEY}`
                             })
                         });
 
