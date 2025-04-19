@@ -223,11 +223,12 @@ const ModeratorPanel = () => {
     };
 
     const handleLogout = () => {
+        document.cookie = 'Authorization=; Max-Age=0; path=/; SameSite=None; Secure';
         navigate('/');
     };
 
     const handleUserClick = (id) => {
-        navigate(`/user/${id}`);
+        navigate(`/members/profile/${id}`);
     };
 
     const handleProjectClick = (id) => {
@@ -244,7 +245,7 @@ const ModeratorPanel = () => {
 
     const handleBlock = async (id) => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/${id}`, {
+            const response = await fetch(`${config.USER_SERVICE}/members?id=${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

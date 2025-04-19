@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/security/AuthContext";
 import PrivateRoute from "./components/security/PrivateRoute";
+import HomePage from "./components/pages/HomePage/HomePage";
 import LoginPage from "./components/pages/LoginPage/LoginPage";
 import YandexCallback from "./components/pages/LoginPage/YandexCallback";
 import RegistrationPage from "./components/pages/RegistrationPage/RegistrationPage";
@@ -38,7 +39,8 @@ const App = () => {
                 <Router>
                     <GlobalLoader/>
                     <Routes>
-                        <Route path="/" element={<LoginPage />} />
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/login" element={<LoginPage />} />
                         <Route path="/yandex-callback" element={<YandexCallback />} />
                         <Route path="/registration" element={<RegistrationPage />} />
                         <Route path="/password-recovery" element={<PasswordRecoveryPage />} />

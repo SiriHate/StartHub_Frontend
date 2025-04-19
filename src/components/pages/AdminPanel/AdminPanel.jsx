@@ -28,10 +28,13 @@ const AdminPanel = () => {
     });
 
     const fetchModerators = () => {
+        console.log('Fetching moderators from:', `${config.USER_SERVICE}/moderators`);
         fetch(`${config.USER_SERVICE}/moderators`)
             .then(response => {
+                console.log('Moderators response status:', response.status);
                 if (!response.ok) {
                     if (response.status === 404) {
+                        console.log('No moderators found');
                         setModerators([]);
                     }
                     throw new Error("Failed to fetch moderators");
@@ -39,10 +42,11 @@ const AdminPanel = () => {
                 return response.json();
             })
             .then(data => {
-                if (Array.isArray(data)) {
-                    setModerators(data);
+                console.log('Received moderators data:', data);
+                if (data.content && Array.isArray(data.content)) {
+                    setModerators(data.content);
                 } else {
-                    throw new Error("Data is not an array");
+                    throw new Error("Data.content is not an array");
                 }
             })
             .catch(error => console.error("Fetch error:", error));
@@ -99,10 +103,10 @@ const AdminPanel = () => {
                 return response.json();
             })
             .then(data => {
-                if (Array.isArray(data)) {
-                    setModerators(data);
+                if (data.content && Array.isArray(data.content)) {
+                    setModerators(data.content);
                 } else {
-                    throw new Error("Data is not an array");
+                    throw new Error("Data.content is not an array");
                 }
             })
             .catch(error => console.error("Search error:", error));
@@ -240,6 +244,7 @@ const AdminPanel = () => {
                 </div>
                 <div className={styles.moderatorsListContainer}>
                     <div className={styles.moderatorsList}>
+                        {console.log('Current moderators state:', moderators)}
                         {Array.isArray(moderators) && moderators.length === 0 ? (
                             <div className={styles.emptyModerators}>
                                 Не найдено ни одного модератора

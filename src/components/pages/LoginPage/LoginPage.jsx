@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Helmet} from 'react-helmet';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import styles from './LoginPage.module.css';
 import config from '../../../config';
 
@@ -12,66 +12,55 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Загрузка скрипта Yandex ID
         const script = document.createElement('script');
         script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
         script.async = true;
+
         script.onload = () => {
-            // Инициализация кнопки Яндекс
-            const oauthQueryParams = {
-                client_id: `${config.YANDEX_CLIENT_ID}`,
-                response_type: 'token',
-                redirect_uri: `https://localhost/yandex-callback`
-            };
+            if (!window.YaAuthSuggest) return;
 
             window.YaAuthSuggest.init(
-                oauthQueryParams,
+                {
+                    client_id: `${config.YANDEX_CLIENT_ID}`,
+                    response_type: 'token',
+                    redirect_uri: `https://localhost/yandex-callback`
+                },
                 window.location.origin,
                 {
-                    view: "button",
-                    parentId: "buttonContainerId",
-                    buttonSize: 'm',
-                    buttonView: 'icon',
+                    view: 'button',
+                    parentId: 'buttonContainerId',
+                    buttonView: 'main',
                     buttonTheme: 'light',
-                    buttonBorderRadius: "0",
-                    buttonIcon: 'ya',
+                    buttonSize: 'm',
+                    buttonBorderRadius: 0
                 }
             )
             .then(({handler}) => handler())
             .then(async (data) => {
-                console.log('Получен токен от Яндекс:', data);
-                if (data && data.access_token) {
-                    try {
-                        const response = await fetch(`${config.USER_SERVICE}/users/auth/yandex`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                token: data.access_token,
-                                client_secret: `${config.YANDEX_SECRET_KEY}`
-                            })
-                        });
+                if (!data || !data.access_token) return;
 
-                        if (response.ok) {
-                            const userData = await response.json();
-                            document.cookie = `Authorization=Bearer ${userData.token}; path=/; SameSite=None; Secure`;
+                try {
+                    const response = await fetch(`${config.USER_SERVICE}/users/auth/yandex`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            token: data.access_token,
+                            client_secret: `${config.YANDEX_SECRET_KEY}`
+                        })
+                    });
 
-                            const userRole = userData.role;
-                            if (userRole === 'MODERATOR') {
-                                navigate('/moderator_panel');
-                            } else if (userRole === 'ADMIN') {
-                                navigate('/admin_panel');
-                            } else {
-                                navigate('/articles-and-news');
-                            }
-                        } else {
-                            setError('Ошибка авторизации через Яндекс');
-                        }
-                    } catch (error) {
-                        console.error('Ошибка при обработке токена:', error);
+                    if (response.ok) {
+                        const userData = await response.json();
+                        document.cookie = `Authorization=Bearer ${userData.token}; path=/; SameSite=None; Secure`;
+                        navigate('/');
+                    } else {
                         setError('Ошибка авторизации через Яндекс');
                     }
+                } catch (error) {
+                    console.error('Ошибка при обработке токена:', error);
+                    setError('Ошибка авторизации через Яндекс');
                 }
             })
             .catch(error => {
@@ -79,28 +68,20 @@ const LoginPage = () => {
                 setError('Ошибка авторизации через Яндекс');
             });
         };
+
         document.body.appendChild(script);
 
         return () => {
-            document.body.removeChild(script);
+            const scriptElement = document.querySelector('script[src*="yastatic.net"]');
+            if (scriptElement) {
+                scriptElement.remove();
+            }
         };
     }, [navigate]);
 
-    useEffect(() => {
-        const savedUsername = localStorage.getItem('username') || '';
-        const savedPassword = localStorage.getItem('password') || '';
-        const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
-
-        if (savedRememberMe) {
-            setUsername(savedUsername);
-            setPassword(savedPassword);
-            setRememberMe(true);
-        }
-    }, []);
-
     // Новый эффект для прокрутки страницы вниз
     useEffect(() => {
-        window.scrollTo({top: 50, behavior: 'smooth'});
+        window.scrollTo({ top: 50, behavior: 'smooth' });
     }, []);
 
     const handleLogin = async (e) => {
@@ -118,7 +99,7 @@ const LoginPage = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({username, password})
+                body: JSON.stringify({ username, password })
             });
 
             if (response.status === 401) {
@@ -140,15 +121,7 @@ const LoginPage = () => {
                     localStorage.removeItem('rememberMe');
                 }
 
-                // Проверяем роль пользователя и перенаправляем соответственно
-                const userRole = data.role;
-                if (userRole === 'MODERATOR') {
-                    navigate('/moderator_panel');
-                } else if (userRole === 'ADMIN') {
-                    navigate('/admin_panel');
-                } else {
-                    navigate('/articles-and-news');
-                }
+                navigate('/');
             }
         } catch (error) {
             console.error('There has been a problem with your fetch operation:', error);
@@ -170,16 +143,14 @@ const LoginPage = () => {
         <div className={styles.loginPage}>
             <Helmet>
                 <title>Авторизация</title>
-                <html className={styles.html}/>
-                <body className={styles.body}/>
+                <html className={styles.html} />
+                <body className={styles.body} />
             </Helmet>
             <div className={styles.loginPageContainer}>
-                <img src="/logo.png" alt="Логотип" className={styles.logo}/>
+                <img src="/logo.png" alt="Логотип" className={styles.logo} />
                 <div className={styles.formContainer}>
                     <div className={styles.wrapper}>
-                        <div className={styles.title}>
-                            Авторизация
-                        </div>
+                        <div className={styles.title}>Авторизация</div>
                         <form onSubmit={handleLogin}>
                             <div className={styles.field}>
                                 <input
@@ -232,7 +203,7 @@ const LoginPage = () => {
                                 </div>
                             </div>
                             <div className={styles.field}>
-                                <input type="submit" value="Войти" className={styles.submitButton}/>
+                                <input type="submit" value="Войти" className={styles.submitButton} />
                             </div>
                             <div className={styles.socialLogin}>
                                 <div className={styles.divider}>

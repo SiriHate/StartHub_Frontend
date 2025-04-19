@@ -1,18 +1,15 @@
-import { useContext, useEffect } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import AuthProvider from "./AuthContext";
 
 const PrivateRoute = () => {
     const { isValid } = useContext(AuthProvider);
-    const navigate = useNavigate();
+    
+    if (!isValid) {
+        return <Navigate to="/" replace />;
+    }
 
-    useEffect(() => {
-        if (!isValid) {
-            navigate("/");
-        }
-    }, [isValid, navigate]);
-
-    return isValid ? <Outlet /> : null;
+    return <Outlet />;
 };
 
 export default PrivateRoute;
