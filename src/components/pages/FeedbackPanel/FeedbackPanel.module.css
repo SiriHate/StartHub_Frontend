@@ -102,28 +102,49 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .feedbackUser {
-    font-size: 18px;
     font-weight: 600;
     color: #f0f0f0;
+    font-size: 1.1em;
+    background: rgba(68, 68, 170, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feedbackUser::before {
+    font-size: 1em;
+}
+
+.feedbackDate {
+    color: #666;
+    font-size: 0.9em;
 }
 
 .feedbackRating {
     display: flex;
     align-items: center;
-    gap: 5px;
 }
 
 .feedbackRatingStars {
     display: flex;
-    gap: 5px;
+    gap: 2px;
 }
 
 .feedbackRatingStar {
-    font-size: 20px;
+    color: #ccc;
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.feedbackRatingStar.active {
     color: #ffd700;
 }
 

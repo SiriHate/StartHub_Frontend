@@ -19,7 +19,7 @@ const ConfirmRegistrationPage = () => {
 
         const confirmRegistration = async () => {
             try {
-                const response = await fetch(`${config.USER_SERVICE}/api/v1/users/confirmation/confirm-registration`, {
+                const response = await fetch(`${config.USER_SERVICE}/confirmations/confirm-registration`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

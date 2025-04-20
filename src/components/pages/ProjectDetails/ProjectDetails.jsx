@@ -15,6 +15,8 @@ function ProjectDetails() {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [isModerator, setIsModerator] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [isSubscribed, setIsSubscribed] = useState(false);
     const navigate = useNavigate();
 
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
@@ -23,9 +25,6 @@ function ProjectDetails() {
     useEffect(() => {
         const checkUserRole = async () => {
             try {
-                const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-                const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
-
                 if (!authorizationToken) {
                     return;
                 }
@@ -40,6 +39,7 @@ function ProjectDetails() {
                 if (response.ok) {
                     const data = await response.json();
                     setIsModerator(data.role === 'MODERATOR');
+                    setCurrentUser(data);
                 }
             } catch (error) {
                 console.error('Ошибка при проверке роли пользователя:', error);
@@ -48,6 +48,31 @@ function ProjectDetails() {
 
         checkUserRole();
     }, []);
+
+    useEffect(() => {
+        const checkSubscription = async () => {
+            try {
+                if (!authorizationToken) {
+                    return;
+                }
+
+                const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`, {
+                    headers: {
+                        'Authorization': authorizationToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsSubscribed(data);
+                }
+            } catch (error) {
+                console.error('Ошибка при проверке подписки:', error);
+            }
+        };
+
+        checkSubscription();
+    }, [projectId, authorizationToken]);
 
     const fetchLikesCount = async () => {
         try {
@@ -66,6 +91,19 @@ function ProjectDetails() {
         }
     };
 
+    const fetchComments = async () => {
+        try {
+            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/comments`);
+            if (!response.ok) {
+                throw new Error('Не удалось загрузить комментарии');
+            }
+            const data = await response.json();
+            setComments(data);
+        } catch (err) {
+            console.error('Ошибка при загрузке комментариев:', err);
+        }
+    };
+
     useEffect(() => {
         const fetchProject = async () => {
             try {
@@ -76,6 +114,7 @@ function ProjectDetails() {
                 const data = await response.json();
                 setProject(data);
                 await fetchLikesCount();
+                await fetchComments();
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -112,20 +151,47 @@ function ProjectDetails() {
         }
     };
 
-    const handleCommentChange = (e) => {
-        setNewComment(e.target.value);
+    const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+        if (!newComment.trim() || !authorizationToken) return;
+
+        try {
+            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/comments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken
+                },
+                body: JSON.stringify({ text: newComment })
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось создать комментарий');
+            }
+
+            setNewComment('');
+            await fetchComments();
+        } catch (err) {
+            console.error('Ошибка при создании комментария:', err);
+        }
     };
 
-    const handleCommentSubmit = (e) => {
-        e.preventDefault();
-        if (newComment.trim()) {
-            const newCommentObject = {
-                id: comments.length + 1,
-                author: 'Аноним',
-                text: newComment,
-            };
-            setComments([...comments, newCommentObject]);
-            setNewComment('');
+    const handleDeleteComment = async (commentId) => {
+        try {
+            const response = await fetch(`${config.MAIN_SERVICE}/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': authorizationToken
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось удалить комментарий');
+            }
+
+            await fetchComments();
+        } catch (err) {
+            console.error('Ошибка при удалении комментария:', err);
         }
     };
 
@@ -204,6 +270,28 @@ function ProjectDetails() {
         }
     };
 
+    const handleCommentClick = (userId) => {
+        navigate(`/members/profile/${userId}`);
+    };
+
+    const handleSubscription = async () => {
+        try {
+            const endpoint = isSubscribed ? 'DELETE' : 'POST';
+            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`, {
+                method: endpoint,
+                headers: {
+                    'Authorization': authorizationToken
+                }
+            });
+
+            if (response.ok) {
+                setIsSubscribed(!isSubscribed);
+            }
+        } catch (error) {
+            console.error('Ошибка при изменении подписки:', error);
+        }
+    };
+
     if (loading) {
         return <div className={styles.loading}>Загрузка...</div>;
     }
@@ -241,10 +329,23 @@ function ProjectDetails() {
             )}
             <div className={styles.projectDetailsPage}>
                 <div className={styles.projectCard}>
-                    <button className={styles.backButton} onClick={handleGoBack}>
-                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                        <span>Назад</span>
-                    </button>
+                    <div className={styles.header}>
+                        <button className={styles.backButton} onClick={handleGoBack}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Назад
+                        </button>
+                        {authorizationToken && (
+                            <button 
+                                className={`${styles.backButton} ${isSubscribed ? styles.active : ''}`} 
+                                onClick={handleSubscription}
+                            >
+                                {isSubscribed ? 'Отписаться' : 'Подписаться'}
+                            </button>
+                        )}
+                    </div>
                     <div className={styles.projectCardHeader}>
                         <h1 className={styles.projectTitle}>{project.projectName}</h1>
                         <img
@@ -337,30 +438,65 @@ function ProjectDetails() {
                             )}
 
                             <div className={styles.commentsSection}>
-                                <div className={styles.commentsWrapper}>
-                                    <div className={styles.commentsDivider}>
-                                        <span className={styles.dividerLine}></span>
-                                        <span className={styles.dividerText}>Комментарии</span>
-                                        <span className={styles.dividerLine}></span>
-                                    </div>
-                                    <form className={styles.commentForm} onSubmit={handleCommentSubmit}>
+                                <h2 className={styles.commentsTitle}>Комментарии</h2>
+                                {authorizationToken ? (
+                                    <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
                                         <textarea
-                                            className={styles.commentInput}
                                             value={newComment}
-                                            onChange={handleCommentChange}
-                                            placeholder="Добавьте комментарий..."
-                                        ></textarea>
-                                        <button type="submit" className={styles.submitCommentBtn}>Отправить комментарий</button>
+                                            onChange={(e) => setNewComment(e.target.value)}
+                                            placeholder="Напишите ваш комментарий..."
+                                            className={styles.commentInput}
+                                        />
+                                        <button type="submit" className={styles.commentSubmitButton}>
+                                            Отправить
+                                        </button>
                                     </form>
-                                    <div className={styles.commentList}>
+                                ) : (
+                                    <p className={styles.loginPrompt}>Войдите, чтобы оставить комментарий</p>
+                                )}
+                                
+                                {comments.length > 0 ? (
+                                    <div className={styles.commentsList}>
                                         {comments.map((comment) => (
-                                            <div key={comment.id} className={styles.comment}>
-                                                <strong>{comment.author}</strong>
-                                                <p>{comment.text}</p>
+                                            <div 
+                                                key={comment.id} 
+                                                className={styles.commentItem}
+                                                onClick={() => handleCommentClick(comment.userId)}
+                                            >
+                                                <div className={styles.commentHeader}>
+                                                    <div>
+                                                        <span className={styles.commentAuthor}>{comment.username}</span>
+                                                        {comment.createdDate && (
+                                                            <div className={styles.commentDate}>
+                                                                {new Date(comment.createdDate).toLocaleDateString('ru-RU', {
+                                                                    year: 'numeric',
+                                                                    month: 'long',
+                                                                    day: 'numeric',
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit'
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {currentUser && (currentUser.username === comment.username || isModerator) && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteComment(comment.id);
+                                                            }}
+                                                            className={styles.deleteCommentButton}
+                                                        >
+                                                            Удалить
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <p className={styles.commentText}>{comment.text}</p>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
+                                ) : (
+                                    <p className={styles.noComments}>Комментариев пока нет</p>
+                                )}
                             </div>
                         </>
                     )}

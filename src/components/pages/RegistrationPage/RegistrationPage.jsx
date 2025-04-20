@@ -53,13 +53,13 @@ const RegistrationPage = () => {
             name,
             email,
             phone,
-            birthDay: dateOfBirth,
+            birthday: dateOfBirth,
             username,
             password,
         };
 
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/registration`, {
+            const response = await fetch(`${config.USER_SERVICE}/members`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -13,13 +13,13 @@ const FeedbackPanel = () => {
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [sortBy, setSortBy] = useState('newest');
+    const [sortBy, setSortBy] = useState('desc');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const itemsPerPage = 5;
 
     const sortOptions = [
-        { value: 'newest', label: 'Более новые' },
-        { value: 'oldest', label: 'Более старые' }
+        { value: 'desc', label: 'Более новые' },
+        { value: 'asc', label: 'Более старые' }
     ];
 
     const handleDeleteSurvey = async () => {
@@ -47,7 +47,7 @@ const FeedbackPanel = () => {
             const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
             const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions`, {
+            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions?sort=${sortBy}`, {
                 headers: {
                     'Authorization': authorizationToken
                 }
@@ -71,7 +71,7 @@ const FeedbackPanel = () => {
 
     useEffect(() => {
         fetchFeedbacks();
-    }, [projectId]);
+    }, [projectId, sortBy]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -86,10 +86,10 @@ const FeedbackPanel = () => {
         let sortedFeedbacks = [...feedbacks];
         
         switch (sortBy) {
-            case 'newest':
+            case 'desc':
                 sortedFeedbacks.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
                 break;
-            case 'oldest':
+            case 'asc':
                 sortedFeedbacks.sort((a, b) => new Date(a.submittedAt) - new Date(b.submittedAt));
                 break;
             default:
@@ -233,6 +233,20 @@ const FeedbackPanel = () => {
                                         <div className={styles.feedbackHeader}>
                                             <div className={styles.feedbackUser}>{feedback.respondentUsername}</div>
                                             <div className={styles.feedbackDate}>{formatDate(feedback.submittedAt)}</div>
+                                            {feedback.averageRating !== undefined && (
+                                                <div className={styles.feedbackRating}>
+                                                    <div className={styles.feedbackRatingStars}>
+                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                            <span 
+                                                                key={star} 
+                                                                className={`${styles.feedbackRatingStar} ${star <= feedback.averageRating ? styles.active : ''}`}
+                                                            >
+                                                                ★
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className={styles.feedbackAnswers}>
                                             {feedback.answers.map((answer) => (

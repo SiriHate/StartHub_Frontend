@@ -123,6 +123,11 @@ const PeopleAndProjects = () => {
         setPage(0);
     };
 
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        fetchItems(searchQuery, appliedFilter, currentTab, newPage, size);
+    };
+
     const handleTabChange = (tab) => {
         setCurrentTab(tab);
         setPage(0);
@@ -214,6 +219,7 @@ const PeopleAndProjects = () => {
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
                             onSizeChange={handleSizeChange}
+                            onPageChange={handlePageChange}
                         />
                     )}
                 </div>
