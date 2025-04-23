@@ -37,6 +37,11 @@ const LoginPage = () => {
             )
             .then(({handler}) => handler())
             .then(async (data) => {
+
+
+
+
+
                 if (!data || !data.access_token) return;
 
                 try {

@@ -186,26 +186,46 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    justify-content: center;
-    margin-top: 20px;
+    margin: 5px 0;
+    width: 100%;
 }
 
-.memberInputContainer input,
-.memberInputContainer select {
-    padding: 8px;
+.userDropdown {
+    position: relative;
+    flex: 3;
+}
+
+.roleSelect {
+    flex: 2 !important;
+}
+
+.uniformHeightSelect {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    background-color: #26243b;
+    color: #f0f0f0;
+    height: 40px;
+    box-sizing: border-box;
 }
 
-.memberInputContainer button {
-    padding: 8px 12px;
+.addMemberButton {
+    padding: 0;
+    min-width: 40px;
+    height: 40px;
     border-radius: 5px;
     background-color: #4a86e8;
     color: white;
+    border: none;
     cursor: pointer;
+    font-size: 24px;
+    line-height: 40px;
+    text-align: center;
+    flex-shrink: 0;
 }
 
-.memberInputContainer button:hover {
+.addMemberButton:hover {
     background-color: #357abD;
 }
 
@@ -276,37 +296,6 @@
     text-align: left;
 }
 
-.memberInputContainer {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: -8px;
-}
-
-.fullWidthInput, .uniformHeightSelect {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background-color: #26243b;
-    color: #f0f0f0;
-    height: 40px;
-}
-
-.addMemberButton {
-    padding: 10px 15px;
-    border-radius: 5px;
-    background-color: #4a86e8;
-    color: white;
-    cursor: pointer;
-    border: none;
-}
-
-.addMemberButton:hover {
-    background-color: #357abD;
-}
-
 .removeMemberButton {
     padding: 4px 8px;
     border-radius: 5px;
@@ -369,4 +358,44 @@
     .createProjectContainer {
         width: 90%;
     }
+}
+
+.userDropdownList {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #26243b;
+    border: 1px solid #444;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    margin-top: 5px;
+}
+
+.userDropdownItem {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #f0f0f0;
+    border-bottom: 1px solid #444;
+}
+
+.userDropdownItem:last-child {
+    border-bottom: none;
+}
+
+.userDropdownItem:hover {
+    background-color: #1f1f40;
+}
+
+.userDropdownItem.noResults {
+    cursor: default;
+    color: #888;
+}
+
+.userDropdownItem.noResults:hover {
+    background-color: transparent;
 }

@@ -104,7 +104,7 @@ function MemberProfile() {
 
     return (
         <div>
-            <NavigationBar />
+            {!isModerator && <NavigationBar />}
             <div className={styles.profilePage}>
                 <Helmet>
                     <title>Профиль пользователя - {username}</title>

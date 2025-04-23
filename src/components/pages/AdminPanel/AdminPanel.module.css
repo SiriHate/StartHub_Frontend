@@ -10,7 +10,7 @@
 .body {
     height: 100%;
     box-sizing: border-box;
-    background: #1a1a2e;
+    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
 }
 
 .adminPanelContainer {

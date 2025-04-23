@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState, useCallback} from "react";
 import {Helmet} from "react-helmet";
 import {useNavigate, useParams} from "react-router-dom";
 import styles from "./ManageProject.module.css";
@@ -20,6 +20,10 @@ function ManageProject() {
     const {projectId} = useParams();
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const [foundUsers, setFoundUsers] = useState([]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const searchTimeoutRef = useRef(null);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -62,18 +66,6 @@ function ManageProject() {
         };
         fetchData();
     }, [projectId, categories]);
-
-    const addMember = () => {
-        if (username && role) {
-            setMembers([...members, {username, role}]);
-            setUsername("");
-            setRole("");
-        }
-    };
-
-    const removeMember = index => {
-        setMembers(members.filter((_, i) => i !== index));
-    };
 
     const handleChange = async (e) => {
         e.preventDefault();
@@ -166,6 +158,77 @@ function ManageProject() {
         }
     };
 
+    const searchUsers = useCallback(async (searchTerm) => {
+        if (!searchTerm) {
+            setFoundUsers([]);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${config.USER_SERVICE}/members?username=${encodeURIComponent(searchTerm)}`, {
+                headers: {
+                    'Authorization': authorizationToken ? ` ${authorizationToken}` : ''
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                setFoundUsers(data.content || []);
+            }
+        } catch (error) {
+            console.error('Error searching users:', error);
+            setFoundUsers([]);
+        }
+    }, [authorizationToken]);
+
+    const handleUsernameChange = (e) => {
+        const value = e.target.value;
+        setUsername(value);
+        setSelectedUser(null);
+        
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+        
+        searchTimeoutRef.current = setTimeout(() => {
+            searchUsers(value);
+        }, 300);
+    };
+
+    const handleUserSelect = (selectedUser) => {
+        setUsername(selectedUser.username);
+        setSelectedUser(selectedUser);
+        setFoundUsers([]);
+        setIsDropdownOpen(false);
+    };
+
+    const addMember = () => {
+        if (selectedUser && role) {
+            const newMember = {
+                username: selectedUser.username,
+                role: role
+            };
+            
+            if (members.some(member => member.username === selectedUser.username)) {
+                alert('Этот пользователь уже добавлен в проект');
+                return;
+            }
+            
+            setMembers([...members, newMember]);
+            setUsername("");
+            setRole("");
+            setSelectedUser(null);
+        } else if (!selectedUser) {
+            alert('Пожалуйста, выберите пользователя из списка');
+        } else if (!role) {
+            alert('Пожалуйста, выберите роль');
+        }
+    };
+
+    const removeMember = index => {
+        setMembers(members.filter((_, i) => i !== index));
+    };
+
     return (
         <>
             <Helmet>
@@ -248,17 +311,41 @@ function ManageProject() {
                         </div>
                         <label htmlFor="projectStage">Команда проекта</label>
                         <div className={styles.memberInputContainer}>
-                            <input
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Имя пользователя"
-                                className={styles.fullWidthInput}
-                            />
+                            <div className={styles.userDropdown}>
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={handleUsernameChange}
+                                    onFocus={() => setIsDropdownOpen(true)}
+                                    placeholder="Введите имя пользователя для поиска"
+                                    className={styles.uniformHeightSelect}
+                                    autoComplete="off"
+                                />
+                                {(isDropdownOpen && username.length > 0 && foundUsers.length > 0) && (
+                                    <div className={styles.userDropdownList}>
+                                        {foundUsers.map((user) => (
+                                            <div
+                                                key={user.id}
+                                                className={styles.userDropdownItem}
+                                                onClick={() => handleUserSelect(user)}
+                                            >
+                                                {user.username}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {(isDropdownOpen && username.length > 0 && foundUsers.length === 0) && (
+                                    <div className={styles.userDropdownList}>
+                                        <div className={styles.userDropdownItem}>
+                                            Пользователи не найдены
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                             <select
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
-                                className={styles.uniformHeightSelect}
+                                className={`${styles.uniformHeightSelect} ${styles.roleSelect}`}
                             >
                                 <option value="">Выберите роль</option>
                                 <option value="Разработчик">Разработчик</option>
