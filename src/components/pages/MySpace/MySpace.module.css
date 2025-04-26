@@ -108,24 +108,29 @@
 
 .manageButton {
     position: absolute;
-    right: 10px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    padding: 15px 25px;
-    background: #1f8b3f;
+    padding: 10px 20px;
+    background: rgba(31, 139, 63, 0.9);
     color: #fff;
-    border: none;
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    min-width: 160px;
+    text-align: center;
 }
 
 .manageButton:hover {
-    background: #145d2b;
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: rgba(31, 139, 63, 1);
+    transform: translateY(-50%) scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .mySpaceTitle {

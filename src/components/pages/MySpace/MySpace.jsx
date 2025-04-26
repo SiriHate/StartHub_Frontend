@@ -24,6 +24,8 @@ const MySpace = () => {
 
     const fetchItems = async (category, query, page, size) => {
         try {
+            setItems([]);
+            
             let url;
             switch (category) {
                 case "Мои проекты":
@@ -44,9 +46,6 @@ const MySpace = () => {
             queryParams.append('size', size);
             if (query) {
                 queryParams.append('query', query);
-            }
-            if (category) {
-                queryParams.append('category', category);
             }
 
             const fullUrl = `${url}?${queryParams.toString()}`;
@@ -74,12 +73,13 @@ const MySpace = () => {
             console.log("📊 [fetchItems] Set items:", data.content?.length || 0, "Total pages:", data.totalPages || 1);
         } catch (error) {
             console.error("❌ [fetchItems] Exception:", error);
+            setItems([]);
         }
     };
 
     useEffect(() => {
         fetchItems(appliedCategory, searchQuery, page, size);
-    }, [appliedCategory, searchQuery, page, size]);
+    }, [appliedCategory, page, size]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -87,6 +87,7 @@ const MySpace = () => {
         console.log("🔍 [handleSearch] Current category:", selectedCategory);
         setAppliedCategory(selectedCategory);
         setPage(0);
+        fetchItems(selectedCategory, searchQuery, 0, size);
     };
 
     const applyCategoryFilter = () => {
@@ -94,6 +95,7 @@ const MySpace = () => {
         setSelectedCategory(tempCategory);
         setAppliedCategory(tempCategory);
         setPage(0);
+        fetchItems(tempCategory, "", 0, size);
     };
 
     const handleCreateItem = () => {
