@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import AuthProvider from "./AuthContext";
+import AuthContext from "./AuthContext"; // <-- правильный импорт
 
 const PrivateRoute = () => {
-    const { isValid } = useContext(AuthProvider);
-    
+    const { isValid } = useContext(AuthContext); // <-- правильное использование
+
     if (!isValid) {
         return <Navigate to="/" replace />;
     }

@@ -56,13 +56,13 @@ export const AuthProvider = ({ children }) => {
             }
             setToken(currentToken);
             validateToken(currentToken);
-        }, 60000);
+        }, 5000);
 
         return () => clearInterval(interval);
     }, []);
 
     const login = (newToken) => {
-        document.cookie = `Authorization=Bearer ${newToken}; path=/; SameSite=None; Secure`;
+        document.cookie = `Authorization=${newToken}; path=/; SameSite=None; Secure`;
         setToken(newToken);
         validateToken(newToken);
     };

@@ -12,6 +12,7 @@ function ManageProject() {
     const [projectLogo, setProjectLogo] = useState(null);
     const [projectLogoPreview, setProjectLogoPreview] = useState('/default_list_element_logo.jpg');
     const [categories, setCategories] = useState([]);
+    const [specializations, setSpecializations] = useState([]);
     const [hasSurvey, setHasSurvey] = useState(false);
     const navigate = useNavigate();
     const fileInputRef = useRef();
@@ -41,7 +42,22 @@ function ManageProject() {
             }
         };
 
+        const fetchSpecializations = async () => {
+            try {
+                const response = await fetch(`${config.USER_SERVICE}/specialist_specializations`);
+                const data = await response.json();
+                if (response.ok) {
+                    setSpecializations(data);
+                } else {
+                    throw new Error('Failed to fetch specializations');
+                }
+            } catch (error) {
+                console.error('Error fetching specializations:', error);
+            }
+        };
+
         fetchCategories();
+        fetchSpecializations();
     }, []);
 
     useEffect(() => {
@@ -354,9 +370,11 @@ function ManageProject() {
                                 className={`${styles.uniformHeightSelect} ${styles.roleSelect}`}
                             >
                                 <option value="">Выберите роль</option>
-                                <option value="Разработчик">Разработчик</option>
-                                <option value="Дизайнер">Дизайнер</option>
-                                <option value="Менеджер">Менеджер</option>
+                                {specializations.map((spec) => (
+                                    <option key={spec.id} value={spec.name}>
+                                        {spec.name}
+                                    </option>
+                                ))}
                             </select>
                             <button type="button" onClick={addMember} className={styles.addMemberButton}>+</button>
                         </div>

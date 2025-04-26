@@ -44,7 +44,7 @@ const App = () => {
                         <Route path="/confirm-registration" element={<ConfirmRegistrationPage />} />
                         <Route element={<PrivateRoute />}>
                             <Route path="/members/personal-account" element={<PersonalMemberAccount />} />
-                            <Route path="/members/profile/:userId" element={<MemberProfilePage />} />
+                            <Route path="/members/profile/:username" element={<MemberProfilePage />} />
                             <Route path="/articles-and-news" element={<ArticlesAndNews />} />
                             <Route path="/moderator_panel" element={<ModeratorPanel />} />
                             <Route path="/create_article" element={<CreateArticle />} />

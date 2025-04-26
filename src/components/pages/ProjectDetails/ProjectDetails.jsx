@@ -199,8 +199,12 @@ function ProjectDetails() {
         navigate(-1);
     };
 
-    const handleMemberClick = (memberId) => {
-        navigate(`/members/profile/${memberId}`);
+    const handleMemberClick = (username) => {
+        navigate(`/members/profile/${username}`);
+    };
+
+    const handleCommentClick = (username) => {
+        navigate(`/members/profile/${username}`);
     };
 
     const getLikesText = (count) => {
@@ -268,10 +272,6 @@ function ProjectDetails() {
         } catch (error) {
             console.error('Ошибка при блокировке проекта:', error);
         }
-    };
-
-    const handleCommentClick = (userId) => {
-        navigate(`/members/profile/${userId}`);
     };
 
     const handleSubscription = async () => {
@@ -373,7 +373,7 @@ function ProjectDetails() {
                         <div className={styles.teamList}>
                             <div 
                                 className={styles.teamMember} 
-                                onClick={() => handleMemberClick(project.projectOwner.id)}
+                                onClick={() => handleMemberClick(project.projectOwner.username)}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <div className={styles.memberInfo}>
@@ -385,7 +385,7 @@ function ProjectDetails() {
                                 <div 
                                     key={member.id} 
                                     className={styles.teamMember}
-                                    onClick={() => handleMemberClick(member.id)}
+                                    onClick={() => handleMemberClick(member.username)}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <div className={styles.memberInfo}>
@@ -456,11 +456,11 @@ function ProjectDetails() {
                                             <div 
                                                 key={comment.id} 
                                                 className={styles.commentItem}
-                                                onClick={() => handleCommentClick(comment.userId)}
+                                                onClick={() => handleCommentClick(comment.author.username)}
                                             >
                                                 <div className={styles.commentHeader}>
                                                     <div>
-                                                        <span className={styles.commentAuthor}>{comment.username}</span>
+                                                        <span className={styles.commentAuthor}>{comment.author.username}</span>
                                                         {comment.createdDate && (
                                                             <div className={styles.commentDate}>
                                                                 {new Date(comment.createdDate).toLocaleDateString('ru-RU', {
@@ -473,7 +473,7 @@ function ProjectDetails() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    {currentUser && (currentUser.username === comment.username || isModerator) && (
+                                                    {currentUser && (currentUser.username === comment.author.username || isModerator) && (
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();

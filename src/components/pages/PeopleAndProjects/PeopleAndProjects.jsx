@@ -83,15 +83,15 @@ const PeopleAndProjects = () => {
         navigate(`/project/${id}`);
     };
 
-    const openMember = (id) => {
-        navigate(`/members/profile/${id}`);
+    const openMember = (username) => {
+        navigate(`/members/profile/${username}`);
     };
 
-    const openItem = (id) => {
+    const openItem = (item) => {
         if (currentTab === "project") {
-            openProject(id);
+            openProject(item.id);
         } else {
-            openMember(id);
+            openMember(item.username);
         }
     };
 
@@ -186,7 +186,7 @@ const PeopleAndProjects = () => {
                         ) : (
                             items.map(item => (
                                 <div key={item.id || item.username} className={styles.item}
-                                     onClick={() => openItem(item.id || item.username)}>
+                                     onClick={() => openItem(item)}>
                                     <img
                                         src={`${config.FILE_SERVER}${item.projectLogoUrl || item.avatarUrl || ""}`}
                                         alt={item.projectName || item.username}

@@ -4,6 +4,27 @@ import { Helmet } from 'react-helmet';
 import styles from './LoginPage.module.css';
 import config from '../../../config';
 
+const safeYaAuthSuggestInit = async (authParams, origin, buttonParams) => {
+    try {
+        if (!window.YaAuthSuggest || typeof window.YaAuthSuggest.init !== 'function') {
+            console.warn('YaAuthSuggest или его init недоступен');
+            return null;
+        }
+
+        const suggestInit = await window.YaAuthSuggest.init(authParams, origin, buttonParams);
+
+        if (!suggestInit || typeof suggestInit.handler !== 'function') {
+            console.warn('handler YaAuthSuggest недоступен');
+            return null;
+        }
+
+        return suggestInit;
+    } catch (error) {
+        console.error('Ошибка внутри safeYaAuthSuggestInit:', error);
+        return null;
+    }
+};
+
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -16,10 +37,8 @@ const LoginPage = () => {
         script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
         script.async = true;
 
-        script.onload = () => {
-            if (!window.YaAuthSuggest) return;
-
-            window.YaAuthSuggest.init(
+        script.onload = async () => {
+            const suggestInit = await safeYaAuthSuggestInit(
                 {
                     client_id: `${config.YANDEX_CLIENT_ID}`,
                     response_type: 'token',
@@ -34,57 +53,58 @@ const LoginPage = () => {
                     buttonSize: 'm',
                     buttonBorderRadius: 0
                 }
-            )
-            .then(({handler}) => handler())
-            .then(async (data) => {
+            );
 
+            if (!suggestInit) {
+                console.warn('Инициализация YaAuthSuggest не удалась');
+                return;
+            }
 
-
-
-
+            try {
+                const data = await suggestInit.handler();
                 if (!data || !data.access_token) return;
 
-                try {
-                    const response = await fetch(`${config.USER_SERVICE}/users/auth/yandex`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            token: data.access_token,
-                            client_secret: `${config.YANDEX_SECRET_KEY}`
-                        })
-                    });
+                const response = await fetch(`${config.USER_SERVICE}/users/auth/yandex`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: data.access_token,
+                        client_secret: `${config.YANDEX_SECRET_KEY}`
+                    })
+                });
 
-                    if (response.ok) {
-                        const userData = await response.json();
-                        document.cookie = `Authorization=Bearer ${userData.token}; path=/; SameSite=None; Secure`;
-                        navigate('/');
-                    } else {
-                        setError('Ошибка авторизации через Яндекс');
-                    }
-                } catch (error) {
-                    console.error('Ошибка при обработке токена:', error);
+                if (response.ok) {
+                    const userData = await response.json();
+                    document.cookie = `Authorization=Bearer ${userData.token}; path=/; SameSite=None; Secure`;
+                    navigate('/');
+                } else {
+                    console.error('Ошибка авторизации через Яндекс. Код:', response.status);
                     setError('Ошибка авторизации через Яндекс');
                 }
-            })
-            .catch(error => {
-                console.error('Ошибка авторизации через Яндекс:', error);
+            } catch (error) {
+                console.error('Ошибка обработки токена от Яндекса:', error);
                 setError('Ошибка авторизации через Яндекс');
-            });
+            }
+        };
+
+        script.onerror = (e) => {
+            console.error('Не удалось загрузить скрипт YaAuthSuggest:', e);
         };
 
         document.body.appendChild(script);
 
         return () => {
-            const scriptElement = document.querySelector('script[src*="yastatic.net"]');
-            if (scriptElement) {
-                scriptElement.remove();
+            try {
+                const scriptElement = document.querySelector('script[src*="yastatic.net"]');
+                if (scriptElement) {
+                    scriptElement.remove();
+                }
+            } catch (error) {
+                console.error('Ошибка при удалении скрипта YaAuthSuggest:', error);
             }
         };
     }, [navigate]);
 
-    // Новый эффект для прокрутки страницы вниз
     useEffect(() => {
         window.scrollTo({ top: 50, behavior: 'smooth' });
     }, []);
@@ -101,16 +121,14 @@ const LoginPage = () => {
         try {
             const response = await fetch(`${config.USER_SERVICE}/users/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
 
             if (response.status === 401) {
                 setError("Неверное имя пользователя или пароль.");
             } else if (!response.ok) {
-                console.error('Network response was not ok');
+                console.error('Ошибка сети при авторизации');
                 setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
             } else {
                 const data = await response.json();
@@ -129,7 +147,7 @@ const LoginPage = () => {
                 navigate('/');
             }
         } catch (error) {
-            console.error('There has been a problem with your fetch operation:', error);
+            console.error('Ошибка при авторизации пользователя:', error);
             setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
         }
     };

@@ -227,8 +227,8 @@ const ModeratorPanel = () => {
         navigate('/');
     };
 
-    const handleUserClick = (id) => {
-        navigate(`/members/profile/${id}`);
+    const handleUserClick = (username) => {
+        navigate(`/members/profile/${username}`);
     };
 
     const handleProjectClick = (id) => {
@@ -243,9 +243,9 @@ const ModeratorPanel = () => {
         navigate(`/article/${id}`);
     };
 
-    const handleBlock = async (id) => {
+    const handleBlock = async (username) => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members?id=${id}`, {
+            const response = await fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -256,6 +256,7 @@ const ModeratorPanel = () => {
                 throw new Error('Ошибка при блокировке пользователя');
             }
 
+            // Обновляем список пользователей после блокировки
             fetchUsers(currentPage - 1, searchQuery);
         } catch (error) {
             console.error('Ошибка при блокировке пользователя:', error);
@@ -460,7 +461,7 @@ const ModeratorPanel = () => {
                                     className={styles.listItem}
                                     onClick={() => {
                                         if (activeTab === 'users') {
-                                            handleUserClick(item.id);
+                                            handleUserClick(item.username);
                                         } else if (activeTab === 'projects') {
                                             handleProjectClick(item.id);
                                         } else if (activeTab === 'news') {
@@ -515,7 +516,7 @@ const ModeratorPanel = () => {
                                                 className={`${styles.actionButton} ${styles.blockButton}`}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleBlock(item.id);
+                                                    handleBlock(item.username);
                                                 }}
                                             >
                                                 Заблокировать

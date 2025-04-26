@@ -6,8 +6,7 @@ import { Helmet } from "react-helmet";
 import config from '../../../config';
 
 function MemberProfile() {
-    const { userId } = useParams();
-    const [username, setUsername] = useState('');
+    const { username } = useParams();
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -46,7 +45,7 @@ function MemberProfile() {
             });
 
         // Загрузка данных профиля
-        fetch(`${config.USER_SERVICE}/members/${userId}`, {
+        fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +59,6 @@ function MemberProfile() {
                 return response.json();
             })
             .then(data => {
-                setUsername(data.username);
                 setName(data.name);
                 setPhone(data.phone);
                 setEmail(data.email);
@@ -74,11 +72,11 @@ function MemberProfile() {
                 console.error('Fetch error:', error);
                 setRedirect(true);
             });
-    }, [userId, authorizationToken]);
+    }, [username, authorizationToken]);
 
     const handleBlockUser = async () => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/${userId}`, {
+            const response = await fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
