@@ -11,6 +11,7 @@ function CreateProject() {
     const [projectDescription, setProjectDescription] = useState("");
     const [category, setCategory] = useState(null);
     const [projectLogo, setProjectLogo] = useState('/default_list_element_logo.jpg');
+    const [projectLogoPreview, setProjectLogoPreview] = useState('/default_list_element_logo.jpg');
     const fileInputRef = useRef();
     const [members, setMembers] = useState([]);
     const [username, setUsername] = useState("");
@@ -180,6 +181,14 @@ function CreateProject() {
         }, 300);
     };
 
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProjectLogo(file);
+            setProjectLogoPreview(URL.createObjectURL(file));
+        }
+    };
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -213,7 +222,7 @@ function CreateProject() {
                             <label htmlFor="projectLogo" className={styles.centerLabel}>Логотип проекта</label>
                             <div className={styles.logoPreview}>
                                 <img
-                                    src={projectLogo}
+                                    src={projectLogoPreview}
                                     alt="Project Logo Preview"
                                     className={styles.logoImage}
                                     onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
@@ -232,7 +241,7 @@ function CreateProject() {
                                 id="logoUpload"
                                 accept="image/*"
                                 style={{display: 'none'}}
-                                onChange={(e) => setProjectLogo(e.target.files[0])}
+                                onChange={handleLogoChange}
                             />
                         </div>
                         <div className={styles.formGroup}>

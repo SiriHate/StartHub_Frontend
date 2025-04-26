@@ -6,6 +6,8 @@ import config from '../../../config';
 
 const RegistrationPage = () => {
     const navigate = useNavigate();
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -22,30 +24,33 @@ const RegistrationPage = () => {
             ...formData,
             [e.target.name]: e.target.value,
         });
+        setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccess(false);
 
         const {name, email, phone, dateOfBirth, username, password, confirmPassword} = formData;
 
         if (!name || !email || !phone || !dateOfBirth || !username || !password || !confirmPassword) {
-            alert('Пожалуйста, заполните все поля.');
+            setError('Пожалуйста, заполните все поля.');
             return;
         }
 
         if (!validateEmail(email)) {
-            alert('Введите корректный email адрес.');
+            setError('Введите корректный email адрес.');
             return;
         }
 
         if (password.length < 8) {
-            alert('Пароль должен содержать 8 или более символов.');
+            setError('Пароль должен содержать 8 или более символов.');
             return;
         }
 
         if (password !== confirmPassword) {
-            alert('Пароли не совпадают.');
+            setError('Пароли не совпадают.');
             return;
         }
 
@@ -68,17 +73,17 @@ const RegistrationPage = () => {
             });
 
             if (response.ok) {
-                const result = await response.json();
-                console.log('Success:', result);
-                alert('Регистрация прошла успешно!');
-                navigate('/');
+                setSuccess(true);
+                setTimeout(() => {
+                    navigate('/');
+                }, 3000);
             } else {
-                console.error('Error response:', response);
-                alert('Произошла ошибка при регистрации.');
+                const errorData = await response.json();
+                setError(errorData.message || 'Произошла ошибка при регистрации.');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Произошла ошибка при регистрации.');
+            setError('Произошла ошибка при подключении к серверу.');
         }
     };
 
@@ -101,6 +106,8 @@ const RegistrationPage = () => {
                         Регистрация
                     </div>
                     <form onSubmit={handleSubmit} className={styles.form}>
+                        {error && <div className={styles.error}>{error}</div>}
+                        {success && <div className={styles.success}>Регистрация прошла успешно!</div>}
                         <div className={styles.field}>
                             <input type="text" id="name" name="name" value={formData.name} onChange={handleChange}
                                    required className={styles.input}/>

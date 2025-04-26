@@ -53,7 +53,14 @@ const RichTextEditor = ({content, setContent}) => {
 
             quillRef.current.root.innerHTML = content;
         }
-    }, [content, setContent]);
+    }, []); // инициализация только один раз
+
+    // Сброс значения при изменении content
+    useEffect(() => {
+        if (quillRef.current && quillRef.current.root.innerHTML !== content) {
+            quillRef.current.root.innerHTML = content || "";
+        }
+    }, [content]);
 
     return (
         <div ref={editorRef} className={styles.editor}></div>

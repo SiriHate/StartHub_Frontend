@@ -10,6 +10,7 @@ function ManageProject() {
     const [projectDescription, setProjectDescription] = useState("");
     const [category, setCategory] = useState(null);
     const [projectLogo, setProjectLogo] = useState(null);
+    const [projectLogoPreview, setProjectLogoPreview] = useState('/default_list_element_logo.jpg');
     const [categories, setCategories] = useState([]);
     const [hasSurvey, setHasSurvey] = useState(false);
     const navigate = useNavigate();
@@ -53,6 +54,7 @@ function ManageProject() {
                     setProjectDescription(data.projectDescription);
                     setMembers(data.members || []);
                     setProjectLogo(`${config.FILE_SERVER}${data.projectLogoUrl}`);
+                    setProjectLogoPreview(`${config.FILE_SERVER}${data.projectLogoUrl}`);
                     setHasSurvey(data.hasSurvey);
 
                     const matchingCategory = categories.find(cat => cat.name === data.category);
@@ -128,6 +130,14 @@ function ManageProject() {
 
     const handleLogoUploadClick = () => {
         fileInputRef.current.click();
+    };
+
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProjectLogo(file);
+            setProjectLogoPreview(URL.createObjectURL(file));
+        }
     };
 
     const handleDeleteProject = async () => {
@@ -249,17 +259,13 @@ function ManageProject() {
                             <label htmlFor="projectLogo" className={styles.centerLabel}>Логотип проекта</label>
                             <div className={styles.logoPreview}>
                                 <img
-                                    src={projectLogo || '/default_list_element_logo.jpg'}
+                                    src={projectLogoPreview}
                                     alt="Project Logo Preview"
                                     className={styles.logoImage}
                                     onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                 />
                             </div>
-                            <button
-                                type="button"
-                                className={styles.uploadButton}
-                                onClick={handleLogoUploadClick}
-                            >
+                            <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
                                 Загрузить фото
                             </button>
                             <input
@@ -268,7 +274,7 @@ function ManageProject() {
                                 id="logoUpload"
                                 accept="image/*"
                                 style={{display: 'none'}}
-                                onChange={(e) => setProjectLogo(e.target.files[0])}
+                                onChange={handleLogoChange}
                             />
                         </div>
                         <div className={styles.formGroup}>

@@ -9,6 +9,7 @@ import config from "../../../config";
 const ManageNews = () => {
     const [articleTitle, setArticleTitle] = useState("");
     const [articleLogo, setArticleLogo] = useState(null);
+    const [articleLogoPreview, setArticleLogoPreview] = useState('/default_list_element_logo.jpg');
     const [existingLogoUrl, setExistingLogoUrl] = useState("");
     const fileInputRef = useRef();
     const [articleContent, setArticleContent] = useState('');
@@ -28,12 +29,14 @@ const ManageNews = () => {
                 }
                 const data = await response.json();
                 setCategories(data);
+                return data;
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
+                return [];
             }
         };
 
-        const fetchArticle = async () => {
+        const fetchArticle = async (categoriesList) => {
             try {
                 const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`);
                 if (!response.ok) {
@@ -43,15 +46,18 @@ const ManageNews = () => {
                 setArticleTitle(data.title);
                 setExistingLogoUrl(`${config.FILE_SERVER}${data.previewUrl}`);
                 setArticleContent(data.content);
-                const matchingCategory = categories.find(cat => cat.id === data.categoryId);
+                // Найти категорию по названию
+                const matchingCategory = (categoriesList || categories).find(cat => cat.name === data.category);
                 setArticleCategory(matchingCategory || null);
             } catch (error) {
                 console.error("Failed to fetch article:", error);
             }
         };
 
-        fetchCategories();
-        fetchArticle();
+        (async () => {
+            const cats = await fetchCategories();
+            await fetchArticle(cats);
+        })();
     }, [newsId]);
 
     const handleSubmit = async (e) => {
@@ -112,6 +118,18 @@ const ManageNews = () => {
         fileInputRef.current.click();
     };
 
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setArticleLogo(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setArticleLogoPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <>
             <Helmet>
@@ -133,24 +151,24 @@ const ManageNews = () => {
                                 Логотип новости
                             </label>
                             <div className={styles.logoPreview}>
-                                {(articleLogo || existingLogoUrl) && (
-                                    <img
-                                        src={articleLogo ? URL.createObjectURL(articleLogo) : existingLogoUrl}
-                                        alt="Article Logo Preview"
-                                    />
-                                )}
-                                <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
-                                    Загрузить фото
-                                </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    id="logoUpload"
-                                    accept="image/*"
-                                    style={{display: "none"}}
-                                    onChange={(e) => setArticleLogo(e.target.files[0])}
+                                <img
+                                    src={articleLogoPreview}
+                                    alt="Article Logo Preview"
+                                    className={styles.logoImage}
+                                    onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                 />
                             </div>
+                            <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
+                                Загрузить фото
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                id="logoUpload"
+                                accept="image/*"
+                                style={{display: "none"}}
+                                onChange={handleLogoChange}
+                            />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="articleTitle">Название новости</label>

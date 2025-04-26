@@ -349,9 +349,10 @@ function ProjectDetails() {
                     <div className={styles.projectCardHeader}>
                         <h1 className={styles.projectTitle}>{project.projectName}</h1>
                         <img
-                            src={`${config.FILE_SERVER}${project.projectLogoUrl}`}
+                            src={project.projectLogoUrl ? `${config.FILE_SERVER}${project.projectLogoUrl}` : "/default_list_element_logo.jpg"}
                             alt={project.projectName}
                             className={styles.projectImage}
+                            onError={e => { e.target.onerror = null; e.target.src = "/default_list_element_logo.jpg"; }}
                         />
                     </div>
 
@@ -375,9 +376,6 @@ function ProjectDetails() {
                                 onClick={() => handleMemberClick(project.projectOwner.id)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <div className={styles.memberAvatar}>
-                                    <img src={project.projectOwner.avatarUrl || "/developer.png"} alt="Владелец проекта" className={styles.memberIcon}/>
-                                </div>
                                 <div className={styles.memberInfo}>
                                     <h3 className={styles.memberName}>{project.projectOwner.username}</h3>
                                     <p className={styles.memberRole}>Владелец проекта</p>
@@ -390,9 +388,6 @@ function ProjectDetails() {
                                     onClick={() => handleMemberClick(member.id)}
                                     style={{ cursor: 'pointer' }}
                                 >
-                                    <div className={styles.memberAvatar}>
-                                        <img src={member.avatarUrl || "/developer.png"} alt={member.username} className={styles.memberIcon}/>
-                                    </div>
                                     <div className={styles.memberInfo}>
                                         <h3 className={styles.memberName}>{member.username}</h3>
                                         <p className={styles.memberRole}>{member.role}</p>

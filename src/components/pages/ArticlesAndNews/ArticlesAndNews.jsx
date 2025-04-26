@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
-import {Helmet} from "react-helmet";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
+import { useNavigate } from "react-router-dom";
 import styles from "./ArticlesAndNews.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
-import LoadingContext from "../../loading/LoadingContext";
 
 const ArticlesAndNews = () => {
     const [items, setItems] = useState([]);
@@ -18,10 +17,8 @@ const ArticlesAndNews = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [size, setSize] = useState(1);
     const navigate = useNavigate();
-    const { setLoadingState } = useContext(LoadingContext);
 
     const fetchCategories = async (tab) => {
-        setLoadingState(true);
         try {
             const url = `${config.MAIN_SERVICE}/${tab === "Статьи" ? "article_categories" : "news_categories"}`;
             const response = await fetch(url);
@@ -38,7 +35,6 @@ const ArticlesAndNews = () => {
     };
 
     const fetchItems = async (searchQuery, category, currentTab, page, size) => {
-        setLoadingState(true);
         try {
             const categoryParam = category ? `&category=${category}` : "";
             const queryParam = searchQuery ? `&query=${searchQuery}` : "";
@@ -53,8 +49,6 @@ const ArticlesAndNews = () => {
         } catch (error) {
             console.error("Failed to fetch items:", error);
             setItems([]);
-        } finally {
-            setLoadingState(false);
         }
     };
 

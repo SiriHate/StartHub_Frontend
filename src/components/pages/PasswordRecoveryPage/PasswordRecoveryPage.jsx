@@ -6,6 +6,8 @@ import config from '../../../config';
 
 const PasswordRecoveryPage = () => {
     const [email, setEmail] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
     const validateEmail = (email) => {
@@ -15,19 +17,21 @@ const PasswordRecoveryPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccess(false);
 
         if (!email) {
-            alert('Пожалуйста, введите ваш email адрес.');
+            setError('Пожалуйста, введите ваш email адрес.');
             return;
         }
 
         if (!validateEmail(email)) {
-            alert('Введите корректный email адрес.');
+            setError('Введите корректный email адрес.');
             return;
         }
 
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/password_recovery/request`, {
+            const response = await fetch(`${config.USER_SERVICE}/members/password_recovery_requests`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,12 +39,18 @@ const PasswordRecoveryPage = () => {
                 body: JSON.stringify({email}),
             });
 
-            const result = await response.json();
-            console.log('Success:', result);
-            alert('Запрос на восстановление пароля отправлен!');
+            if (response.ok) {
+                setSuccess(true);
+                setTimeout(() => {
+                    navigate('/');
+                }, 3000);
+            } else {
+                const data = await response.json();
+                setError(data.message || 'Произошла ошибка при отправке запроса на восстановление пароля.');
+            }
         } catch (error) {
             console.error('Error:', error);
-            alert('Произошла ошибка при отправке запроса на восстановление пароля.');
+            setError('Произошла ошибка при подключении к серверу.');
         }
     };
 
@@ -63,6 +73,8 @@ const PasswordRecoveryPage = () => {
                                    onChange={(e) => setEmail(e.target.value)} required/>
                             <label htmlFor="email">Email</label>
                         </div>
+                        {error && <div className={styles.error}>{error}</div>}
+                        {success && <div className={styles.success}>Запрос на восстановление пароля отправлен!</div>}
                         <div className={styles.field}>
                             <input type="submit" value="Восстановить пароль"/>
                         </div>

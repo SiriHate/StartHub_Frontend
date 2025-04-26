@@ -9,6 +9,7 @@ import config from "../../../config";
 const CreateArticle = () => {
     const [articleTitle, setArticleTitle] = useState("");
     const [articleLogo, setArticleLogo] = useState('/default_list_element_logo.jpg');
+    const [articleLogoPreview, setArticleLogoPreview] = useState('/default_list_element_logo.jpg');
     const fileInputRef = useRef();
     const [articleContent, setArticleContent] = useState('');
     const [articleCategory, setArticleCategory] = useState(null);
@@ -93,6 +94,14 @@ const CreateArticle = () => {
         fileInputRef.current.click();
     };
 
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setArticleLogo(file);
+            setArticleLogoPreview(URL.createObjectURL(file));
+        }
+    };
+
     return (
         <>
             <Helmet>
@@ -114,23 +123,24 @@ const CreateArticle = () => {
                                 Логотип статьи
                             </label>
                             <div className={styles.logoPreview}>
-                                {articleLogo && (
-                                    typeof articleLogo === 'string' 
-                                        ? <img src={articleLogo} alt="Article Logo Preview"/>
-                                        : <img src={URL.createObjectURL(articleLogo)} alt="Article Logo Preview"/>
-                                )}
-                                <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
-                                    Загрузить фото
-                                </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    id="logoUpload"
-                                    accept="image/*"
-                                    style={{display: "none"}}
-                                    onChange={(e) => setArticleLogo(e.target.files[0])}
+                                <img
+                                    src={articleLogoPreview}
+                                    alt="Article Logo Preview"
+                                    className={styles.logoImage}
+                                    onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                 />
                             </div>
+                            <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
+                                Загрузить фото
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                id="logoUpload"
+                                accept="image/*"
+                                style={{display: "none"}}
+                                onChange={handleLogoChange}
+                            />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="articleTitle">Название статьи</label>

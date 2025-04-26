@@ -126,7 +126,7 @@ function MemberProfile() {
                         </button>
                     )}
                     <div className={styles.profileCardHeader}>
-                        <img src={avatar} alt="Аватар пользователя" className={styles.avatar} />
+                        <img src={avatar} alt="Аватар пользователя" className={styles.avatar} onError={e => { e.target.onerror = null; e.target.src = '/default_user_avatar.jpg'; }} />
                         <div className={styles.username}>{username}</div>
                     </div>
                     <div className={styles.infoSection}>

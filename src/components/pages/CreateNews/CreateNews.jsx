@@ -11,6 +11,7 @@ import config from "../../../config";
 const CreateNews = () => {
     const [newsTitle, setNewsTitle] = useState("");
     const [newsLogo, setNewsLogo] = useState('/default_list_element_logo.jpg');
+    const [newsLogoPreview, setNewsLogoPreview] = useState('/default_list_element_logo.jpg');
     const fileInputRef = useRef();
     const [newsContent, setNewsContent] = useState('');
     const [newsCategory, setNewsCategory] = useState('');
@@ -94,6 +95,14 @@ const CreateNews = () => {
         fileInputRef.current.click();
     };
 
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setNewsLogo(file);
+            setNewsLogoPreview(URL.createObjectURL(file));
+        }
+    };
+
     return (
         <>
             <Helmet>
@@ -111,27 +120,25 @@ const CreateNews = () => {
                     <h2 className={styles.formTitle}>Публикация новости</h2>
                     <form className={styles.createNewsForm} onSubmit={handleSubmit}>
                         <div className={styles.formGroup}>
-                            <label htmlFor="logoUpload" className={styles.centerLabel}>
-                                Логотип новостной публикации
-                            </label>
                             <div className={styles.logoPreview}>
-                                {newsLogo && (
-                                    typeof newsLogo === 'string' 
-                                        ? <img src={newsLogo} alt="News Logo Preview"/>
-                                        : <img src={URL.createObjectURL(newsLogo)} alt="News Logo Preview"/>
-                                )}
-                                <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
-                                    Загрузить фото
-                                </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    id="logoUpload"
-                                    accept="image/*"
-                                    style={{display: "none"}}
-                                    onChange={(e) => setNewsLogo(e.target.files[0])}
+                                <img
+                                    src={newsLogoPreview}
+                                    alt="News Logo Preview"
+                                    className={styles.logoImage}
+                                    onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
                                 />
                             </div>
+                            <button type="button" className={styles.uploadButton} onClick={handleLogoUploadClick}>
+                                Загрузить фото
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                id="logoUpload"
+                                accept="image/*"
+                                style={{display: "none"}}
+                                onChange={handleLogoChange}
+                            />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="newsTitle">Название новости</label>

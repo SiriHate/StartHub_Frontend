@@ -15,7 +15,7 @@ const PeopleAndProjects = () => {
     const [appliedFilter, setAppliedFilter] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
-    const [size, setSize] = useState(1); // Количество элементов на странице
+    const [size, setSize] = useState(1);
     const navigate = useNavigate();
 
     const fetchCategories = async (tab) => {
@@ -42,7 +42,8 @@ const PeopleAndProjects = () => {
             const filterParam = filter ? (currentTab === "project" ? `&category=${filter}` : `&specialization=${filter}`) : "";
             const queryParam = searchQuery ? (currentTab === "project" ? `&query=${searchQuery}` : `&username=${searchQuery}`) : "";
             const moderationParam = currentTab === "project" ? "&moderationPassed=true" : "";
-            const url = `${serviceUrl}/${currentTab === "project" ? "projects/search" : "members"}?page=${page}&size=${size}${moderationParam}${filterParam}${queryParam}`;
+            const profileHiddenParam = currentTab === "member" ? "&profileHiddenFlag=false" : "";
+            const url = `${serviceUrl}/${currentTab === "project" ? "projects" : "members"}?page=${page}&size=${size}${moderationParam}${filterParam}${queryParam}${profileHiddenParam}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error("Network response was not ok");

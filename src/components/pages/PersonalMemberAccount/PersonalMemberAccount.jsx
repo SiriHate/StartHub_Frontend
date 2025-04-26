@@ -48,7 +48,14 @@ function PersonalMemberAccount() {
                 setSpecialization(data.specialization);
                 setUsername(data.username);
                 setAbout(data.about);
-                setAvatar(data.avatarUrl);
+                let avatarUrl = data.avatarUrl;
+                if (avatarUrl) {
+                    avatarUrl = avatarUrl.replace(/\\/g, '/');
+                    if (!avatarUrl.startsWith('http')) {
+                        avatarUrl = config.FILE_SERVER + avatarUrl;
+                    }
+                }
+                setAvatar(avatarUrl);
                 setProfileHiddenFlag(data.profileHiddenFlag);
                 setIsLoading(false);
             })
@@ -224,6 +231,7 @@ function PersonalMemberAccount() {
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+            setAvatar(URL.createObjectURL(file));
             handleSubmitUpload(file);
         } else {
             alert('Please select a JPG or PNG image.');
@@ -233,7 +241,7 @@ function PersonalMemberAccount() {
     const handleSubmitUpload = (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        fetch(`${config.FILE_SERVER}/members/me/avatar`, {
+        fetch(`${config.FILE_SERVER}/upload/memberAvatars`, {
             method: 'POST',
             body: formData,
         })
@@ -245,14 +253,14 @@ function PersonalMemberAccount() {
             })
             .then(data => {
                 const avatarUrl = data.url;
-                return sendAvatarUrlToBackend(avatarUrl);
+                sendAvatarUrlToBackend(avatarUrl, true);
             })
             .catch(error => {
                 console.error('Upload error:', error);
             });
     };
 
-    const sendAvatarUrlToBackend = (avatarUrl) => {
+    const sendAvatarUrlToBackend = (avatarUrl, updateUI = false) => {
         fetch(`${config.USER_SERVICE}/members/me/avatar`, {
             method: 'PATCH',
             headers: {
@@ -268,7 +276,16 @@ function PersonalMemberAccount() {
                 return response.json();
             })
             .then(() => {
-                window.location.reload();
+                if (updateUI) {
+                    let url = avatarUrl.replace(/\\/g, '/');
+                    if (!url.startsWith('http')) {
+                        url = config.FILE_SERVER + url;
+                    }
+                    url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+                    setAvatar(url);
+                } else {
+                    window.location.reload();
+                }
             })
             .catch(error => {
                 console.error('Error updating avatar URL:', error);
@@ -300,9 +317,9 @@ function PersonalMemberAccount() {
                                    onChange={handleProfileHiddenChange}/>
                         </div>
                         <img
-                            src={avatar}
+                            src={avatar ? avatar : '/default_user_avatar.jpg'}
                             alt="User Avatar"
-                            onError={(e) => e.target.src = '/default_user_avatar.jpg'}
+                            onError={e => { e.target.onerror = null; e.target.src = '/default_user_avatar.jpg'; }}
                             className={styles.avatar}
                         />
                         <input type="file" className={styles.uploadInput} onChange={handleFileUpload} ref={fileInputRef}

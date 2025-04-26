@@ -29,15 +29,11 @@ import ManageProject from "./components/pages/ManageProject/ManageProject";
 import LeaveFeedback from "./components/pages/LeaveFeedback/LeaveFeedback";
 import FeedbackPanel from "./components/pages/FeedbackPanel/FeedbackPanel";
 import ModeratorPanel from "./components/pages/ModeratorPanel/ModeratorPanel";
-import { LoadingProvider } from "./components/loading/LoadingContext";
-import GlobalLoader from "./components/loading/GlobalLoader";
 
 const App = () => {
     return (
-        <LoadingProvider>
             <AuthProvider>
                 <Router>
-                    <GlobalLoader/>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/login" element={<LoginPage />} />
@@ -73,7 +69,6 @@ const App = () => {
                     </Routes>
                 </Router>
             </AuthProvider>
-        </LoadingProvider>
     );
 };
 

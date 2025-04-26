@@ -1,63 +1,99 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import config from '../../../config';
+import styles from './HomePage.module.css';
 
-const HomePage = () => {
-    const navigate = useNavigate();
-    const [isChecking, setIsChecking] = useState(true);
-    const [userData, setUserData] = useState(null);
-
-    const checkAuth = useCallback(async () => {
-        const token = document.cookie.split('; ')
-            .find(row => row.startsWith('Authorization='))
-            ?.split('=')[1];
-
-        if (!token) {
-            setIsChecking(false);
-            navigate('/login', { replace: true });
-            return;
-        }
-
-        try {
-            const response = await fetch(`${config.USER_SERVICE}/users/me`, {
-                headers: {
-                    'Authorization': token
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setUserData(data);
-                const userRole = data.role;
-                
-                setIsChecking(false);
-                if (userRole === 'MODERATOR') {
-                    navigate('/moderator_panel', { replace: true });
-                } else if (userRole === 'ADMIN') {
-                    navigate('/admin_panel', { replace: true });
-                } else {
-                    navigate('/articles-and-news', { replace: true });
-                }
-            } else {
-                setIsChecking(false);
-                navigate('/login', { replace: true });
-            }
-        } catch (error) {
-            console.error('Ошибка при проверке авторизации:', error);
-            setIsChecking(false);
-            navigate('/login', { replace: true });
-        }
-    }, [navigate]);
-
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
-
-    if (isChecking) {
-        return <div>Проверка авторизации...</div>;
+const getTargetPathByRole = (role) => {
+    switch (role) {
+        case 'MODERATOR':
+            return '/moderator_panel';
+        case 'ADMIN':
+            return '/admin_panel';
+        default:
+            return '/articles-and-news';
     }
-
-    return null;
 };
 
-export default HomePage; 
+const HomePage = () => {
+    const navigate   = useNavigate();
+    const location   = useLocation();        // <-- текущий URL
+    const [loading, setLoading] = useState(true);
+    const [error,   setError]   = useState('');
+
+    useEffect(() => {
+        let isMounted  = true;                 // предотвращаем setState после размонтирования
+        const ctrl     = new AbortController();
+        const timeout  = setTimeout(() => ctrl.abort(), 10_000);
+
+        (async () => {
+            /* 1. достаём токен из cookie */
+            const token = document.cookie
+                .split('; ')
+                .find((row) => row.startsWith('Authorization='))
+                ?.split('=')[1];
+
+            if (!token) {
+                if (isMounted) setLoading(false);
+                if (location.pathname !== '/login')
+                    navigate('/login', { replace: true });
+                return;
+            }
+
+            try {
+                /* 2. валидируем токен */
+                const res = await fetch(`${config.USER_SERVICE}/users/me`, {
+                    headers: { Authorization: token },
+                    signal : ctrl.signal,
+                });
+
+                if (!res.ok) throw new Error('unauthorized');
+
+                const { role } = await res.json();
+                const target  = getTargetPathByRole(role);
+
+                /* 3. переходим только если ещё не там */
+                if (location.pathname !== target) {
+                    navigate(target, { replace: true });
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    if (isMounted) {
+                        setError('Проблема с авторизацией. Пожалуйста, войдите снова.');
+                        setTimeout(() => navigate('/login', { replace: true }), 2000);
+                    }
+                }
+            } finally {
+                clearTimeout(timeout);
+                if (isMounted) setLoading(false);
+            }
+        })();
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timeout);
+            ctrl.abort();
+        };
+    }, []);                                   // effect выполняется ровно один раз
+
+    /* ----------------------- UI-состояния ----------------------- */
+    if (loading) {
+        return (
+            <div className={styles.authChecking}>
+                <div className={styles.spinner} />
+                <p>Проверка авторизации…</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.authError}>
+                <p>{error}</p>
+            </div>
+        );
+    }
+
+    return null; // компонент лишь перенаправляет, ничего не отображаем
+};
+
+export default HomePage;
