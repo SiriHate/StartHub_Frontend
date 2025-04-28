@@ -49,8 +49,6 @@ const MySpace = () => {
             }
 
             const fullUrl = `${url}?${queryParams.toString()}`;
-            console.log("🌐 [fetchItems] URL:", fullUrl);
-            console.log("📊 [fetchItems] Page:", page, "Size:", size);
 
             const response = await fetch(fullUrl, {
                 method: 'GET',
@@ -61,18 +59,14 @@ const MySpace = () => {
             });
 
             if (!response.ok) {
-                console.error("❌ [fetchItems] Response not OK:", response.status);
                 return;
             }
 
             const data = await response.json();
-            console.log("📦 [fetchItems] Response data:", data);
 
             setItems(Array.isArray(data.content) ? data.content : []);
             setTotalPages(data.totalPages || 1);
-            console.log("📊 [fetchItems] Set items:", data.content?.length || 0, "Total pages:", data.totalPages || 1);
         } catch (error) {
-            console.error("❌ [fetchItems] Exception:", error);
             setItems([]);
         }
     };

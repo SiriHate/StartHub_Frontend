@@ -18,18 +18,13 @@ const RichTextEditor = ({content, setContent}) => {
 
     const modules = {
         toolbar: [
-            // Основное форматирование текста
             ['bold', 'italic', 'underline', 'strike'],
-            // Заголовки и размеры
             [{ 'header': [1, 2, 3, false] }],
             [{ 'size': ['small', false, 'large', 'huge'] }],
-            // Цвета и выравнивание
             [{ 'color': [] }, { 'background': [] }],
             [{ 'align': [] }],
-            // Списки и отступы
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
             [{ 'indent': '-1'}, { 'indent': '+1' }],
-            // Дополнительные элементы
             ['blockquote', 'code-block'],
             ['link', 'image'],
             ['clean']
@@ -53,9 +48,8 @@ const RichTextEditor = ({content, setContent}) => {
 
             quillRef.current.root.innerHTML = content;
         }
-    }, []); // инициализация только один раз
+    }, []);
 
-    // Сброс значения при изменении content
     useEffect(() => {
         if (quillRef.current && quillRef.current.root.innerHTML !== content) {
             quillRef.current.root.innerHTML = content || "";

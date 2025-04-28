@@ -157,6 +157,9 @@ const ArticlePage = () => {
                 </div>
                 <div className={styles.articleMetadata}>
                     <div className={styles.projectCategory}>
+                        Автор: <span className={styles.articleAuthor}>{article.owner}</span>
+                    </div>
+                    <div className={styles.projectCategory}>
                         Категория: <span className={styles.categoryBadge}>{article.category}</span>
                     </div>
                 </div>

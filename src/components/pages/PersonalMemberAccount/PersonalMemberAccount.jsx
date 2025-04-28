@@ -158,7 +158,7 @@ function PersonalMemberAccount() {
                 if (response.status !== 200) {
                     throw new Error('Failed to update personal information');
                 }
-                alert('Personal information updated successfully.');
+                alert('Данные профиля были успешно изменены!');
             })
             .catch(error => console.error('Update error:', error));
     };

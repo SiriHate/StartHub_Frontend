@@ -139,8 +139,8 @@
     display: flex;
     gap: 5px;
     flex-grow: 1;
-    width: 50%; /* Search bar now takes up 50% of the width */
-    margin: 0 auto; /* Centering the search bar */
+    width: 50%;
+    margin: 0 auto;
 }
 
 .searchInput {
@@ -149,7 +149,7 @@
     border: 2px solid #fff;
     border-radius: 5px;
     outline: none;
-    width: calc(100% - 120px); /* Adjust width to fit button */
+    width: calc(100% - 120px);
 }
 
 .button {

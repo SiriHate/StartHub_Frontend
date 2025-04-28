@@ -13,7 +13,7 @@ const ManageNews = () => {
     const [existingLogoUrl, setExistingLogoUrl] = useState("");
     const fileInputRef = useRef();
     const [articleContent, setArticleContent] = useState('');
-    const [articleCategory, setArticleCategory] = useState(null); // объект категории
+    const [articleCategory, setArticleCategory] = useState(null);
     const [categories, setCategories] = useState([]);
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
@@ -46,7 +46,6 @@ const ManageNews = () => {
                 setArticleTitle(data.title);
                 setExistingLogoUrl(`${config.FILE_SERVER}${data.previewUrl}`);
                 setArticleContent(data.content);
-                // Найти категорию по названию
                 const matchingCategory = (categoriesList || categories).find(cat => cat.name === data.category);
                 setArticleCategory(matchingCategory || null);
             } catch (error) {
@@ -130,6 +129,28 @@ const ManageNews = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (window.confirm('Вы уверены, что хотите удалить эту новость?')) {
+            try {
+                const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': authorizationToken ? `Bearer ${authorizationToken}` : ''
+                    }
+                });
+
+                if (response.ok) {
+                    console.log('Новость успешно удалена!');
+                    navigate('/my_space');
+                } else {
+                    throw new Error('Ошибка при удалении новости: ' + response.statusText);
+                }
+            } catch (error) {
+                console.error('Ошибка при выполнении запроса:', error);
+            }
+        }
+    };
+
     return (
         <>
             <Helmet>
@@ -204,6 +225,9 @@ const ManageNews = () => {
                         </div>
                         <button type="submit" className={styles.submitButton}>
                             Редактировать новость
+                        </button>
+                        <button type="button" className={styles.deleteButton} onClick={handleDelete}>
+                            Удалить новость
                         </button>
                     </form>
                 </div>

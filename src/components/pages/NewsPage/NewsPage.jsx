@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {Helmet} from "react-helmet";
 import {Navigate, useNavigate, useParams} from "react-router-dom";
 import styles from "./NewsPage.module.css";
-import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
 import Menu from "../../menu/Menu";
 import config from '../../../config';
 

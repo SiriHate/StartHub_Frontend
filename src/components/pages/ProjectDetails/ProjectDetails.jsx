@@ -98,7 +98,15 @@ function ProjectDetails() {
                 throw new Error('Не удалось загрузить комментарии');
             }
             const data = await response.json();
-            setComments(data);
+            const formattedComments = data.map(comment => ({
+                id: comment.id,
+                author: {
+                    username: comment.username
+                },
+                text: comment.text,
+                createdDate: comment.createdDate
+            }));
+            setComments(formattedComments);
         } catch (err) {
             console.error('Ошибка при загрузке комментариев:', err);
         }
@@ -143,11 +151,9 @@ function ProjectDetails() {
                 throw new Error('Не удалось поставить лайк');
             }
 
-            // После успешной отправки лайка обновляем счетчик
             await fetchLikesCount();
         } catch (err) {
             console.error('Ошибка при отправке лайка:', err);
-            // Здесь можно добавить отображение ошибки пользователю
         }
     };
 
@@ -337,7 +343,7 @@ function ProjectDetails() {
                             </svg>
                             Назад
                         </button>
-                        {authorizationToken && (
+                        {!isModerator && (
                             <button 
                                 className={`${styles.backButton} ${isSubscribed ? styles.active : ''}`} 
                                 onClick={handleSubscription}
@@ -373,11 +379,11 @@ function ProjectDetails() {
                         <div className={styles.teamList}>
                             <div 
                                 className={styles.teamMember} 
-                                onClick={() => handleMemberClick(project.projectOwner.username)}
+                                onClick={() => project.projectOwner && handleMemberClick(project.projectOwner.username)}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <div className={styles.memberInfo}>
-                                    <h3 className={styles.memberName}>{project.projectOwner.username}</h3>
+                                    <h3 className={styles.memberName}>{project.projectOwner?.username || 'Неизвестный пользователь'}</h3>
                                     <p className={styles.memberRole}>Владелец проекта</p>
                                 </div>
                             </div>
@@ -385,12 +391,12 @@ function ProjectDetails() {
                                 <div 
                                     key={member.id} 
                                     className={styles.teamMember}
-                                    onClick={() => handleMemberClick(member.username)}
+                                    onClick={() => member && handleMemberClick(member.username)}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <div className={styles.memberInfo}>
-                                        <h3 className={styles.memberName}>{member.username}</h3>
-                                        <p className={styles.memberRole}>{member.role}</p>
+                                        <h3 className={styles.memberName}>{member?.username || 'Неизвестный пользователь'}</h3>
+                                        <p className={styles.memberRole}>{member?.role || 'Участник'}</p>
                                     </div>
                                 </div>
                             ))}
@@ -456,11 +462,11 @@ function ProjectDetails() {
                                             <div 
                                                 key={comment.id} 
                                                 className={styles.commentItem}
-                                                onClick={() => handleCommentClick(comment.author.username)}
+                                                onClick={() => comment.author && handleCommentClick(comment.author.username)}
                                             >
                                                 <div className={styles.commentHeader}>
                                                     <div>
-                                                        <span className={styles.commentAuthor}>{comment.author.username}</span>
+                                                        <span className={styles.commentAuthor}>{comment.author?.username || 'Неизвестный пользователь'}</span>
                                                         {comment.createdDate && (
                                                             <div className={styles.commentDate}>
                                                                 {new Date(comment.createdDate).toLocaleDateString('ru-RU', {

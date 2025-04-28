@@ -2,7 +2,6 @@ import React, {useEffect, useRef, useState} from "react";
 import {Helmet} from "react-helmet";
 import {useNavigate} from "react-router-dom";
 import styles from "./CreateProject.module.css";
-import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
 import Menu from "../../menu/Menu";
 import config from "../../../config";
 
@@ -28,7 +27,7 @@ function CreateProject() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch project categories
+        
         fetch(`${config.MAIN_SERVICE}/project_categories`, {
             method: 'GET',
             headers: {
@@ -40,7 +39,6 @@ function CreateProject() {
             .then(data => setCategories(data))
             .catch(error => console.error('Error fetching categories:', error));
 
-        // Fetch specialist roles
         fetch(`${config.USER_SERVICE}/specialist_specializations`, {
             method: 'GET',
             headers: {
@@ -144,7 +142,7 @@ function CreateProject() {
         }
 
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/search?username=${query}`, {
+            const response = await fetch(`${config.USER_SERVICE}/members?username=${query}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -154,9 +152,7 @@ function CreateProject() {
 
             if (response.ok) {
                 const data = await response.json();
-                // Получаем массив пользователей из поля content
                 const users = data.content || [];
-                // Ограничиваем количество результатов до 5
                 setSearchResults(users.slice(0, 5));
                 setShowDropdown(true);
             }
@@ -314,9 +310,9 @@ function CreateProject() {
                                     <option key={spec.id} value={spec.name}>{spec.name}</option>
                                 ))}
                             </select>
-                            <button 
-                                type="button" 
-                                onClick={addMember} 
+                            <button
+                                type="button"
+                                onClick={addMember}
                                 className={styles.addMemberButton}
                                 disabled={!selectedUser || !roleName}
                             >+</button>

@@ -37,7 +37,6 @@ const CreateFeedbackForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Проверяем, что все вопросы заполнены
         if (questions.some(q => !q.text.trim())) {
             alert('Пожалуйста, заполните все вопросы');
             return;

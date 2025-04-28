@@ -181,3 +181,19 @@
 .submitButton:hover {
     background-color: #5555bb;
 }
+
+.deleteButton {
+    margin-top: 15px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #aa4444;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+.deleteButton:hover {
+    background-color: #bb5555;
+}

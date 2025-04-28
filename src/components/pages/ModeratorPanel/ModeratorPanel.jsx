@@ -18,7 +18,6 @@ const ModeratorPanel = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
-    // Проверка роли пользователя
     useEffect(() => {
         const checkUserRole = async () => {
             try {
@@ -55,7 +54,6 @@ const ModeratorPanel = () => {
         checkUserRole();
     }, [navigate]);
 
-    // Загрузка пользователей
     const fetchUsers = async (page = 0, search = '') => {
         try {
             setLoading(true);
@@ -86,7 +84,6 @@ const ModeratorPanel = () => {
         }
     };
 
-    // Загрузка проектов
     const fetchProjects = async (page = 0) => {
         try {
             setLoading(true);
@@ -120,7 +117,6 @@ const ModeratorPanel = () => {
         }
     };
 
-    // Загрузка новостей
     const fetchNews = async (page = 0) => {
         try {
             setLoading(true);
@@ -154,7 +150,6 @@ const ModeratorPanel = () => {
         }
     };
 
-    // Загрузка статей
     const fetchArticles = async (page = 0) => {
         try {
             setLoading(true);
@@ -245,7 +240,7 @@ const ModeratorPanel = () => {
 
     const handleBlock = async (username) => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
+            const response = await fetch(`${config.USER_SERVICE}/members?username=${username}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -253,13 +248,12 @@ const ModeratorPanel = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Ошибка при блокировке пользователя');
+                throw new Error('Ошибка при удалении пользователя');
             }
 
-            // Обновляем список пользователей после блокировки
             fetchUsers(currentPage - 1, searchQuery);
         } catch (error) {
-            console.error('Ошибка при блокировке пользователя:', error);
+            console.error('Ошибка при удалении пользователя:', error);
         }
     };
 
@@ -343,7 +337,6 @@ const ModeratorPanel = () => {
                 throw new Error('Ошибка при одобрении');
             }
 
-            // Обновляем список после успешного одобрения
             if (activeTab === 'projects') {
                 fetchProjects(currentPage - 1);
             } else if (activeTab === 'news') {

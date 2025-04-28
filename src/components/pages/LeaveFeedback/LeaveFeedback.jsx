@@ -100,7 +100,6 @@ const LeaveFeedback = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // После успешной отправки перенаправляем на страницу проекта
             navigate(`/project/${projectId}`);
         } catch (error) {
             console.error('Ошибка при отправке ответов:', error);

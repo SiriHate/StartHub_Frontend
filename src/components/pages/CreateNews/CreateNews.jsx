@@ -3,7 +3,6 @@ import {Helmet} from "react-helmet";
 import "quill/dist/quill.snow.css";
 import styles from "./CreateNews.module.css";
 import Menu from "../../menu/Menu";
-import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
 import RichTextEditor from "../../editor/RichTextEditor";
 import {useNavigate} from "react-router-dom";
 import config from "../../../config";
@@ -79,7 +78,7 @@ const CreateNews = () => {
                     setNewsLogo('/default_list_element_logo.jpg');
                     setNewsContent('');
                     setNewsCategory('');
-                    navigate('/my_space'); // Redirect to /my_space
+                    navigate('/my_space');
                 } else {
                     throw new Error('Ошибка при создании новости: ' + response.statusText);
                 }

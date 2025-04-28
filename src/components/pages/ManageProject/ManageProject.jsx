@@ -170,7 +170,7 @@ function ManageProject() {
             }
 
             console.log('Project deleted successfully');
-            navigate('/my_projects');
+            navigate('/my_space');
         } catch (error) {
             console.error('Error deleting project:', error);
         }

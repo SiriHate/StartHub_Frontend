@@ -56,7 +56,6 @@ const AdminPanel = () => {
         const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
         const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
-        // Проверка роли пользователя
         fetch(`${config.USER_SERVICE}/users/me`, {
             method: 'GET',
             headers: {
@@ -120,7 +119,7 @@ const AdminPanel = () => {
                 if (!response.ok) {
                     throw new Error("Failed to delete moderator");
                 }
-                fetchModerators(); // Refresh the list of moderators
+                fetchModerators();
             })
             .catch(error => console.error("Delete error:", error));
     };

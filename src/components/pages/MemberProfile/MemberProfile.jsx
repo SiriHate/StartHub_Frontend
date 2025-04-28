@@ -23,7 +23,6 @@ function MemberProfile() {
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
     useEffect(() => {
-        // Проверка роли пользователя
         fetch(`${config.USER_SERVICE}/users/me`, {
             method: 'GET',
             headers: {
@@ -44,7 +43,6 @@ function MemberProfile() {
                 console.error('Error fetching user role:', error);
             });
 
-        // Загрузка данных профиля
         fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
             method: 'GET',
             headers: {

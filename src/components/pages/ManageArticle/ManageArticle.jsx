@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Helmet} from "react-helmet";
 import styles from "./ManageArticle.module.css";
-import {ReactComponent as GoBackIcon} from '../../../icons/go_back.svg';
 import Menu from "../../menu/Menu";
 import RichTextEditor from "../../editor/RichTextEditor";
 import {useNavigate, useParams} from "react-router-dom";
@@ -130,6 +129,28 @@ const ManageArticle = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (window.confirm('Вы уверены, что хотите удалить эту статью?')) {
+            try {
+                const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': authorizationToken ? `Bearer ${authorizationToken}` : ''
+                    }
+                });
+
+                if (response.ok) {
+                    console.log('Статья успешно удалена!');
+                    navigate('/my_space');
+                } else {
+                    throw new Error('Ошибка при удалении статьи: ' + response.statusText);
+                }
+            } catch (error) {
+                console.error('Ошибка при выполнении запроса:', error);
+            }
+        }
+    };
+
     return (
         <>
             <Helmet>
@@ -204,6 +225,9 @@ const ManageArticle = () => {
                         </div>
                         <button type="submit" className={styles.submitButton}>
                             Редактировать статью
+                        </button>
+                        <button type="button" className={styles.deleteButton} onClick={handleDelete}>
+                            Удалить статью
                         </button>
                     </form>
                 </div>

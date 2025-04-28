@@ -5,15 +5,12 @@ const YandexCallback = () => {
     const [status, setStatus] = useState('Загрузка...');
 
     useEffect(() => {
-        // Создаем скрипт для загрузки SDK
         const script = document.createElement('script');
         script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js';
         script.async = true;
-        
-        // Обработчик загрузки скрипта
+
         script.onload = () => {
             setStatus('Получение токена...');
-            // Добавляем небольшую задержку перед отправкой токена
             setTimeout(() => {
                 window.YaSendSuggestToken(window.location.origin, {
                     flag: true
@@ -22,16 +19,13 @@ const YandexCallback = () => {
             }, 1000);
         };
 
-        // Обработчик ошибки загрузки скрипта
         script.onerror = (error) => {
             console.error('Ошибка загрузки скрипта Yandex ID:', error);
             setStatus('Ошибка загрузки сервиса Яндекс');
         };
 
-        // Добавляем скрипт на страницу
         document.body.appendChild(script);
 
-        // Очистка при размонтировании компонента
         return () => {
             document.body.removeChild(script);
         };

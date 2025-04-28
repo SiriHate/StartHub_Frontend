@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
-import AuthContext from '../../security/AuthContext'; // <-- импортируем контекст
+import AuthContext from '../../security/AuthContext';
 
 const HomePage = () => {
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext); // <-- достаем функцию login
+    const { login } = useContext(AuthContext);
     const [isChecking, setIsChecking] = useState(true);
     const [redirected, setRedirected] = useState(false);
     const [userData, setUserData] = useState(null);
@@ -32,7 +32,7 @@ const HomePage = () => {
                 const data = await response.json();
                 setUserData(data);
 
-                login(token); // <-- обязательно авторизуем пользователя глобально
+                login(token);
 
                 const userRole = data.role;
                 setIsChecking(false);
