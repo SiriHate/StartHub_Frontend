@@ -17,31 +17,34 @@ function MemberProfile() {
     const [redirect, setRedirect] = useState(false);
     const [isBlocked, setIsBlocked] = useState(false);
     const [isModerator, setIsModerator] = useState(false);
+    const [currentUserUsername, setCurrentUserUsername] = useState('');
     const navigate = useNavigate();
 
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
 
     useEffect(() => {
-        fetch(`${config.USER_SERVICE}/users/me`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authorizationToken
-            },
-        })
-            .then(response => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`${config.USER_SERVICE}/users/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authorizationToken
+                    },
+                });
                 if (response.status !== 200) {
                     throw new Error('Failed to fetch user role');
                 }
-                return response.json();
-            })
-            .then(data => {
+                const data = await response.json();
                 setIsModerator(data.role === 'MODERATOR');
-            })
-            .catch(error => {
+                setCurrentUserUsername(data.username);
+            } catch (error) {
                 console.error('Error fetching user role:', error);
-            });
+            }
+        };
+
+        fetchUserData();
 
         fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
             method: 'GET',
@@ -94,6 +97,33 @@ function MemberProfile() {
         }
     };
 
+    const handleSendMessage = async () => {
+        try {
+            const chatRequest = {
+                secondUsername: username
+            };
+
+            const response = await fetch(`${config.CHAT_SERVICE}/private_chats`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorizationToken
+                },
+                body: JSON.stringify(chatRequest)
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось создать чат');
+            }
+
+            const createdChat = await response.json();
+            navigate('/chats');
+        } catch (error) {
+            console.error('Ошибка при создании чата:', error);
+            alert('Произошла ошибка при создании чата');
+        }
+    };
+
     if (redirect) {
         return <Navigate to="/not-found" replace />;
     }
@@ -124,6 +154,9 @@ function MemberProfile() {
                     <div className={styles.profileCardHeader}>
                         <img src={avatar} alt="Аватар пользователя" className={styles.avatar} onError={e => { e.target.onerror = null; e.target.src = '/default_user_avatar.jpg'; }} />
                         <div className={styles.username}>{username}</div>
+                        <button onClick={handleSendMessage} className={styles.sendMessageButton}>
+                            <i className="fas fa-comments"></i> Написать сообщение
+                        </button>
                     </div>
                     <div className={styles.infoSection}>
                         <div className={styles.infoItem}>

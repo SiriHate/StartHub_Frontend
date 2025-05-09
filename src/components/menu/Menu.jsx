@@ -30,6 +30,11 @@ const Menu = () => {
                             </Link>
                         </li>
                         <li className={styles.navItem}>
+                            <Link to="/chats" className={getActiveClass("/chats")}>
+                                <i className={`fas fa-comments ${styles.faUser}`}/> Мои чаты
+                            </Link>
+                        </li>
+                        <li className={styles.navItem}>
                             <Link to="/members/personal-account"
                                   className={getActiveClass("/members/personal-account")}>
                                 <i className={`fas fa-user ${styles.faUser}`}/> Мой профиль

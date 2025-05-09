@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
             }
             setToken(currentToken);
             validateToken(currentToken);
-        }, 5000);
+        }, 1800000);
 
         return () => clearInterval(interval);
     }, []);

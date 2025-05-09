@@ -29,6 +29,7 @@ import ManageProject from "./components/pages/ManageProject/ManageProject";
 import LeaveFeedback from "./components/pages/LeaveFeedback/LeaveFeedback";
 import FeedbackPanel from "./components/pages/FeedbackPanel/FeedbackPanel";
 import ModeratorPanel from "./components/pages/ModeratorPanel/ModeratorPanel";
+import MyChats from "./components/pages/MyChats/MyChats";
 
 const App = () => {
     return (
@@ -64,6 +65,7 @@ const App = () => {
                             <Route path="/create_feedback_form" element={<CreateFeedbackForm/>} />
                             <Route path="/feedback_panel" element={<FeedbackPanel/>} />
                             <Route path="/admin_panel" element={<AdminPanel/>} />
+                            <Route path="/chats" element={<MyChats />} />
                         </Route>
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>

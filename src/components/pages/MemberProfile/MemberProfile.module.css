@@ -49,10 +49,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
-    background-color: #1b1739;
-    width: 100%;
     padding: 20px;
+    border-bottom: 1px solid #333;
 }
 
 .backButton {
@@ -103,11 +101,13 @@
     font-weight: 600;
     color: #f0f0f0;
     margin-top: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .sendMessageButton {
-    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     background-color: #3a3b6b;
     color: #f0f0f0;
     border: none;
@@ -116,10 +116,15 @@
     cursor: pointer;
     font-weight: 600;
     transition: background-color 0.3s ease;
+    margin-bottom: 20px;
 }
 
 .sendMessageButton:hover {
     background-color: #5a5b8c;
+}
+
+.sendMessageButton i {
+    font-size: 16px;
 }
 
 .infoSection {
