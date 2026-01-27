@@ -51,11 +51,8 @@ function PersonalMemberAccount() {
                 let avatarUrl = data.avatarUrl;
                 if (avatarUrl) {
                     avatarUrl = avatarUrl.replace(/\\/g, '/');
-                    if (!avatarUrl.startsWith('http')) {
-                        avatarUrl = config.FILE_SERVER + avatarUrl;
-                    }
                 }
-                setAvatar(avatarUrl);
+                setAvatar(avatarUrl || '');
                 setProfileHiddenFlag(data.profileHiddenFlag);
                 setIsLoading(false);
             })
@@ -241,54 +238,37 @@ function PersonalMemberAccount() {
     const handleSubmitUpload = (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        fetch(`${config.FILE_SERVER}/upload/memberAvatars`, {
-            method: 'POST',
+        const headers = authorizationToken ? {'Authorization': `${authorizationToken}`} : {};
+        fetch(`${config.USER_SERVICE}/members/me/avatar`, {
+            method: 'PATCH',
+            headers,
             body: formData,
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Failed to upload photo');
+                    throw new Error('Failed to upload avatar');
+                }
+                if (response.status === 204) {
+                    return null;
                 }
                 return response.json();
             })
             .then(data => {
-                const avatarUrl = data.url;
-                sendAvatarUrlToBackend(avatarUrl, true);
+                if (!data) {
+                    window.location.reload();
+                    return;
+                }
+                const rawUrl = data.avatarUrl || data.url;
+                if (!rawUrl) {
+                    window.location.reload();
+                    return;
+                }
+                let normalizedUrl = rawUrl.replace(/\\/g, '/');
+                normalizedUrl += (normalizedUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+                setAvatar(normalizedUrl);
             })
             .catch(error => {
                 console.error('Upload error:', error);
-            });
-    };
-
-    const sendAvatarUrlToBackend = (avatarUrl, updateUI = false) => {
-        fetch(`${config.USER_SERVICE}/members/me/avatar`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authorizationToken ? ` ${authorizationToken}` : ''
-            },
-            body: JSON.stringify({avatarUrl: avatarUrl})
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to update avatar URL');
-                }
-                return response.json();
-            })
-            .then(() => {
-                if (updateUI) {
-                    let url = avatarUrl.replace(/\\/g, '/');
-                    if (!url.startsWith('http')) {
-                        url = config.FILE_SERVER + url;
-                    }
-                    url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
-                    setAvatar(url);
-                } else {
-                    window.location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Error updating avatar URL:', error);
             });
     };
 

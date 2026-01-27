@@ -55,10 +55,6 @@ const LoginPage = () => {
                 }
             );
 
-            if (!suggestInit) {
-                console.warn('Инициализация YaAuthSuggest не удалась');
-                return;
-            }
 
             try {
                 const data = await suggestInit.handler();
@@ -119,7 +115,7 @@ const LoginPage = () => {
         }
 
         try {
-            const response = await fetch(`${config.USER_SERVICE}/users/login`, {
+            const response = await fetch(`${config.USER_SERVICE}/users/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })

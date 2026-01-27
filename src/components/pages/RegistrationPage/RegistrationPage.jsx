@@ -64,7 +64,7 @@ const RegistrationPage = () => {
         };
 
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members`, {
+            const response = await fetch(`${config.USER_SERVICE}/members/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
