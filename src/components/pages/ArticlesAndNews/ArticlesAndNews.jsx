@@ -20,7 +20,7 @@ const ArticlesAndNews = () => {
 
     const fetchCategories = async (tab) => {
         try {
-            const url = `${config.MAIN_SERVICE}/${tab === "Статьи" ? "article_categories" : "news_categories"}`;
+            const url = `${config.MAIN_SERVICE}/${tab === "Статьи" ? "article-categories" : "news-categories"}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');

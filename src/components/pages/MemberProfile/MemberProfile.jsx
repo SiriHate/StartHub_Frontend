@@ -46,7 +46,7 @@ function MemberProfile() {
 
         fetchUserData();
 
-        fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
+        fetch(`${config.USER_SERVICE}/members?username=${username}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ function MemberProfile() {
 
     const handleBlockUser = async () => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
+            const response = await fetch(`${config.USER_SERVICE}/members?username=${username}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -112,11 +112,7 @@ function MemberProfile() {
                 body: JSON.stringify(chatRequest)
             });
 
-            if (!response.ok) {
-                throw new Error('Не удалось создать чат');
-            }
-
-            const createdChat = await response.json();
+            await response.json();
             navigate('/chats');
         } catch (error) {
             console.error('Ошибка при создании чата:', error);

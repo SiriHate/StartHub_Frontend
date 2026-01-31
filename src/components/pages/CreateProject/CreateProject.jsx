@@ -28,7 +28,7 @@ function CreateProject() {
 
     useEffect(() => {
         
-        fetch(`${config.MAIN_SERVICE}/project_categories`, {
+        fetch(`${config.MAIN_SERVICE}/project-categories`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ function CreateProject() {
             .then(data => setCategories(data))
             .catch(error => console.error('Error fetching categories:', error));
 
-        fetch(`${config.USER_SERVICE}/specialist_specializations`, {
+        fetch(`${config.USER_SERVICE}/member-specializations`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

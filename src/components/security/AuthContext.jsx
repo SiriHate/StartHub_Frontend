@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         try {
-            const response = await fetch(`${config.USER_SERVICE}/auth/token/validate`, {
+            const response = await fetch(`${config.USER_SERVICE}/auth/me/token/verify`, {
                 method: "GET",
                 headers: {
                     "Authorization": `${token}`
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
-            const isValidToken = await response.json();
+            const isValidToken = response.ok
             if (isValidToken !== true) {
                 console.error("Ошибка валидации токена: ответ сервера не true");
                 logout();

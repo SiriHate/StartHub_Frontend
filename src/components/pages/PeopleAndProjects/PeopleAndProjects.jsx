@@ -21,8 +21,8 @@ const PeopleAndProjects = () => {
     const fetchCategories = async (tab) => {
         try {
             const url = tab === "project"
-                ? `${config.MAIN_SERVICE}/project_categories`
-                : `${config.USER_SERVICE}/specialist_specializations`;
+                ? `${config.MAIN_SERVICE}/project-categories`
+                : `${config.USER_SERVICE}/member-specializations`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error("Network response was not ok");

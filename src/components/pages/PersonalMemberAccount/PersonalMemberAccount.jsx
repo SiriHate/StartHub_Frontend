@@ -27,7 +27,7 @@ function PersonalMemberAccount() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${config.USER_SERVICE}/members/me/personal_info`, {
+        fetch(`${config.USER_SERVICE}/members/me`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ function PersonalMemberAccount() {
     }, [authorizationToken]);
 
     useEffect(() => {
-        fetch(`${config.USER_SERVICE}/specialist_specializations`, {
+        fetch(`${config.USER_SERVICE}/member-specializations`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ function PersonalMemberAccount() {
         const newProfileHiddenFlag = event.target.checked;
         setProfileHiddenFlag(newProfileHiddenFlag);
         const requestBody = JSON.stringify({profileHiddenFlag: newProfileHiddenFlag});
-        fetch(`${config.USER_SERVICE}/members/me/profile_hidden_flag`, {
+        fetch(`${config.USER_SERVICE}/members/me/profile-hidden-flag`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ function PersonalMemberAccount() {
             return;
         }
         const selectedSpecialization = specializations.find(spec => spec.name === specialization);
-        fetch(`${config.USER_SERVICE}/members/me/personal_info`, {
+        fetch(`${config.USER_SERVICE}/members/me`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -174,16 +174,11 @@ function PersonalMemberAccount() {
     };
 
     const handleChangePassword = () => {
-        if (newPassword.length < 8) {
-            alert('The new password must be at least 8 characters long.');
-            return;
-        }
         fetch(`${config.USER_SERVICE}/members/me/password`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': authorizationToken ? `${authorizationToken}` : '',
-                'Cache-Control': 'public'
             },
             body: JSON.stringify({
                 currentPassword: currentPassword,
