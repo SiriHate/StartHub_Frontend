@@ -22,7 +22,7 @@ const CreateNews = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/news_categories`);
+                const response = await fetch(`${config.MAIN_SERVICE}/news-categories`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -39,51 +39,40 @@ const CreateNews = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!newsLogo) {
+        if (!newsLogo || typeof newsLogo === 'string') {
             alert('Пожалуйста, загрузите логотип новости.');
             return;
         }
 
         const formData = new FormData();
-        formData.append('file', newsLogo);
+        const newsData = {
+            title: newsTitle,
+            content: newsContent || '',
+            categoryId: newsCategory ? Number(newsCategory) : null
+        };
+        formData.append('news', new Blob([JSON.stringify(newsData)], { type: 'application/json' }));
+        formData.append('logo', newsLogo);
 
         try {
-            const uploadResponse = await fetch(`${config.FILE_SERVER}/upload/newsLogos`, {
+            const response = await fetch(`${config.MAIN_SERVICE}/news`, {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Authorization': authorizationToken ? ` ${authorizationToken}` : ''
+                },
+                body: formData
             });
 
-            const uploadResult = await uploadResponse.json();
-
-            if (uploadResponse.ok) {
-                const newsData = {
-                    title: newsTitle,
-                    previewUrl: uploadResult.url,
-                    content: newsContent,
-                    category: categories.find(cat => cat.id === Number(newsCategory))
-                };
-
-                const response = await fetch(`${config.MAIN_SERVICE}/news`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': authorizationToken ? ` ${authorizationToken}` : ''
-                    },
-                    body: JSON.stringify(newsData)
-                });
-
-                if (response.ok) {
-                    console.log('Новость успешно создана!');
-                    setNewsTitle('');
-                    setNewsLogo('/default_list_element_logo.jpg');
-                    setNewsContent('');
-                    setNewsCategory('');
-                    navigate('/my_space');
-                } else {
-                    throw new Error('Ошибка при создании новости: ' + response.statusText);
-                }
+            if (response.ok) {
+                console.log('Новость успешно создана!');
+                setNewsTitle('');
+                setNewsLogo('/default_list_element_logo.jpg');
+                setNewsLogoPreview('/default_list_element_logo.jpg');
+                setNewsContent('');
+                setNewsCategory('');
+                navigate('/my_space');
             } else {
-                throw new Error('Ошибка загрузки файла: ' + uploadResult.message);
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.message || 'Ошибка при создании новости');
             }
         } catch (error) {
             console.error('Ошибка при выполнении запроса:', error);

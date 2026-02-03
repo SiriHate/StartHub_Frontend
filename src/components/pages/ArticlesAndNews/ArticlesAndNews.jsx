@@ -15,7 +15,7 @@ const ArticlesAndNews = () => {
     const [appliedCategory, setAppliedCategory] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
-    const [size, setSize] = useState(1);
+    const [size, setSize] = useState(20);
     const navigate = useNavigate();
 
     const fetchCategories = async (tab) => {
@@ -36,9 +36,14 @@ const ArticlesAndNews = () => {
 
     const fetchItems = async (searchQuery, category, currentTab, page, size) => {
         try {
-            const categoryParam = category ? `&category=${category}` : "";
-            const queryParam = searchQuery ? `&query=${searchQuery}` : "";
-            const url = `${config.MAIN_SERVICE}/${currentTab === "Статьи" ? "articles" : "news"}?page=${page}&size=${size}&moderationPassed=true${categoryParam}${queryParam}`;
+            const path = currentTab === "Статьи" ? "articles" : "news";
+            const params = new URLSearchParams();
+            params.set("page", String(page));
+            params.set("size", String(size));
+            params.set("moderationPassed", "true");
+            if (category) params.set("category", category);
+            if (searchQuery) params.set("query", searchQuery);
+            const url = `${config.MAIN_SERVICE}/${path}?${params.toString()}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');

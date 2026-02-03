@@ -30,7 +30,7 @@ function ManageProject() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/project_categories`);
+                const response = await fetch(`${config.MAIN_SERVICE}/project-categories`);
                 const data = await response.json();
                 if (response.ok) {
                     setCategories(data);

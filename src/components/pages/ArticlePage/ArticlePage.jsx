@@ -11,7 +11,7 @@ const ArticlePage = () => {
     const [article, setArticle] = useState({
         title: "",
         owner: "",
-        previewUrl: "",
+        logoUrl: "",
         category: "",
         content: "",
         moderationPassed: false
@@ -55,7 +55,7 @@ const ArticlePage = () => {
                     setArticle({
                         title: data.title,
                         owner: data.owner,
-                        previewUrl: `${config.FILE_SERVER}${data.previewUrl}`,
+                        logoUrl: data.logoUrl || (data.previewUrl ? `${config.FILE_SERVER}${data.previewUrl}` : ""),
                         category: data.category,
                         content: data.content,
                         moderationPassed: data.moderationPassed
@@ -153,7 +153,7 @@ const ArticlePage = () => {
                 </button>
                 <div className={styles.projectCardHeader}>
                     <h1 className={styles.articleTitle}>{article.title}</h1>
-                    <img src={article.previewUrl} alt="Article preview" className={styles.articlePreview}/>
+                    {article.logoUrl && <img src={article.logoUrl} alt="Article preview" className={styles.articlePreview}/>}
                 </div>
                 <div className={styles.articleMetadata}>
                     <div className={styles.projectCategory}>

@@ -78,47 +78,36 @@ function CreateProject() {
             return;
         }
 
-        const logoFormData = new FormData();
-        logoFormData.append('file', projectLogo);
+        const projectData = {
+            name: projectName,
+            description: projectDescription,
+            categoryId: category.id,
+            members: members.map(member => ({
+                username: member.username,
+                role: member.role
+            }))
+        };
+
+        const formData = new FormData();
+        formData.append('project', new Blob([JSON.stringify(projectData)], { type: 'application/json' }));
+        if (projectLogo instanceof File) {
+            formData.append('logo', projectLogo);
+        }
 
         try {
-            const logoUploadResponse = await fetch(`${config.FILE_SERVER}/upload/projectLogos`, {
-                method: 'POST',
-                body: logoFormData,
-            });
-
-            if (!logoUploadResponse.ok) {
-                throw new Error('Failed to upload project logo');
-            }
-
-            const logoUploadData = await logoUploadResponse.json();
-            const projectLogoUrl = logoUploadData.url;
-
-            const projectData = {
-                projectLogoUrl: projectLogoUrl,
-                projectName: projectName,
-                projectDescription: projectDescription,
-                category: category,
-                members: members.map(member => ({
-                    username: member.username,
-                    role: member.role
-                }))
-            };
-
             const response = await fetch(`${config.MAIN_SERVICE}/projects`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': authorizationToken ? ` ${authorizationToken}` : '',
                 },
-                body: JSON.stringify(projectData),
+                body: formData,
             });
 
             if (response.ok) {
                 console.log('Проект успешно создан');
                 navigate(-1);
             } else {
-                const errorResponse = await response.json();
+                const errorResponse = await response.json().catch(() => ({}));
                 console.error('Ошибка при создании проекта', errorResponse);
             }
         } catch (error) {

@@ -96,15 +96,15 @@
 }
 
 .articlePreview {
-    width: 300px;
-    height: 300px;
-    object-fit: contain;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
     border-radius: 10px;
-    border: 4px solid #fff;
     margin: 20px 0;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 10px;
+    display: block;
 }
 
 .articlePreview:hover {

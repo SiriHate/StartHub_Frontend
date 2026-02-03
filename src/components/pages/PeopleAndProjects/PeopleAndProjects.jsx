@@ -136,6 +136,15 @@ const PeopleAndProjects = () => {
         fetchItems(searchQuery, appliedFilter, tab, 0, size);
     };
 
+    const getImageUrl = (item) => {
+        const url = item.projectLogoUrl || item.avatarUrl || "";
+        if (!url) return "";
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return url;
+        }
+        return `${config.FILE_SERVER}${url}`;
+    };
+
     return (
         <>
             <Helmet>
@@ -188,7 +197,7 @@ const PeopleAndProjects = () => {
                                 <div key={item.id || item.username} className={styles.item}
                                      onClick={() => openItem(item)}>
                                     <img
-                                        src={`${config.FILE_SERVER}${item.projectLogoUrl || item.avatarUrl || ""}`}
+                                        src={getImageUrl(item) || (currentTab === "project" ? "/default_list_element_logo.jpg" : "/default_user_avatar.jpg")}
                                         alt={item.projectName || item.username}
                                         className={styles.itemImage}
                                         onError={(e) => {

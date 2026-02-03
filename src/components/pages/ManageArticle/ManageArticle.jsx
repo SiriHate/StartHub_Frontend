@@ -23,7 +23,7 @@ const ManageArticle = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/article_categories`);
+                const response = await fetch(`${config.MAIN_SERVICE}/article-categories`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -44,7 +44,10 @@ const ManageArticle = () => {
                 }
                 const data = await response.json();
                 setArticleTitle(data.title);
-                setExistingLogoUrl(`${config.FILE_SERVER}${data.previewUrl}`);
+                setExistingLogoUrl(data.logoUrl || (data.previewUrl ? `${config.FILE_SERVER}${data.previewUrl}` : ""));
+                if (data.logoUrl || data.previewUrl) {
+                    setArticleLogoPreview(data.logoUrl || `${config.FILE_SERVER}${data.previewUrl}`);
+                }
                 setArticleContent(data.content);
                 const matchingCategory = (categoriesList || categories).find(cat => cat.name === data.category);
                 setArticleCategory(matchingCategory || null);
@@ -62,51 +65,33 @@ const ManageArticle = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let logoUrl = existingLogoUrl;
-        if (articleLogo) {
-            const formData = new FormData();
-            formData.append('file', articleLogo);
-
-            try {
-                const uploadResponse = await fetch(`${config.FILE_SERVER}/upload/articleLogos`, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const uploadResult = await uploadResponse.json();
-                if (uploadResponse.ok) {
-                    logoUrl = uploadResult.url;
-                } else {
-                    throw new Error('Ошибка загрузки файла: ' + uploadResult.message);
-                }
-            } catch (error) {
-                console.error('Ошибка при выполнении запроса:', error);
-                return;
-            }
-        }
-
         const articleData = {
             title: articleTitle,
-            previewUrl: logoUrl,
-            content: articleContent,
-            category: articleCategory
+            content: articleContent || '',
+            categoryId: articleCategory ? articleCategory.id : null
         };
+
+        const formData = new FormData();
+        formData.append('article', new Blob([JSON.stringify(articleData)], { type: 'application/json' }));
+        if (articleLogo instanceof File) {
+            formData.append('logo', articleLogo);
+        }
 
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': authorizationToken ? `Bearer ${authorizationToken}` : ''
                 },
-                body: JSON.stringify(articleData)
+                body: formData
             });
 
             if (response.ok) {
                 console.log('Статья успешно отредактирована!');
                 navigate(`/article/${articleId}`);
             } else {
-                throw new Error('Ошибка при редактировании статьи: ' + response.statusText);
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.message || 'Ошибка при редактировании статьи');
             }
         } catch (error) {
             console.error('Ошибка при выполнении запроса:', error);

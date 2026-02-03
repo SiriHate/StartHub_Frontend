@@ -45,7 +45,6 @@ function PersonalMemberAccount() {
                 setPhone(data.phone);
                 setEmail(data.email);
                 setBirthday(data.birthday);
-                setSpecialization(data.specialization);
                 setUsername(data.username);
                 setAbout(data.about);
                 let avatarUrl = data.avatarUrl;
@@ -54,6 +53,10 @@ function PersonalMemberAccount() {
                 }
                 setAvatar(avatarUrl || '');
                 setProfileHiddenFlag(data.profileHiddenFlag);
+
+                const spec = specializations.find(s => s.name === data.specialization);
+                setSpecialization(spec ? spec.id : null);
+
                 setIsLoading(false);
             })
             .catch(error => {
@@ -61,14 +64,12 @@ function PersonalMemberAccount() {
                 setProfileError(error.message);
                 setIsLoading(false);
             });
-    }, [authorizationToken]);
+    }, [authorizationToken, specializations]);
 
     useEffect(() => {
         fetch(`${config.USER_SERVICE}/member-specializations`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authorizationToken ? `${authorizationToken}` : '',
+            method: 'GET', headers: {
+                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : '',
             },
         })
             .then(response => {
@@ -108,12 +109,9 @@ function PersonalMemberAccount() {
         setProfileHiddenFlag(newProfileHiddenFlag);
         const requestBody = JSON.stringify({profileHiddenFlag: newProfileHiddenFlag});
         fetch(`${config.USER_SERVICE}/members/me/profile-hidden-flag`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authorizationToken ? `${authorizationToken}` : '',
-            },
-            body: requestBody,
+            method: 'PATCH', headers: {
+                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : '',
+            }, body: requestBody,
         })
             .then(response => {
                 if (response.status !== 200) {
@@ -134,7 +132,7 @@ function PersonalMemberAccount() {
             alert('Please enter a valid email address.');
             return;
         }
-        const selectedSpecialization = specializations.find(spec => spec.name === specialization);
+
         fetch(`${config.USER_SERVICE}/members/me`, {
             method: 'PATCH',
             headers: {
@@ -146,7 +144,7 @@ function PersonalMemberAccount() {
                 phone: phone,
                 email: email,
                 birthday: birthday,
-                specialization: selectedSpecialization || null,
+                specializationId: specialization || null, // передаем ID
                 about: about,
                 profileHiddenFlag: profileHiddenFlag
             }),
@@ -175,16 +173,11 @@ function PersonalMemberAccount() {
 
     const handleChangePassword = () => {
         fetch(`${config.USER_SERVICE}/members/me/password`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authorizationToken ? `${authorizationToken}` : '',
-            },
-            body: JSON.stringify({
-                currentPassword: currentPassword,
-                newPassword: newPassword,
+            method: 'PATCH', headers: {
+                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : '',
+            }, body: JSON.stringify({
+                currentPassword: currentPassword, newPassword: newPassword,
             }),
-            credentials: 'include'
         })
             .then(response => {
                 if (response.status !== 200) {
@@ -197,10 +190,8 @@ function PersonalMemberAccount() {
 
     const handleDeleteAccount = () => {
         fetch(`${config.USER_SERVICE}/members/me`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authorizationToken ? `${authorizationToken}` : ''
+            method: 'DELETE', headers: {
+                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : ''
             },
         })
             .then(response => {
@@ -235,9 +226,7 @@ function PersonalMemberAccount() {
         formData.append('file', file);
         const headers = authorizationToken ? {'Authorization': `${authorizationToken}`} : {};
         fetch(`${config.USER_SERVICE}/members/me/avatar`, {
-            method: 'PATCH',
-            headers,
-            body: formData,
+            method: 'PATCH', headers, body: formData,
         })
             .then(response => {
                 if (!response.ok) {
@@ -273,18 +262,14 @@ function PersonalMemberAccount() {
         }
     };
 
-    return (
-        <div className={styles.profilePage}>
+    return (<div className={styles.profilePage}>
             <Helmet>
                 <title>Личный кабинет</title>
             </Helmet>
             <Menu/>
-            {isLoading ? null : profileError ? (
-                <div className={styles.errorContainer}>
+            {isLoading ? null : profileError ? (<div className={styles.errorContainer}>
                     <h2>Не удалось загрузить профиль</h2>
-                </div>
-            ) : (
-                <div className={styles.profileCard}>
+                </div>) : (<div className={styles.profileCard}>
                     <div className={styles.profileCardHeader}>
                         <div className={styles.hideProfileWrapper}>
                             <span className={styles.label}>Скрыть профиль</span>
@@ -294,7 +279,10 @@ function PersonalMemberAccount() {
                         <img
                             src={avatar ? avatar : '/default_user_avatar.jpg'}
                             alt="User Avatar"
-                            onError={e => { e.target.onerror = null; e.target.src = '/default_user_avatar.jpg'; }}
+                            onError={e => {
+                                e.target.onerror = null;
+                                e.target.src = '/default_user_avatar.jpg';
+                            }}
                             className={styles.avatar}
                         />
                         <input type="file" className={styles.uploadInput} onChange={handleFileUpload} ref={fileInputRef}
@@ -325,11 +313,14 @@ function PersonalMemberAccount() {
                         </div>
                         <div className={styles.infoItem}>
                             <span className={styles.label}>Специализация:</span>
-                            <select className={styles.infoInput} value={specialization}
-                                    onChange={e => setSpecialization(e.target.value)}>
+                            <select
+                                className={styles.infoInput}
+                                value={specialization || ''}
+                                onChange={e => setSpecialization(e.target.value ? Number(e.target.value) : null)} // сохраняем ID как число
+                            >
                                 <option value="">Выберите специализацию</option>
                                 {specializations.map(spec => (
-                                    <option key={spec.id} value={spec.name}>{spec.name}</option>
+                                    <option key={spec.id} value={spec.id}>{spec.name}</option> // value теперь ID
                                 ))}
                             </select>
                         </div>
@@ -365,10 +356,8 @@ function PersonalMemberAccount() {
                             </button>
                         </div>
                     </div>
-                </div>
-            )}
-            {isModalOpen && (
-                <div className={styles.modal}>
+                </div>)}
+            {isModalOpen && (<div className={styles.modal}>
                     <div className={styles.modalContent}>
                         <p>Вы уверены, что хотите удалить аккаунт?</p>
                         <div>
@@ -380,10 +369,8 @@ function PersonalMemberAccount() {
                             </button>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
-    );
+                </div>)}
+        </div>);
 }
 
 export default PersonalMemberAccount;

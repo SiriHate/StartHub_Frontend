@@ -32,10 +32,10 @@ const MySpace = () => {
                     url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
                     break;
                 case "Мои статьи":
-                    url = `${config.MAIN_SERVICE}/users/my/articles`;
+                    url = `${config.MAIN_SERVICE}/articles/me`;
                     break;
                 case "Мои новости":
-                    url = `${config.MAIN_SERVICE}/users/my/news`;
+                    url = `${config.MAIN_SERVICE}/news/me`;
                     break;
                 default:
                     url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
@@ -212,10 +212,15 @@ const MySpace = () => {
                                 Не найдено ни одного {selectedCategory.toLowerCase().split(" ")[1]}
                             </div>
                         ) : (
-                            items.map(item => (
+                            items.map(item => {
+                                const previewSrc = item.logoUrl
+                                    || (selectedCategory === "Мои проекты"
+                                        ? (item.projectLogoUrl ? `${config.FILE_SERVER}${item.projectLogoUrl}` : '')
+                                        : (item.previewUrl ? `${config.FILE_SERVER}${item.previewUrl}` : ''));
+                                return (
                                 <div key={item.id} className={styles.item} onClick={() => openItem(item.id)}>
                                     <img
-                                        src={`${config.FILE_SERVER}${selectedCategory === "Мои проекты" ? item.projectLogoUrl : item.previewUrl}`}
+                                        src={previewSrc || '/default_list_element_logo.jpg'}
                                         alt={item.title || item.projectName || item.eventName}
                                         className={styles.itemImage}
                                         onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
@@ -231,7 +236,7 @@ const MySpace = () => {
                                         {selectedCategory === "Мои проекты" ? "Управление проектом" : "Управление публикацией"}
                                     </button>
                                 </div>
-                            ))
+                            ); })
                         )}
                     </div>
                     {items.length > 0 && (
