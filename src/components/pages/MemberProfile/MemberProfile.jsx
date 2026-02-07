@@ -103,10 +103,13 @@ function MemberProfile() {
     const handleSendMessage = async () => {
         try {
             const chatRequest = {
-                secondUsername: username
+                isGroup: false,
+                participants: [
+                    { username, role: 'MEMBER' }
+                ]
             };
 
-            const response = await fetch(`${config.CHAT_SERVICE}/private_chats`, {
+            const response = await fetch(`${config.CHAT_SERVICE}/chats`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

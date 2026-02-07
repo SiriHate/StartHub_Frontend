@@ -135,6 +135,35 @@
     color: #f0f0f0;
 }
 
+.chatHeaderActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.manageChatButton {
+    background-color: rgba(99, 102, 241, 0.25);
+    border: 1px solid rgba(99, 102, 241, 0.5);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #b8b8e0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.manageChatButton:hover {
+    background-color: rgba(99, 102, 241, 0.4);
+    color: #f0f0f0;
+}
+
+.manageChatButton i {
+    font-size: 14px;
+}
+
 .participants {
     display: flex;
     gap: 10px;
@@ -157,6 +186,18 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+.messagesLoadMore {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+    flex-shrink: 0;
+}
+
+.messagesLoadMoreHint {
+    font-size: 0.85rem;
+    color: #8888b0;
 }
 
 .message {
@@ -345,6 +386,24 @@
     font-style: italic;
 }
 
+.loadingInList {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #aaa;
+    font-style: italic;
+    font-size: 1em;
+}
+
+.chatsListSentinel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 8px 0;
+}
+
 .searchContainer {
     position: relative;
     margin-bottom: 15px;
@@ -409,31 +468,176 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(27, 23, 57, 0.85);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
+    animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal {
-    background-color: #2e2a50;
-    padding: 25px;
-    border-radius: 12px;
-    width: 450px;
-    max-width: 90%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    border: 1px solid #3e3a6d;
+    background: linear-gradient(165deg, #252148 0%, #1e1b3a 100%);
+    padding: 0;
+    border-radius: 16px;
+    width: 420px;
+    max-width: 92vw;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    overflow: hidden;
+    animation: modalSlideIn 0.25s ease;
 }
 
-.modal h2 {
-    margin-top: 0;
-    margin-bottom: 25px;
-    text-align: center;
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.modalTitle {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
     color: #f0f0f0;
-    font-size: 1.5em;
+    letter-spacing: -0.02em;
+}
+
+.modalClose {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #a0a0c0;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.modalClose:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f0f0f0;
+}
+
+.modalClose:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.modalClose i {
+    font-size: 1rem;
+}
+
+.modalSubtitle {
+    margin: 0 0 20px;
+    padding: 0 24px;
+    font-size: 0.9rem;
+    color: #a0a0c0;
+}
+
+.modalBody {
+    padding: 20px 24px 24px;
+}
+
+.modalLabel {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
     font-weight: 500;
+    color: #b8b8d0;
+}
+
+.modalChoiceButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 24px 24px;
+}
+
+.modalChoiceBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 18px 20px;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    background: rgba(99, 102, 241, 0.08);
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.modalChoiceBtn:hover {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.modalChoiceBtn i {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+    color: #6366f1;
+}
+
+.modalChoiceBtn small {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #8888b0;
+}
+
+.modalSubmitBtn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+.modalSubmitBtn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.modalSubmitBtn:disabled {
+    background: #2a2a4a;
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 .modalButtons {
@@ -518,7 +722,15 @@
 .groupChatForm {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
+}
+
+.groupChatForm .modalLabel {
+    margin-top: 4px;
+}
+
+.groupChatForm .modalLabel:first-child {
+    margin-top: 0;
 }
 
 .groupChatForm input {
@@ -571,8 +783,8 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 18px;
-    color: #ff6b6b;
+    font-size: 12px;
+    color: #a0a0c0;
     padding: 0 4px;
     transition: all 0.2s ease;
     display: flex;
@@ -580,12 +792,12 @@
     justify-content: center;
     width: 24px;
     height: 24px;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 .participantTag button:hover {
-    color: #ff4444;
-    background-color: rgba(255, 68, 68, 0.1);
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
 }
 
 .participantTag:hover {
@@ -630,4 +842,139 @@
 
 .hideChatButton i {
     font-size: 12px;
+}
+
+.managePanelOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: flex-end;
+    z-index: 1000;
+}
+
+.managePanel {
+    width: 400px;
+    max-width: 95vw;
+    background: linear-gradient(165deg, #252148 0%, #1e1b3a 100%);
+    border-left: 1px solid rgba(99, 102, 241, 0.25);
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.managePanelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.managePanelTitle {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.managePanelBody {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.memberList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.memberItem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 10px;
+}
+
+.memberInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.memberName {
+    font-weight: 500;
+    color: #f0f0f0;
+}
+
+.memberRoleBadge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.memberRoleBadge.roleOWNER {
+    background: rgba(234, 179, 8, 0.25);
+    color: #facc15;
+}
+
+.memberRoleBadge.roleMODERATOR {
+    background: rgba(99, 102, 241, 0.3);
+    color: #a5b4fc;
+}
+
+.memberRoleBadge.roleMEMBER {
+    background: rgba(255, 255, 255, 0.08);
+    color: #a0a0c0;
+}
+
+.memberActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.memberActionBtn {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.memberActionBtn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    color: #f0f0f0;
+}
+
+.memberActionBtnDanger {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    background: rgba(248, 113, 113, 0.15);
+    color: #fca5a5;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.memberActionBtnDanger:hover {
+    background: rgba(248, 113, 113, 0.3);
+    color: #fef2f2;
 }
