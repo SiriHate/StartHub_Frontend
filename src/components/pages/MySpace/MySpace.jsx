@@ -29,7 +29,7 @@ const MySpace = () => {
             let url;
             switch (category) {
                 case "Мои проекты":
-                    url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
+                    url = `${config.MAIN_SERVICE}/me/projects`;
                     break;
                 case "Мои статьи":
                     url = `${config.MAIN_SERVICE}/articles/me`;
@@ -38,7 +38,7 @@ const MySpace = () => {
                     url = `${config.MAIN_SERVICE}/news/me`;
                     break;
                 default:
-                    url = `${config.MAIN_SERVICE}/users/my/projects/owned`;
+                    url = `${config.MAIN_SERVICE}/me/projects`;
             }
 
             const queryParams = new URLSearchParams();
@@ -77,8 +77,6 @@ const MySpace = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        console.log("🔍 [handleSearch] Search initiated:", searchQuery);
-        console.log("🔍 [handleSearch] Current category:", selectedCategory);
         setAppliedCategory(selectedCategory);
         setPage(0);
         fetchItems(selectedCategory, searchQuery, 0, size);

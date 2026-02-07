@@ -46,7 +46,7 @@ function MemberProfile() {
 
         fetchUserData();
 
-        fetch(`${config.USER_SERVICE}/members?username=${username}`, {
+        fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -66,7 +66,10 @@ function MemberProfile() {
                 setBirthday(data.birthday);
                 setSpecialization(data.specialization);
                 setAbout(data.about);
-                const avatarSrc = data.avatarUrl ? `${config.FILE_SERVER}${data.avatarUrl}` : "/default_avatar.jpg";
+                const raw = data.avatarUrl ?? data.avatar_url;
+                const avatarSrc = !raw ? "/default_user_avatar.jpg"
+                    : (raw.startsWith('http://') || raw.startsWith('https://')) ? raw
+                        : `${config.FILE_SERVER || ''}${raw}`;
                 setAvatar(avatarSrc);
             })
             .catch(error => {
@@ -77,7 +80,7 @@ function MemberProfile() {
 
     const handleBlockUser = async () => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members?username=${username}`, {
+            const response = await fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

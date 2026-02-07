@@ -318,11 +318,11 @@ const ModeratorPanel = () => {
         try {
             let endpoint = '';
             if (activeTab === 'projects') {
-                endpoint = `${config.MAIN_SERVICE}/projects/${id}/moderationPassed`;
+                endpoint = `${config.MAIN_SERVICE}/projects/${id}/moderation-passed`;
             } else if (activeTab === 'news') {
-                endpoint = `${config.MAIN_SERVICE}/news/${id}/moderationPassed`;
+                endpoint = `${config.MAIN_SERVICE}/news/${id}/moderation-passed`;
             } else if (activeTab === 'articles') {
-                endpoint = `${config.MAIN_SERVICE}/articles/${id}/moderationPassed`;
+                endpoint = `${config.MAIN_SERVICE}/articles/${id}/moderation-passed`;
             }
 
             const response = await fetch(endpoint, {
@@ -474,8 +474,8 @@ const ModeratorPanel = () => {
                                                 </>
                                             ) : activeTab === 'projects' ? (
                                                 <>
-                                                    <span className={styles.name}>{item.projectName}</span>
-                                                    <span className={styles.username}>{item.projectOwner}</span>
+                                                    <span className={styles.name}>{item.name}</span>
+                                                    <span className={styles.username}>{item.owner}</span>
                                                 </>
                                             ) : activeTab === 'news' ? (
                                                 <>

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AdminPanel.module.css";
 import {Helmet} from "react-helmet";
+import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
 
 const AdminPanel = () => {
@@ -9,6 +10,9 @@ const AdminPanel = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [moderators, setModerators] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+    const [size, setSize] = useState(5);
     const [deleteId, setDeleteId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -27,26 +31,30 @@ const AdminPanel = () => {
         employeeId: ""
     });
 
-    const fetchModerators = () => {
-        console.log('Fetching moderators from:', `${config.USER_SERVICE}/moderators`);
-        fetch(`${config.USER_SERVICE}/moderators`)
+    const fetchModerators = (pageNum, pageSize, usernameQuery) => {
+        const params = new URLSearchParams();
+        params.set("page", String(pageNum));
+        params.set("size", String(pageSize));
+        if (usernameQuery) params.set("usernameQuery", usernameQuery);
+        const url = `${config.USER_SERVICE}/moderators?${params.toString()}`;
+        fetch(url)
             .then(response => {
-                console.log('Moderators response status:', response.status);
                 if (!response.ok) {
                     if (response.status === 404) {
-                        console.log('No moderators found');
                         setModerators([]);
+                        setTotalPages(0);
                     }
                     throw new Error("Failed to fetch moderators");
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('Received moderators data:', data);
                 if (data.content && Array.isArray(data.content)) {
                     setModerators(data.content);
+                    setTotalPages(data.totalPages ?? 1);
                 } else {
-                    throw new Error("Data.content is not an array");
+                    setModerators([]);
+                    setTotalPages(0);
                 }
             })
             .catch(error => console.error("Fetch error:", error));
@@ -76,9 +84,8 @@ const AdminPanel = () => {
                     navigate('/');
                     return;
                 }
-                console.log('User is admin, loading moderators...');
                 setIsLoading(false);
-                fetchModerators();
+                fetchModerators(0, size, "");
             })
             .catch(error => {
                 console.error('Error fetching user role:', error);
@@ -91,24 +98,8 @@ const AdminPanel = () => {
     }
 
     const searchModerators = () => {
-        fetch(`${config.USER_SERVICE}/moderators?username=${searchQuery}`)
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        setModerators([]);
-                    }
-                    throw new Error("Failed to search moderators");
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.content && Array.isArray(data.content)) {
-                    setModerators(data.content);
-                } else {
-                    throw new Error("Data.content is not an array");
-                }
-            })
-            .catch(error => console.error("Search error:", error));
+        setPage(0);
+        fetchModerators(0, size, searchQuery);
     };
 
     const deleteModerator = (id) => {
@@ -119,7 +110,7 @@ const AdminPanel = () => {
                 if (!response.ok) {
                     throw new Error("Failed to delete moderator");
                 }
-                fetchModerators();
+                fetchModerators(page, size, searchQuery);
             })
             .catch(error => console.error("Delete error:", error));
     };
@@ -136,7 +127,7 @@ const AdminPanel = () => {
                 if (!response.ok) {
                     throw new Error("Failed to create moderator");
                 }
-                fetchModerators();
+                fetchModerators(page, size, searchQuery);
             })
             .catch(error => console.error("Create error:", error));
     };
@@ -153,7 +144,7 @@ const AdminPanel = () => {
                 if (!response.ok) {
                     throw new Error("Failed to update moderator");
                 }
-                fetchModerators();
+                fetchModerators(page, size, searchQuery);
             })
             .catch(error => console.error("Update error:", error));
     };
@@ -216,6 +207,34 @@ const AdminPanel = () => {
         navigate('/');
     };
 
+    const handleNextPage = () => {
+        if (page < totalPages - 1) {
+            const newPage = page + 1;
+            setPage(newPage);
+            fetchModerators(newPage, size, searchQuery);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (page > 0) {
+            const newPage = page - 1;
+            setPage(newPage);
+            fetchModerators(newPage, size, searchQuery);
+        }
+    };
+
+    const handleSizeChange = (event) => {
+        const newSize = parseInt(event.target.value, 10);
+        setSize(newSize);
+        setPage(0);
+        fetchModerators(0, newSize, searchQuery);
+    };
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        fetchModerators(newPage, size, searchQuery);
+    };
+
     return (
         <div className={styles.adminPanelContainer}>
             <Helmet>
@@ -243,7 +262,6 @@ const AdminPanel = () => {
                 </div>
                 <div className={styles.moderatorsListContainer}>
                     <div className={styles.moderatorsList}>
-                        {console.log('Current moderators state:', moderators)}
                         {Array.isArray(moderators) && moderators.length === 0 ? (
                             <div className={styles.emptyModerators}>
                                 Не найдено ни одного модератора
@@ -271,6 +289,19 @@ const AdminPanel = () => {
                             ))
                         )}
                     </div>
+                    {(moderators.length > 0 || totalPages > 1) && (
+                        <div className={styles.paginationWrapper}>
+                            <Pagination
+                                page={page}
+                                totalPages={totalPages > 0 ? totalPages : 1}
+                                size={size}
+                                onPreviousPage={handlePreviousPage}
+                                onNextPage={handleNextPage}
+                                onSizeChange={handleSizeChange}
+                                onPageChange={handlePageChange}
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className={styles.footerContainer}>
                     <button className={`${styles.button} ${styles.createButton}`}

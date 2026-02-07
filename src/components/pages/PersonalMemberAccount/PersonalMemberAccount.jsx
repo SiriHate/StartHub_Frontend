@@ -25,6 +25,8 @@ function PersonalMemberAccount() {
     const [specializations, setSpecializations] = useState([]);
     const [profileError, setProfileError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [passwordChangeFeedback, setPasswordChangeFeedback] = useState(null);
+    const passwordFeedbackTimeoutRef = useRef(null);
 
     useEffect(() => {
         fetch(`${config.USER_SERVICE}/members/me`, {
@@ -65,6 +67,14 @@ function PersonalMemberAccount() {
                 setIsLoading(false);
             });
     }, [authorizationToken, specializations]);
+
+    useEffect(() => {
+        return () => {
+            if (passwordFeedbackTimeoutRef.current) {
+                clearTimeout(passwordFeedbackTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         fetch(`${config.USER_SERVICE}/member-specializations`, {
@@ -171,6 +181,17 @@ function PersonalMemberAccount() {
         setNewPassword(event.target.value);
     };
 
+    const showPasswordFeedback = (message, type) => {
+        if (passwordFeedbackTimeoutRef.current) {
+            clearTimeout(passwordFeedbackTimeoutRef.current);
+        }
+        setPasswordChangeFeedback({ message, type });
+        passwordFeedbackTimeoutRef.current = setTimeout(() => {
+            setPasswordChangeFeedback(null);
+            passwordFeedbackTimeoutRef.current = null;
+        }, 3000);
+    };
+
     const handleChangePassword = () => {
         fetch(`${config.USER_SERVICE}/members/me/password`, {
             method: 'PATCH', headers: {
@@ -181,11 +202,21 @@ function PersonalMemberAccount() {
         })
             .then(response => {
                 if (response.status !== 200) {
-                    throw new Error('Failed to change password');
+                    return response.json().then(body => {
+                        throw new Error(body?.message || body?.errorMessage || 'Не удалось сменить пароль');
+                    }).catch(e => {
+                        if (e.message) throw e;
+                        throw new Error('Не удалось сменить пароль');
+                    });
                 }
-                alert('Password changed successfully.');
+                setCurrentPassword('');
+                setNewPassword('');
+                showPasswordFeedback('Пароль успешно изменён', 'success');
             })
-            .catch(error => console.error('Change password error:', error));
+            .catch(error => {
+                console.error('Change password error:', error);
+                showPasswordFeedback(error?.message || 'Не удалось сменить пароль. Проверьте текущий пароль.', 'error');
+            });
     };
 
     const handleDeleteAccount = () => {
@@ -347,6 +378,17 @@ function PersonalMemberAccount() {
                         <button className={styles.changePasswordBtn} onClick={handleChangePassword}>
                             Сменить пароль
                         </button>
+                        {passwordChangeFeedback && (
+                            <div
+                                className={
+                                    passwordChangeFeedback.type === 'success'
+                                        ? styles.passwordFeedbackSuccess
+                                        : styles.passwordFeedbackError
+                                }
+                            >
+                                {passwordChangeFeedback.message}
+                            </div>
+                        )}
                     </div>
                     <div className={styles.actionsSection}>
                         <div className={styles.buttonWrapper}>

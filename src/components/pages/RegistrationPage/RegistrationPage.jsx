@@ -44,11 +44,6 @@ const RegistrationPage = () => {
             return;
         }
 
-        if (password.length < 8) {
-            setError('Пароль должен содержать 8 или более символов.');
-            return;
-        }
-
         if (password !== confirmPassword) {
             setError('Пароли не совпадают.');
             return;

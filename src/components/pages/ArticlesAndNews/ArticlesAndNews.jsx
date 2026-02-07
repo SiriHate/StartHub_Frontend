@@ -99,6 +99,17 @@ const ArticlesAndNews = () => {
         return currentTab === "Новости" ? "Не найдено ни одной новости" : "Не найдено ни одной статьи";
     };
 
+    const getPreviewSrc = (item) => {
+        const url = item?.logoUrl ?? item?.logo_url ?? item?.previewUrl ?? item?.preview_url;
+        if (!url || typeof url !== 'string') return '/default_list_element_logo.jpg';
+        const trimmed = url.trim();
+        if (!trimmed) return '/default_list_element_logo.jpg';
+        if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+            return trimmed;
+        }
+        return `${config.FILE_SERVER || ''}${trimmed}`;
+    };
+
     const handleNextPage = () => {
         if (page < totalPages - 1) {
             const newPage = page + 1;
@@ -188,10 +199,11 @@ const ArticlesAndNews = () => {
                             items.map(item => (
                                 <div key={item.id} className={styles.item} onClick={() => openItem(item.id)}>
                                     <img
-                                        src={`${config.FILE_SERVER}${item.previewUrl}`}
+                                        src={getPreviewSrc(item)}
                                         alt={item.title}
                                         className={styles.itemImage}
-                                        onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
+                                        referrerPolicy="no-referrer"
+                                        onError={(e) => { e.target.onerror = null; e.target.src = '/default_list_element_logo.jpg'; }}
                                     />
                                     <div className={styles.itemContent}>
                                         <div className={styles.itemName}>{item.title}</div>

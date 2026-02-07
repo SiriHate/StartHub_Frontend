@@ -137,12 +137,16 @@ const PeopleAndProjects = () => {
     };
 
     const getImageUrl = (item) => {
-        const url = item.projectLogoUrl || item.avatarUrl || "";
-        if (!url) return "";
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-            return url;
+        const url = currentTab === "project"
+            ? (item.logoUrl ?? item.logo_url ?? item.projectLogoUrl ?? "")
+            : (item.avatarUrl ?? item.avatar_url ?? "");
+        if (!url || typeof url !== "string") return "";
+        const trimmed = url.trim();
+        if (!trimmed) return "";
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+            return trimmed;
         }
-        return `${config.FILE_SERVER}${url}`;
+        return `${config.FILE_SERVER || ""}${trimmed}`;
     };
 
     return (
@@ -194,19 +198,25 @@ const PeopleAndProjects = () => {
                             <div className={styles.emptyItems}>{getEmptyMessage()}</div>
                         ) : (
                             items.map(item => (
-                                <div key={item.id || item.username} className={styles.item}
+                                <div key={item.id ?? item.username} className={styles.item}
                                      onClick={() => openItem(item)}>
                                     <img
                                         src={getImageUrl(item) || (currentTab === "project" ? "/default_list_element_logo.jpg" : "/default_user_avatar.jpg")}
-                                        alt={item.projectName || item.username}
+                                        alt={currentTab === "project" ? (item.name ?? item.projectName) : item.username}
                                         className={styles.itemImage}
                                         onError={(e) => {
+                                            e.target.onerror = null;
                                             e.target.src = currentTab === "project" ? "/default_list_element_logo.jpg" : "/default_user_avatar.jpg";
                                         }}
                                     />
                                     <div className={styles.itemContent}>
                                         <div className={styles.itemName}>
-                                            {currentTab === "project" ? item.projectName : (
+                                            {currentTab === "project" ? (
+                                                <>
+                                                    {item.name ?? item.projectName}
+                                                    {item.owner && <span className={styles.itemUsername}> ({item.owner})</span>}
+                                                </>
+                                            ) : (
                                                 <>
                                                     {item.name}
                                                     <span className={styles.itemUsername}> ({item.username})</span>
@@ -214,7 +224,7 @@ const PeopleAndProjects = () => {
                                             )}
                                         </div>
                                         <div className={styles.itemDetail}>
-                                            {currentTab === "project" ? item.category : item.specialization}
+                                            {currentTab === "project" ? (item.category ?? item.categoryName) : item.specialization}
                                         </div>
                                     </div>
                                 </div>
