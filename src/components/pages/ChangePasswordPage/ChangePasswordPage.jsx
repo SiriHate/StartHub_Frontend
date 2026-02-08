@@ -15,117 +15,59 @@ const PasswordChangePage = () => {
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tokenParam = searchParams.get('token');
-        if (tokenParam) {
-            setToken(tokenParam);
-        }
+        if (tokenParam) setToken(tokenParam);
     }, [location]);
-
-    useEffect(() => {
-        window.scrollTo({ top: 50, behavior: 'smooth' });
-    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
-        if (!newPassword || !confirmNewPassword) {
-            setError('Пожалуйста, заполните все поля для ввода пароля.');
-            return;
-        }
-
-        if (newPassword.length < 8) {
-            setError('Пароль должен содержать не менее 8 символов.');
-            return;
-        }
-
-        if (newPassword !== confirmNewPassword) {
-            setError('Пароли не совпадают.');
-            return;
-        }
-
-        const data = {
-            token,
-            newPassword
-        };
+        if (!newPassword || !confirmNewPassword) { setError('Пожалуйста, заполните все поля.'); return; }
+        if (newPassword.length < 8) { setError('Пароль должен содержать не менее 8 символов.'); return; }
+        if (newPassword !== confirmNewPassword) { setError('Пароли не совпадают.'); return; }
 
         try {
             const response = await fetch(`${config.USER_SERVICE}/members/password_recovery_confirmations`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                method: 'PATCH', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({token, newPassword})
             });
-            if (response.ok) {
-                alert('Ваш пароль успешно изменён.');
-                navigate('/');
-            } else {
-                setError('Произошла ошибка при изменении пароля. Токен может быть недействительным или срок его действия истек.');
-                navigate('/');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setError('Произошла ошибка при изменении пароля.');
-            navigate('/');
-        }
+            if (response.ok) { alert('Ваш пароль успешно изменён.'); navigate('/'); }
+            else { setError('Ошибка. Токен может быть недействительным.'); navigate('/'); }
+        } catch (err) { setError('Произошла ошибка при изменении пароля.'); navigate('/'); }
     };
 
     return (
-        <div className={styles.loginPage}>
+        <>
             <Helmet>
-                <title>Восстановление пароля</title>
-                <html className={styles.html} />
+                <title>Новый пароль — StartHub</title>
                 <body className={styles.body} />
             </Helmet>
-            <div className={styles.loginPageContainer}>
-                <img src="/logo.png" alt="Логотип" className={styles.logo} />
-                <div className={styles.formContainer}>
-                    <div className={styles.wrapper}>
-                        <div className={styles.title}>Восстановление пароля</div>
-                        <form onSubmit={handleSubmit}>
-                            <div className={styles.field}>
-                                <input
-                                    type="password"
-                                    id="new-password"
-                                    name="new-password"
-                                    value={newPassword}
-                                    className={styles.fieldInput}
-                                    placeholder=" "
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    required
-                                />
-                                <label htmlFor="new-password" className={styles.fieldLabel}>Новый пароль</label>
-                            </div>
-                            <div className={styles.field}>
-                                <input
-                                    type="password"
-                                    id="confirm-new-password"
-                                    name="confirm-new-password"
-                                    value={confirmNewPassword}
-                                    className={styles.fieldInput}
-                                    placeholder=" "
-                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                    required
-                                />
-                                <label htmlFor="confirm-new-password" className={styles.fieldLabel}>Подтверждение пароля</label>
-                            </div>
-                            {error && <div className={styles.errorMessage}>{error}</div>}
-                            <div className={styles.field}>
-                                <input type="submit" value="Восстановить пароль" className={styles.submitButton} />
-                            </div>
-                            <div className={styles.signupLink}>
-                                <button
-                                    onClick={() => navigate('/')}
-                                    className={styles.linkButton}
-                                >
-                                    Вернуться к авторизации
-                                </button>
-                            </div>
-                        </form>
+            <div className={styles.page}>
+                <img src="/logo.png" alt="StartHub" className={styles.logo} />
+                <div className={styles.card}>
+                    <h1 className={styles.title}>Новый пароль</h1>
+                    <p className={styles.subtitle}>Введите новый пароль для вашего аккаунта</p>
+
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        <div className={styles.fieldGroup}>
+                            <label><i className="fas fa-lock"></i> Новый пароль</label>
+                            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Минимум 8 символов" required />
+                        </div>
+                        <div className={styles.fieldGroup}>
+                            <label><i className="fas fa-lock"></i> Подтверждение пароля</label>
+                            <input type="password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} placeholder="Повторите пароль" required />
+                        </div>
+
+                        {error && <div className={styles.errorMsg}><i className="fas fa-exclamation-circle"></i> {error}</div>}
+
+                        <button type="submit" className={styles.submitBtn}>Сохранить пароль</button>
+                    </form>
+
+                    <div className={styles.footer}>
+                        <button className={styles.linkBtn} onClick={() => navigate('/')}>Вернуться к авторизации</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

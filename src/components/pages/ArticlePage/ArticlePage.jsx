@@ -42,7 +42,6 @@ const ArticlePage = () => {
                 console.error('Ошибка при проверке роли пользователя:', error);
             }
         };
-
         checkUserRole();
     }, [authorizationToken]);
 
@@ -62,7 +61,6 @@ const ArticlePage = () => {
                     });
                     setLoading(false);
                 } else {
-                    console.error('Ошибка при получении данных:', response.status);
                     setRedirect(true);
                 }
             } catch (error) {
@@ -70,7 +68,6 @@ const ArticlePage = () => {
                 setRedirect(true);
             }
         };
-
         fetchArticle();
     }, [articleId]);
 
@@ -78,17 +75,10 @@ const ArticlePage = () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}/moderationPassed`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken },
                 body: JSON.stringify(true)
             });
-
-            if (!response.ok) {
-                throw new Error('Ошибка при одобрении статьи');
-            }
-
+            if (!response.ok) throw new Error('Ошибка при одобрении статьи');
             setArticle(prev => ({...prev, moderationPassed: true}));
         } catch (error) {
             console.error('Ошибка при одобрении статьи:', error);
@@ -99,72 +89,102 @@ const ArticlePage = () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}`, {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
-                }
+                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken }
             });
-
-            if (!response.ok) {
-                throw new Error('Ошибка при блокировке статьи');
-            }
-
+            if (!response.ok) throw new Error('Ошибка при блокировке статьи');
             navigate('/articles-and-news');
         } catch (error) {
             console.error('Ошибка при блокировке статьи:', error);
         }
     };
 
-    if (loading) {
-        return <div className={styles.loading}>Загрузка...</div>;
+    if (redirect) {
+        return <Navigate to="/not-found" replace />;
     }
 
-    if (redirect) {
-        return <Navigate to="/not-found" replace/>;
+    if (loading) {
+        return (
+            <>
+                <Helmet><title>Статья — StartHub</title><body className={styles.body} /></Helmet>
+                <Menu />
+                <div className={styles.page}>
+                    <div className={styles.loadingState}>
+                        <div className={styles.spinner}></div>
+                        <p>Загрузка статьи...</p>
+                    </div>
+                </div>
+            </>
+        );
     }
 
     return (
         <>
             <Helmet>
-                <title>{article.title}</title>
-                <html className={styles.html}/>
-                <body className={styles.body}/>
+                <title>{article.title} — StartHub</title>
+                <body className={styles.body} />
             </Helmet>
-            {isMember && <Menu/>}
+
+            {isMember && <Menu />}
+
             {isModerator && (
-                <div className={styles.moderatorPanel}>
-                    <h3 className={styles.moderatorPanelTitle}>Действия модератора</h3>
-                    <div className={styles.moderatorPanelActions}>
+                <div className={styles.moderatorBar}>
+                    <span className={styles.moderatorLabel}>
+                        <i className="fas fa-shield-alt"></i> Модерация
+                    </span>
+                    <div className={styles.moderatorActions}>
                         {!article.moderationPassed && (
-                            <button onClick={handleApprove} className={styles.approveButton}>
-                                Одобрить
+                            <button onClick={handleApprove} className={styles.approveBtn}>
+                                <i className="fas fa-check"></i> Одобрить
                             </button>
                         )}
-                        <button onClick={handleBlock} className={styles.blockButton}>
-                            Заблокировать
+                        <button onClick={handleBlock} className={styles.blockBtn}>
+                            <i className="fas fa-ban"></i> Заблокировать
                         </button>
                     </div>
                 </div>
             )}
-            <div className={styles.articleContainer}>
-                <button onClick={() => navigate(-1)} className={styles.backButton}>
-                    <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                    <span>Назад</span>
-                </button>
-                <div className={styles.projectCardHeader}>
-                    <h1 className={styles.articleTitle}>{article.title}</h1>
-                    {article.logoUrl && <img src={article.logoUrl} alt="Article preview" className={styles.articlePreview}/>}
-                </div>
-                <div className={styles.articleMetadata}>
-                    <div className={styles.projectCategory}>
-                        Автор: <span className={styles.articleAuthor}>{article.owner}</span>
+
+            <div className={styles.page}>
+                <div className={styles.container}>
+                    <div className={styles.topBar}>
+                        <button className={styles.backBtn} onClick={() => navigate(-1)}>
+                            <i className="fas fa-arrow-left"></i> Назад
+                        </button>
                     </div>
-                    <div className={styles.projectCategory}>
-                        Категория: <span className={styles.categoryBadge}>{article.category}</span>
+
+                    <div className={styles.hero}>
+                        {article.logoUrl && (
+                            <img
+                                src={article.logoUrl}
+                                alt={article.title}
+                                className={styles.heroImage}
+                                onError={e => { e.target.onerror = null; e.target.src = '/default_list_element_logo.jpg'; }}
+                            />
+                        )}
+                        <div className={styles.heroInfo}>
+                            <h1 className={styles.heroTitle}>{article.title}</h1>
+                            <div className={styles.metaRow}>
+                                {article.category && (
+                                    <span className={styles.categoryBadge}>
+                                        <i className="fas fa-tag"></i> {article.category}
+                                    </span>
+                                )}
+                                {article.owner && (
+                                    <span className={styles.ownerBadge}>
+                                        <i className="fas fa-user"></i> {article.owner}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className={styles.projectDescription}>
-                    <div className={styles.articleText} dangerouslySetInnerHTML={{__html: article.content}}/>
+
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <i className="fas fa-align-left"></i>
+                            <h2>Содержание</h2>
+                        </div>
+                        <div className={styles.contentBody} dangerouslySetInnerHTML={{__html: article.content}} />
+                    </div>
                 </div>
             </div>
         </>

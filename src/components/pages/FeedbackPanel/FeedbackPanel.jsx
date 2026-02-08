@@ -18,8 +18,8 @@ const FeedbackPanel = () => {
     const itemsPerPage = 5;
 
     const sortOptions = [
-        { value: 'desc', label: 'Более новые' },
-        { value: 'asc', label: 'Более старые' }
+        { value: 'desc', label: 'Сначала новые' },
+        { value: 'asc', label: 'Сначала старые' }
     ];
 
     const handleDeleteSurvey = async () => {
@@ -127,7 +127,10 @@ const FeedbackPanel = () => {
                 <Menu />
                 <div className={styles.feedbackPanelPage}>
                     <div className={styles.feedbackPanelContainer}>
-                        <h1 className={styles.panelTitle}>Загрузка...</h1>
+                        <div className={styles.loadingState}>
+                            <div className={styles.spinner}></div>
+                            <span>Загрузка отзывов...</span>
+                        </div>
                     </div>
                 </div>
             </>
@@ -144,15 +147,17 @@ const FeedbackPanel = () => {
                 <Menu />
                 <div className={styles.feedbackPanelPage}>
                     <div className={styles.feedbackPanelContainer}>
-                        <h1 className={styles.panelTitle}>Ошибка</h1>
-                        <p className={styles.errorMessage}>{error}</p>
-                        <button 
-                            className={styles.backButton}
-                            onClick={() => navigate(`/project/${projectId}`)}
-                        >
-                            <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                            Вернуться к проекту
-                        </button>
+                        <div className={styles.errorState}>
+                            <i className="fas fa-exclamation-triangle"></i>
+                            <p>{error}</p>
+                            <button 
+                                className={styles.backButton}
+                                onClick={() => navigate(`/project/${projectId}`)}
+                            >
+                                <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
+                                Вернуться к проекту
+                            </button>
+                        </div>
                     </div>
                 </div>
             </>
@@ -166,11 +171,15 @@ const FeedbackPanel = () => {
                 <body className={styles.body} />
             </Helmet>
             <Menu />
+
             {showDeleteConfirm && (
                 <div className={styles.modalOverlay} onClick={() => setShowDeleteConfirm(false)}>
                     <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                        <h3>Подтверждение удаления</h3>
-                        <p>Вы уверены, что хотите удалить форму обратной связи? Это действие нельзя отменить.</p>
+                        <div className={styles.modalIcon}>
+                            <i className="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>Удалить форму обратной связи?</h3>
+                        <p>Все собранные отзывы будут удалены. Это действие нельзя отменить.</p>
                         <div className={styles.modalButtons}>
                             <button 
                                 className={styles.cancelButton}
@@ -185,74 +194,95 @@ const FeedbackPanel = () => {
                                     handleDeleteSurvey();
                                 }}
                             >
-                                Удалить
+                                <i className="fas fa-trash-alt"></i> Удалить
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
             <div className={styles.feedbackPanelPage}>
                 <div className={styles.feedbackPanelContainer}>
-                    <div className={styles.headerButtons}>
+                    <div className={styles.headerRow}>
                         <button 
                             className={styles.backButton}
                             onClick={() => navigate(`/project/${projectId}`)}
                         >
                             <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                            Вернуться к проекту
+                            <span>Назад</span>
                         </button>
                         <button 
                             className={styles.deleteButton}
                             onClick={() => setShowDeleteConfirm(true)}
                         >
-                            Удалить форму
+                            <i className="fas fa-trash-alt"></i> Удалить форму
                         </button>
                     </div>
 
-                    <h1 className={styles.panelTitle}>Обратная связь</h1>
+                    <div className={styles.titleBlock}>
+                        <h1 className={styles.panelTitle}>Обратная связь</h1>
+                        <span className={styles.feedbackCount}>
+                            Отзывов: {feedbacks.length}
+                        </span>
+                    </div>
 
                     {feedbacks.length > 0 ? (
                         <>
-                            <div className={styles.feedbackControls}>
-                                <select 
-                                    className={styles.sortSelect}
-                                    value={sortBy}
-                                    onChange={handleSortChange}
-                                >
-                                    {sortOptions.map(option => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
+                            <div className={styles.toolbar}>
+                                <div className={styles.sortGroup}>
+                                    <i className="fas fa-sort-amount-down"></i>
+                                    <select 
+                                        className={styles.sortSelect}
+                                        value={sortBy}
+                                        onChange={handleSortChange}
+                                    >
+                                        {sortOptions.map(option => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             <div className={styles.feedbackList}>
                                 {getCurrentFeedbacks().map((feedback) => (
-                                    <div key={feedback.id} className={styles.feedbackItem}>
-                                        <div className={styles.feedbackHeader}>
-                                            <div className={styles.feedbackUser}>{feedback.respondentUsername}</div>
-                                            <div className={styles.feedbackDate}>{formatDate(feedback.submittedAt)}</div>
-                                            {feedback.averageRating !== undefined && (
-                                                <div className={styles.feedbackRating}>
-                                                    <div className={styles.feedbackRatingStars}>
+                                    <div key={feedback.id} className={styles.feedbackCard}>
+                                        <div className={styles.cardHeader}>
+                                            <div className={styles.cardUser}>
+                                                <i className="fas fa-user-circle"></i>
+                                                <span>{feedback.respondentUsername}</span>
+                                            </div>
+                                            <div className={styles.cardMeta}>
+                                                {feedback.averageRating !== undefined && (
+                                                    <div className={styles.cardRating}>
                                                         {[1, 2, 3, 4, 5].map((star) => (
                                                             <span 
                                                                 key={star} 
-                                                                className={`${styles.feedbackRatingStar} ${star <= feedback.averageRating ? styles.active : ''}`}
+                                                                className={`${styles.star} ${star <= feedback.averageRating ? styles.starActive : ''}`}
                                                             >
                                                                 ★
                                                             </span>
                                                         ))}
                                                     </div>
-                                                </div>
-                                            )}
+                                                )}
+                                                <span className={styles.cardDate}>
+                                                    <i className="fas fa-clock"></i>
+                                                    {formatDate(feedback.submittedAt)}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className={styles.feedbackAnswers}>
+                                        <div className={styles.cardAnswers}>
                                             {feedback.answers.map((answer) => (
-                                                <div key={answer.id} className={styles.feedbackAnswer}>
-                                                    <div className={styles.feedbackQuestion}>{answer.questionText}</div>
-                                                    <div className={styles.feedbackText}>{answer.answerText}</div>
+                                                <div key={answer.id} className={styles.answerBlock}>
+                                                    <div className={styles.answerQuestion}>
+                                                        <span className={styles.qLabel}>В</span>
+                                                        {answer.questionText}
+                                                    </div>
+                                                    <div className={styles.answerText}>
+                                                        <span className={styles.aLabel}>О</span>
+                                                        {answer.answerText}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -260,39 +290,39 @@ const FeedbackPanel = () => {
                                 ))}
                             </div>
 
-                            <div className={styles.pagination}>
-                                <button
-                                    className={styles.paginationButton}
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                >
-                                    Назад
-                                </button>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            {totalPages > 1 && (
+                                <div className={styles.pagination}>
                                     <button
-                                        key={page}
-                                        className={`${styles.paginationButton} ${currentPage === page ? styles.active : ''}`}
-                                        onClick={() => handlePageChange(page)}
+                                        className={styles.pageBtn}
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
                                     >
-                                        {page}
+                                        <i className="fas fa-chevron-left"></i>
                                     </button>
-                                ))}
-                                <button
-                                    className={styles.paginationButton}
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                >
-                                    Вперед
-                                </button>
-                            </div>
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                        <button
+                                            key={page}
+                                            className={`${styles.pageBtn} ${currentPage === page ? styles.pageBtnActive : ''}`}
+                                            onClick={() => handlePageChange(page)}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                    <button
+                                        className={styles.pageBtn}
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                    >
+                                        <i className="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            )}
                         </>
                     ) : (
                         <div className={styles.emptyState}>
-                            <div className={styles.emptyStateIcon}>📝</div>
-                            <h2 className={styles.emptyStateTitle}>Пока нет отзывов</h2>
-                            <p className={styles.emptyStateText}>
-                                Форма обратной связи активна, но пока никто не оставил свой отзыв.
-                            </p>
+                            <i className="fas fa-inbox"></i>
+                            <h2>Пока нет отзывов</h2>
+                            <p>Форма обратной связи активна, но пока никто не оставил свой отзыв.</p>
                         </div>
                     )}
                 </div>

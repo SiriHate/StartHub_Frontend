@@ -10,7 +10,6 @@ import { Stomp } from '@stomp/stompjs';
 function MyChats() {
     const [chats, setChats] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [selectedChat, setSelectedChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -34,19 +33,22 @@ function MyChats() {
     const [groupChatName, setGroupChatName] = useState('');
     const [groupParticipants, setGroupParticipants] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
-    const [searchLoading, setSearchLoading] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [showChatManagePanel, setShowChatManagePanel] = useState(false);
     const [chatMembers, setChatMembers] = useState([]);
     const [currentUserRoleInChat, setCurrentUserRoleInChat] = useState(null);
     const [loadingMembers, setLoadingMembers] = useState(false);
+    const [managePanelSearchQuery, setManagePanelSearchQuery] = useState('');
+    const [managePanelSearchResults, setManagePanelSearchResults] = useState([]);
+    const [managePanelShowDropdown, setManagePanelShowDropdown] = useState(false);
     const RECONNECT_INTERVAL_MS = 7000;
     const MAX_RECONNECT_ATTEMPTS = 18;
-    const navigate = useNavigate();
     const messagesEndRef = useRef(null);
     const searchTimeoutRef = useRef(null);
     const dropdownRef = useRef(null);
+    const managePanelDropdownRef = useRef(null);
+    const managePanelSearchTimeoutRef = useRef(null);
     const chatsListRef = useRef(null);
     const messagesContainerRef = useRef(null);
     const pendingHistoryPageRef = useRef(null);
@@ -56,8 +58,15 @@ function MyChats() {
     const selectedChatRef = useRef(selectedChat);
     selectedChatRef.current = selectedChat;
 
+    const navigate = useNavigate();
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
     const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+
+    const openProfile = (username) => {
+        if (username && username !== currentUsername) {
+            navigate(`/members/profile/${username}`);
+        }
+    };
 
     const fetchMyChats = async (page, append = false) => {
         try {
@@ -84,9 +93,6 @@ function MyChats() {
             return data;
         } catch (err) {
             console.error('Error fetching chats:', err);
-            if (!append) {
-                setError('Ошибка при загрузке чатов');
-            }
             throw err;
         } finally {
             if (!append) setLoading(false);
@@ -111,7 +117,6 @@ function MyChats() {
                 setCurrentUsername(userData.username);
             } catch (error) {
                 console.error('Error fetching user data:', error);
-                setError('Ошибка при загрузке данных пользователя');
                 setLoading(false);
                 return;
             }
@@ -119,7 +124,6 @@ function MyChats() {
 
         const loadInitial = async () => {
             setLoading(true);
-            setError(null);
             await fetchUserData();
             try {
                 await fetchMyChats(0, false);
@@ -162,7 +166,6 @@ function MyChats() {
             client.connect(headers, 
                 (frame) => {
                     setIsConnected(true);
-                    setError(null);
                     setReconnectAttempts(0);
                     
                     const subscription = client.subscribe(`/topic/chat/${chatId}`, (message) => {
@@ -248,15 +251,12 @@ function MyChats() {
 
     const handleReconnect = (chatId) => {
         if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-            setError(null);
             setReconnectAttempts(prev => prev + 1);
             setTimeout(() => {
                 if (selectedChatRef.current?.id === chatId) {
                     connectToWebSocket(chatId);
                 }
             }, RECONNECT_INTERVAL_MS);
-        } else {
-            setError('Не удалось установить соединение с сервером чата. Попробуйте обновить страницу.');
         }
     };
 
@@ -387,7 +387,6 @@ function MyChats() {
                 JSON.stringify(messageRequest)
             );
             setNewMessage('');
-            setError(null);
         } catch (error) {
             if (selectedChat) {
                 handleReconnect(selectedChat.id);
@@ -426,9 +425,7 @@ function MyChats() {
             setShowCreateChatModal(false);
             setSearchUsername('');
             setSelectedUser(null);
-        } catch (error) {
-            setError('Ошибка при создании личного чата');
-        }
+        } catch (error) {}
     };
 
     const handleCreateGroupChat = async () => {
@@ -459,9 +456,7 @@ function MyChats() {
             setShowCreateChatModal(false);
             setGroupChatName('');
             setGroupParticipants([]);
-        } catch (error) {
-            setError('Ошибка при создании группового чата');
-        }
+        } catch (error) {}
     };
 
     const searchUsers = async (query) => {
@@ -471,7 +466,6 @@ function MyChats() {
             return;
         }
 
-        setSearchLoading(true);
         try {
             const response = await fetch(`${config.USER_SERVICE}/members?username=${query}&page=0&size=10`, {
                 headers: {
@@ -486,11 +480,8 @@ function MyChats() {
                 setShowDropdown(true);
             }
         } catch (error) {
-            setError('Ошибка при поиске пользователей');
             setSearchResults([]);
             setShowDropdown(false);
-        } finally {
-            setSearchLoading(false);
         }
     };
 
@@ -512,6 +503,9 @@ function MyChats() {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
+            }
+            if (managePanelDropdownRef.current && !managePanelDropdownRef.current.contains(event.target)) {
+                setManagePanelShowDropdown(false);
             }
         };
 
@@ -597,31 +591,6 @@ function MyChats() {
         };
     }, []);
 
-    const handleHideChat = async () => {
-        if (!selectedChat) return;
-
-        try {
-            const response = await fetch(`${config.CHAT_SERVICE}/private_chats/${selectedChat.id}/toggle_visibility`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to hide chat');
-            }
-
-            // Удаляем чат из списка
-            setChats(prevChats => prevChats.filter(chat => chat.id !== selectedChat.id));
-            setSelectedChat(null);
-            setMessages([]);
-        } catch (error) {
-            setError('Ошибка при скрытии чата');
-        }
-    };
-
     const fetchChatMembers = async (chatId, page = 0, size = 50) => {
         setLoadingMembers(true);
         try {
@@ -650,14 +619,14 @@ function MyChats() {
     };
 
     useEffect(() => {
-        if (selectedChat?.isGroup) {
+        if (selectedChat?.type === 'GROUP') {
             fetchChatMembers(selectedChat.id);
         } else {
             setCurrentUserRoleInChat(null);
             setChatMembers([]);
             setShowChatManagePanel(false);
         }
-    }, [selectedChat?.id, selectedChat?.isGroup]);
+    }, [selectedChat?.id, selectedChat?.type === 'GROUP']);
 
     const canExcludeMember = (member) => {
         if (!member || member.username === currentUsername || (member.userUsername && member.userUsername === currentUsername)) return false;
@@ -689,36 +658,86 @@ function MyChats() {
                 }
             );
             if (!response.ok) throw new Error('Failed to change role');
-            if (selectedChat?.isGroup) {
+            if (selectedChat?.type === 'GROUP') {
                 await fetchChatMembers(selectedChat.id);
             }
-        } catch (err) {
-            setError('Ошибка при изменении роли');
-        }
+        } catch (err) {}
     };
 
     const handleExcludeMember = async (memberId) => {
-        if (!selectedChat?.isGroup) return;
+        if (selectedChat?.type !== 'GROUP') return;
         try {
             const response = await fetch(
-                `${config.CHAT_SERVICE}/chats/${selectedChat.id}/members/${memberId}`,
+                `${config.CHAT_SERVICE}/chats/members/${memberId}`,
                 { method: 'DELETE', headers: { 'Authorization': authorizationToken } }
             );
             if (!response.ok) throw new Error('Failed to exclude');
             await fetchChatMembers(selectedChat.id);
-        } catch (err) {
-            setError('Ошибка при исключении участника');
+        } catch (err) {}
+    };
+
+    const searchUsersForManagePanel = async (query) => {
+        if (query.length < 2) {
+            setManagePanelSearchResults([]);
+            setManagePanelShowDropdown(false);
+            return;
         }
+        try {
+            const response = await fetch(`${config.USER_SERVICE}/members?username=${query}&page=0&size=10`, {
+                headers: { 'Authorization': authorizationToken }
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            const users = (data.content || []).filter(
+                user => user.username !== currentUsername &&
+                !chatMembers.some(m => (m.username || m.userUsername) === user.username)
+            ).slice(0, 8);
+            setManagePanelSearchResults(users);
+            setManagePanelShowDropdown(true);
+        } catch (err) {
+            setManagePanelSearchResults([]);
+            setManagePanelShowDropdown(false);
+        }
+    };
+
+    const handleManagePanelSearchChange = (e) => {
+        const value = e.target.value;
+        setManagePanelSearchQuery(value);
+        if (managePanelSearchTimeoutRef.current) clearTimeout(managePanelSearchTimeoutRef.current);
+        managePanelSearchTimeoutRef.current = setTimeout(() => searchUsersForManagePanel(value), 300);
+    };
+
+    const handleInviteToChat = async (username) => {
+        if (selectedChat?.type !== 'GROUP') return;
+        try {
+            const response = await fetch(
+                `${config.CHAT_SERVICE}/chats/${selectedChat.id}/members`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authorizationToken
+                    },
+                    body: JSON.stringify({ username, role: 'MEMBER' })
+                }
+            );
+            if (!response.ok) return;
+            await fetchChatMembers(selectedChat.id);
+            setManagePanelSearchQuery('');
+            setManagePanelSearchResults([]);
+            setManagePanelShowDropdown(false);
+        } catch (err) {}
     };
 
     const getMemberDisplayName = (member) => member?.username ?? member?.userUsername ?? '—';
 
     return (
         <div>
-            <NavigationBar />
             <Helmet>
-                <title>Мои чаты - StartHub</title>
+                <title>Мои чаты — StartHub</title>
+                <body className={styles.body} />
             </Helmet>
+            <NavigationBar />
             <div className={styles.chatsContainer}>
                 <div
                     ref={chatsListRef}
@@ -746,8 +765,6 @@ function MyChats() {
                     </div>
                     {loading ? (
                         <div className={styles.loadingInList}>Загрузка...</div>
-                    ) : error ? (
-                        <div className={styles.emptyState}>Ошибка при загрузке чатов</div>
                     ) : filteredChats.length === 0 ? (
                         <div className={styles.emptyState}>
                             {searchQuery ? 'Чаты не найдены' : 'У вас пока нет чатов'}
@@ -777,7 +794,7 @@ function MyChats() {
                             <div className={styles.chatHeader}>
                                 <div className={styles.chatTitle}>{getChatName(selectedChat)}</div>
                                 <div className={styles.chatHeaderActions}>
-                                    {selectedChat.isGroup && (currentUserRoleInChat === 'OWNER' || currentUserRoleInChat === 'MODERATOR') && (
+                                    {selectedChat.type === 'GROUP' && (currentUserRoleInChat === 'OWNER' || currentUserRoleInChat === 'MODERATOR') && (
                                         <button
                                             type="button"
                                             onClick={() => setShowChatManagePanel(true)}
@@ -786,21 +803,8 @@ function MyChats() {
                                             <i className="fas fa-cog"></i> Управление чатом
                                         </button>
                                     )}
-                                    {selectedChat.isGroup === false && (
-                                        <button onClick={handleHideChat} className={styles.hideChatButton}>
-                                            <i className="fas fa-eye-slash"></i> Скрыть чат
-                                        </button>
-                                    )}
                                 </div>
                             </div>
-                            {error && (
-                                <div className={styles.errorMessage}>
-                                    {error}
-                                    <button onClick={() => connectToWebSocket(selectedChat.id)} className={styles.retryButton}>
-                                        Переподключиться
-                                    </button>
-                                </div>
-                            )}
                             <div
                                 ref={messagesContainerRef}
                                 className={styles.messagesContainer}
@@ -832,8 +836,11 @@ function MyChats() {
                                             }`}
                                         >
                                             <div className={styles.messageHeader}>
-                                                <span className={styles.messageAuthor}>{message.sender}</span>
-                                                <span className={styles.messageTime}>{formatDate(message.timestamp)}</span>
+                                                <span
+                                                    className={`${styles.messageAuthor} ${message.sender !== currentUsername ? styles.clickable : ''}`}
+                                                    onClick={(e) => { e.stopPropagation(); openProfile(message.sender); }}
+                                                >{message.sender}</span>
+                                                <span className={styles.messageTime}>{formatDate(message.sendAt ?? message.timestamp)}</span>
                                             </div>
                                             <div className={styles.messageText}>{message.content}</div>
                                         </div>
@@ -864,21 +871,56 @@ function MyChats() {
                 </div>
             </div>
 
-            {showChatManagePanel && selectedChat?.isGroup && (
-                <div className={styles.managePanelOverlay} onClick={() => setShowChatManagePanel(false)}>
+            {showChatManagePanel && selectedChat?.type === 'GROUP' && (
+                <div className={styles.managePanelOverlay} onClick={() => {
+                    setShowChatManagePanel(false);
+                    setManagePanelSearchQuery('');
+                    setManagePanelSearchResults([]);
+                    setManagePanelShowDropdown(false);
+                }}>
                     <div className={styles.managePanel} onClick={e => e.stopPropagation()}>
                         <div className={styles.managePanelHeader}>
                             <h3 className={styles.managePanelTitle}>Участники чата</h3>
                             <button
                                 type="button"
                                 className={styles.modalClose}
-                                onClick={() => setShowChatManagePanel(false)}
+                                onClick={() => {
+                                    setShowChatManagePanel(false);
+                                    setManagePanelSearchQuery('');
+                                    setManagePanelSearchResults([]);
+                                    setManagePanelShowDropdown(false);
+                                }}
                                 aria-label="Закрыть"
                             >
                                 <i className="fas fa-times"></i>
                             </button>
                         </div>
                         <div className={styles.managePanelBody}>
+                            <div className={styles.managePanelInvite} ref={managePanelDropdownRef}>
+                                <label className={styles.modalLabel}>Пригласить в чат</label>
+                                <div className={styles.searchContainer}>
+                                    <input
+                                        type="text"
+                                        placeholder="Поиск пользователей..."
+                                        value={managePanelSearchQuery}
+                                        onChange={handleManagePanelSearchChange}
+                                    />
+                                    {managePanelShowDropdown && managePanelSearchResults.length > 0 && (
+                                        <div className={styles.dropdown}>
+                                            {managePanelSearchResults.map(user => (
+                                                <div
+                                                    key={user.username}
+                                                    className={styles.dropdownItem}
+                                                    onClick={() => handleInviteToChat(user.username)}
+                                                >
+                                                    {user.username}
+                                                    <span className={styles.inviteHint}>Пригласить</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                             {loadingMembers ? (
                                 <div className={styles.loadingInList}>Загрузка...</div>
                             ) : (
@@ -894,7 +936,10 @@ function MyChats() {
                                         return (
                                             <li key={id} className={styles.memberItem}>
                                                 <div className={styles.memberInfo}>
-                                                    <span className={styles.memberName}>{name}{isMe ? ' (вы)' : ''}</span>
+                                                    <span
+                                                        className={`${styles.memberName} ${!isMe ? styles.clickable : ''}`}
+                                                        onClick={() => openProfile(name)}
+                                                    >{name}{isMe ? ' (вы)' : ''}</span>
                                                     <span className={`${styles.memberRoleBadge} ${styles[`role${role}`]}`}>
                                                         {role === 'OWNER' ? 'Владелец' : role === 'MODERATOR' ? 'Модератор' : 'Участник'}
                                                     </span>
@@ -944,17 +989,20 @@ function MyChats() {
                 <div className={styles.modalOverlay} onClick={() => setShowCreateChatModal(false)}>
                     <div className={styles.modal} onClick={e => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
-                            <h2 className={styles.modalTitle}>Создать чат</h2>
+                            <div className={styles.modalHeaderText}>
+                                <h2 className={styles.modalTitle}>Создать чат</h2>
+                                <p className={styles.modalSubtitle}>Выберите тип чата</p>
+                            </div>
                             <button
                                 type="button"
                                 className={styles.modalClose}
                                 onClick={() => setShowCreateChatModal(false)}
                                 aria-label="Закрыть"
+                                title="Закрыть"
                             >
                                 <i className="fas fa-times"></i>
                             </button>
                         </div>
-                        <p className={styles.modalSubtitle}>Выберите тип чата</p>
                         <div className={styles.modalChoiceButtons}>
                             <button
                                 type="button"

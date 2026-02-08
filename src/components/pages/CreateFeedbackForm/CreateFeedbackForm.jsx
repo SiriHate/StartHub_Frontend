@@ -25,9 +25,7 @@ const CreateFeedbackForm = () => {
     }, [questions]);
 
     const deleteQuestion = (id) => {
-        if (questions.length > 1) {
-            setQuestions(questions.filter(q => q.id !== id));
-        }
+        if (questions.length > 1) setQuestions(questions.filter(q => q.id !== id));
     };
 
     const updateQuestion = (id, text) => {
@@ -36,94 +34,78 @@ const CreateFeedbackForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (questions.some(q => !q.text.trim())) {
-            alert('Пожалуйста, заполните все вопросы');
-            return;
-        }
+        if (questions.some(q => !q.text.trim())) { alert('Пожалуйста, заполните все вопросы'); return; }
 
         try {
-            const surveyData = {
-                questions: questions.map(q => ({
-                    questionText: q.text.trim()
-                }))
-            };
-
+            const surveyData = { questions: questions.map(q => ({ questionText: q.text.trim() })) };
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken ? ` ${authorizationToken}` : ''
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken ? ` ${authorizationToken}` : '' },
                 body: JSON.stringify(surveyData)
             });
-
-            if (response.ok) {
-                navigate(`/manage_project/${projectId}`);
-            } else {
-                const errorData = await response.json();
-                alert(`Ошибка при создании формы: ${errorData.message || 'Неизвестная ошибка'}`);
-            }
-        } catch (error) {
-            console.error('Ошибка при отправке формы:', error);
-            alert('Произошла ошибка при отправке формы. Пожалуйста, попробуйте позже.');
-        }
+            if (response.ok) { navigate(`/manage_project/${projectId}`); }
+            else { const d = await response.json(); alert(`Ошибка: ${d.message || 'Неизвестная ошибка'}`); }
+        } catch (error) { alert('Произошла ошибка при отправке формы.'); }
     };
 
     return (
         <>
             <Helmet>
-                <title>Создание формы обратной связи - StartHub</title>
+                <title>Создание формы обратной связи — StartHub</title>
                 <body className={styles.body} />
             </Helmet>
             <Menu />
-            <div className={styles.createFeedbackPage}>
-                <div className={styles.createFeedbackContainer} ref={containerRef}>
-                    <button 
-                        onClick={() => navigate(`/manage_project/${projectId}`)} 
-                        className={styles.backButton}
-                    >
-                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                        <span>Назад</span>
-                    </button>
-                    <h1 className={styles.formTitle}>Создание формы обратной связи</h1>
-                    <form onSubmit={handleSubmit}>
-                        <div className={styles.questionsList}>
-                            {questions.map((question, index) => (
-                                <div key={question.id} className={styles.questionItem}>
-                                    <div className={styles.questionHeader}>
-                                        <span className={styles.questionNumber}>Вопрос {index + 1}</span>
-                                        {questions.length > 1 && (
-                                            <button
-                                                type="button"
-                                                className={styles.deleteQuestionBtn}
-                                                onClick={() => deleteQuestion(question.id)}
-                                            >
-                                                Удалить
-                                            </button>
-                                        )}
-                                    </div>
-                                    <textarea
-                                        className={styles.questionInput}
-                                        value={question.text}
-                                        onChange={(e) => updateQuestion(question.id, e.target.value)}
-                                        placeholder="Введите текст вопроса..."
-                                        required
-                                    />
-                                </div>
-                            ))}
+            <div className={styles.page}>
+                <div className={styles.container} ref={containerRef}>
+                    {/* Top bar */}
+                    <div className={styles.topBar}>
+                        <button className={styles.backBtn} onClick={() => navigate(`/manage_project/${projectId}`)}>
+                            <i className="fas fa-arrow-left"></i> Назад
+                        </button>
+                    </div>
+
+                    {/* Card */}
+                    <div className={styles.card}>
+                        <div className={styles.cardHeader}>
+                            <i className="fas fa-clipboard-list"></i>
+                            <h1>Форма обратной связи</h1>
                         </div>
-                        <button
-                            type="button"
-                            className={styles.addQuestionBtn}
-                            onClick={addQuestion}
-                        >
-                            Добавить вопрос
-                        </button>
-                        <button type="submit" className={styles.submitButton}>
-                            Создать форму
-                        </button>
-                    </form>
+                        <p className={styles.cardSubtitle}>Добавьте вопросы, которые увидят участники проекта</p>
+
+                        <form onSubmit={handleSubmit} className={styles.form}>
+                            <div className={styles.questionsList}>
+                                {questions.map((question, index) => (
+                                    <div key={question.id} className={styles.questionCard}>
+                                        <div className={styles.questionHeader}>
+                                            <span className={styles.questionBadge}>
+                                                <i className="fas fa-question-circle"></i> Вопрос {index + 1}
+                                            </span>
+                                            {questions.length > 1 && (
+                                                <button type="button" className={styles.removeBtn} onClick={() => deleteQuestion(question.id)} title="Удалить вопрос">
+                                                    <i className="fas fa-times"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                        <textarea
+                                            className={styles.questionInput}
+                                            value={question.text}
+                                            onChange={(e) => updateQuestion(question.id, e.target.value)}
+                                            placeholder="Введите текст вопроса..."
+                                            required
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button type="button" className={styles.addBtn} onClick={addQuestion}>
+                                <i className="fas fa-plus"></i> Добавить вопрос
+                            </button>
+
+                            <button type="submit" className={styles.submitBtn}>
+                                <i className="fas fa-paper-plane"></i> Создать форму
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </>

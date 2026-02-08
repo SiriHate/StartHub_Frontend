@@ -1,170 +1,172 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-
-* {
+.body {
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.html {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.body {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
     background-attachment: fixed;
 }
 
-.registrationPage {
-    height: 100%;
-    width: 100%;
+.page {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
-    background-attachment: fixed;
-    font-family: 'Montserrat', sans-serif;
-    box-sizing: border-box;
-    padding-top: 15px;
-    padding-bottom: 30px;
-}
-
-::selection {
-    background: #4158d0;
-    color: #fff;
-}
-
-.linkButton {
-    background: none;
-    border: none;
-    color: #007bff;
-    text-decoration: underline;
-    cursor: pointer;
-    padding: 0;
-    font: inherit;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
 }
 
 .logo {
-    width: 250px;
+    width: 200px;
     height: auto;
-    z-index: 10;
-    margin: 10px auto;
-    display: block;
+    margin-bottom: 32px;
 }
 
-.formContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.wrapper {
-    width: 400px;
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.1);
-    position: relative;
-    margin-bottom: 30px;
+.card {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(30, 30, 65, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 36px 32px;
+    backdrop-filter: blur(12px);
 }
 
 .title {
-    font-size: 28px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 80px;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
     color: #fff;
-    user-select: none;
-    border-radius: 15px 15px 0 0;
-    background: #4a90e2;
+    text-align: center;
+}
+
+.subtitle {
+    margin: 6px 0 28px;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
 }
 
 .form {
-    padding: 10px 30px 40px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.field {
-    height: 50px;
-    width: 100%;
-    margin-top: 20px;
-    position: relative;
+.row {
+    display: flex;
+    gap: 12px;
 }
 
-.input {
-    height: 100%;
+.row .fieldGroup {
+    flex: 1;
+}
+
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fieldGroup label {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.fieldGroup input {
+    padding: 11px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
     width: 100%;
-    outline: none;
-    font-size: 17px;
-    padding-left: 20px;
-    border: 1px solid lightgrey;
-    border-radius: 25px;
-    transition: all 0.3s ease;
     box-sizing: border-box;
 }
 
-.label {
-    position: absolute;
-    top: 0%;
-    left: 20px;
-    color: #4158d0;
-    font-weight: 400;
-    font-size: 14px;
-    background: #fff;
-    transform: translateY(-50%);
-    transition: all 0.3s ease;
+.fieldGroup input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
 }
 
-.submitButton {
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 20px;
-    font-weight: 500;
+.fieldGroup input:focus {
+    outline: none;
+    border-color: rgba(74, 158, 237, 0.45);
+}
+
+.fieldGroup input[type="date"] {
+    color-scheme: dark;
+}
+
+.errorMsg {
+    padding: 10px 14px;
+    background: rgba(220, 60, 60, 0.1);
+    border: 1px solid rgba(220, 60, 60, 0.2);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.84rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.successMsg {
+    padding: 10px 14px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 8px;
+    color: #86efac;
+    font-size: 0.84rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.submitBtn {
+    margin-top: 6px;
+    padding: 13px;
+    background: rgba(74, 158, 237, 0.15);
+    border: 1px solid rgba(74, 158, 237, 0.3);
+    border-radius: 10px;
+    color: #a3d4ff;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
-    background: #4a90e2;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    width: 100%;
+    font-family: inherit;
+    transition: all 0.2s;
 }
 
-.submitButtonActive {
-    transform: scale(0.95);
+.submitBtn:hover {
+    background: rgba(74, 158, 237, 0.25);
+    color: #fff;
 }
 
-.signupLink {
-    color: #262626;
-    margin-top: 20px;
-    text-align: center;
+.linkBtn {
+    background: none;
+    border: none;
+    color: #4a9eed;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    transition: color 0.15s;
 }
 
-.signupLinkA {
-    color: #4158d0;
-    text-decoration: none;
-}
-
-.signupLinkAHover {
+.linkBtn:hover {
+    color: #a3d4ff;
     text-decoration: underline;
 }
 
-.error {
-    color: #e74c3c;
-    background-color: #fde8e8;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
+.footer {
+    margin-top: 24px;
     text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
 }
 
-.success {
-    color: #2ecc71;
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: 500;
+@media (max-width: 520px) {
+    .card { padding: 28px 20px; }
+    .row { flex-direction: column; gap: 16px; }
+    .logo { width: 160px; }
 }

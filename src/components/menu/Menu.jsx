@@ -20,8 +20,13 @@ const Menu = () => {
                             </Link>
                         </li>
                         <li className={styles.navItem}>
-                            <Link to="/people_and_projects" className={getActiveClass("/people_and_projects")}>
-                                Поиск людей и проектов
+                            <Link to="/projects" className={getActiveClass("/projects")}>
+                                <i className={`fas fa-rocket ${styles.faUser}`}/> Проекты
+                            </Link>
+                        </li>
+                        <li className={styles.navItem}>
+                            <Link to="/people" className={getActiveClass("/people")}>
+                                <i className={`fas fa-users ${styles.faUser}`}/> Пользователи
                             </Link>
                         </li>
                         <li className={styles.navItem}>

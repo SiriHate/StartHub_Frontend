@@ -94,26 +94,6 @@ function PersonalMemberAccount() {
             .catch(error => console.error('Fetch error:', error));
     }, [authorizationToken]);
 
-    const handleAboutChange = (event) => {
-        setAbout(event.target.value);
-    };
-
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    };
-
-    const handlePhoneChange = (event) => {
-        setPhone(event.target.value);
-    };
-
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
-
-    const handleBirthdayChange = (event) => {
-        setBirthday(event.target.value);
-    };
-
     const handleProfileHiddenChange = (event) => {
         const newProfileHiddenFlag = event.target.checked;
         setProfileHiddenFlag(newProfileHiddenFlag);
@@ -139,7 +119,7 @@ function PersonalMemberAccount() {
 
     const handleSave = () => {
         if (!isValidEmail(email)) {
-            alert('Please enter a valid email address.');
+            alert('Пожалуйста, введите корректный email.');
             return;
         }
 
@@ -154,7 +134,7 @@ function PersonalMemberAccount() {
                 phone: phone,
                 email: email,
                 birthday: birthday,
-                specializationId: specialization || null, // передаем ID
+                specializationId: specialization || null,
                 about: about,
                 profileHiddenFlag: profileHiddenFlag
             }),
@@ -173,19 +153,11 @@ function PersonalMemberAccount() {
         navigate('/');
     };
 
-    const handleCurrentPasswordChange = (event) => {
-        setCurrentPassword(event.target.value);
-    };
-
-    const handleNewPasswordChange = (event) => {
-        setNewPassword(event.target.value);
-    };
-
     const showPasswordFeedback = (message, type) => {
         if (passwordFeedbackTimeoutRef.current) {
             clearTimeout(passwordFeedbackTimeoutRef.current);
         }
-        setPasswordChangeFeedback({ message, type });
+        setPasswordChangeFeedback({message, type});
         passwordFeedbackTimeoutRef.current = setTimeout(() => {
             setPasswordChangeFeedback(null);
             passwordFeedbackTimeoutRef.current = null;
@@ -234,21 +206,13 @@ function PersonalMemberAccount() {
             .catch(error => console.error('Delete error:', error));
     };
 
-    const handleCancelDelete = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleOpenDeleteModal = () => {
-        setIsModalOpen(true);
-    };
-
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
             setAvatar(URL.createObjectURL(file));
             handleSubmitUpload(file);
         } else {
-            alert('Please select a JPG or PNG image.');
+            alert('Выберите изображение формата JPG или PNG.');
         }
     };
 
@@ -293,126 +257,217 @@ function PersonalMemberAccount() {
         }
     };
 
-    return (<div className={styles.profilePage}>
+    if (isLoading) {
+        return (
+            <>
+                <Helmet>
+                    <title>Личный кабинет — StartHub</title>
+                    <body className={styles.body}/>
+                </Helmet>
+                <Menu/>
+                <div className={styles.page}>
+                    <div className={styles.loadingState}>
+                        <div className={styles.spinner}></div>
+                        <p>Загрузка профиля...</p>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+    if (profileError) {
+        return (
+            <>
+                <Helmet>
+                    <title>Личный кабинет — StartHub</title>
+                    <body className={styles.body}/>
+                </Helmet>
+                <Menu/>
+                <div className={styles.page}>
+                    <div className={styles.errorState}>
+                        <i className="fas fa-exclamation-triangle"></i>
+                        <p>Не удалось загрузить профиль</p>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+    return (
+        <>
             <Helmet>
-                <title>Личный кабинет</title>
+                <title>Личный кабинет — StartHub</title>
+                <body className={styles.body}/>
             </Helmet>
             <Menu/>
-            {isLoading ? null : profileError ? (<div className={styles.errorContainer}>
-                    <h2>Не удалось загрузить профиль</h2>
-                </div>) : (<div className={styles.profileCard}>
-                    <div className={styles.profileCardHeader}>
-                        <div className={styles.hideProfileWrapper}>
-                            <span className={styles.label}>Скрыть профиль</span>
-                            <input type="checkbox" className={styles.infoInput} checked={profileHiddenFlag}
-                                   onChange={handleProfileHiddenChange}/>
+            <div className={styles.page}>
+                <div className={styles.container}>
+                    {/* Header Card */}
+                    <div className={styles.headerCard}>
+                        <div className={styles.avatarBlock}>
+                            <img
+                                src={avatar ? avatar : '/default_user_avatar.jpg'}
+                                alt="User Avatar"
+                                onError={e => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/default_user_avatar.jpg';
+                                }}
+                                className={styles.avatar}
+                            />
+                            <input type="file" onChange={handleFileUpload} ref={fileInputRef}
+                                   style={{display: 'none'}} accept="image/jpeg,image/png"/>
+                            <button className={styles.uploadBtn} onClick={handleUploadClick}>
+                                <i className="fas fa-camera"></i> Загрузить фото
+                            </button>
                         </div>
-                        <img
-                            src={avatar ? avatar : '/default_user_avatar.jpg'}
-                            alt="User Avatar"
-                            onError={e => {
-                                e.target.onerror = null;
-                                e.target.src = '/default_user_avatar.jpg';
-                            }}
-                            className={styles.avatar}
-                        />
-                        <input type="file" className={styles.uploadInput} onChange={handleFileUpload} ref={fileInputRef}
-                               style={{display: 'none'}}/>
-                        <div className={styles.username}>{username}</div>
-                        <button className={styles.uploadBtn} onClick={handleUploadClick}>
-                            Загрузить фото
+                        <div className={styles.headerInfo}>
+                            <h1 className={styles.usernameTitle}>{username}</h1>
+                            <div className={styles.hideToggle}>
+                                <label className={styles.toggleLabel}>
+                                    <input
+                                        type="checkbox"
+                                        checked={profileHiddenFlag}
+                                        onChange={handleProfileHiddenChange}
+                                        className={styles.toggleInput}
+                                    />
+                                    <span className={styles.toggleSwitch}></span>
+                                    <span className={styles.toggleText}>Скрыть профиль</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Personal Info Section */}
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <i className="fas fa-user-edit"></i>
+                            <h2>Личная информация</h2>
+                        </div>
+                        <div className={styles.formGrid}>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Имя</label>
+                                <input type="text" className={styles.formInput} value={name}
+                                       onChange={(e) => setName(e.target.value)} placeholder="Введите имя"/>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Телефон</label>
+                                <input type="text" className={styles.formInput} value={phone}
+                                       onChange={(e) => setPhone(e.target.value)} placeholder="+7 (999) 999-99-99"/>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Email</label>
+                                <input type="email" className={styles.formInput} value={email}
+                                       onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com"/>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Дата рождения</label>
+                                <input type="date" className={styles.formInput} value={birthday}
+                                       onChange={(e) => setBirthday(e.target.value)}/>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Специализация</label>
+                                <select
+                                    className={styles.formInput}
+                                    value={specialization || ''}
+                                    onChange={e => setSpecialization(e.target.value ? Number(e.target.value) : null)}
+                                >
+                                    <option value="">Выберите специализацию</option>
+                                    {specializations.map(spec => (
+                                        <option key={spec.id} value={spec.id}>{spec.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                                <label className={styles.formLabel}>О себе</label>
+                                <textarea className={styles.formTextarea} value={about}
+                                          onChange={(e) => setAbout(e.target.value)}
+                                          placeholder="Расскажите о себе..." rows={4}/>
+                            </div>
+                        </div>
+                        <button className={styles.primaryBtn} onClick={handleSave}>
+                            <i className="fas fa-save"></i> Сохранить изменения
                         </button>
                     </div>
-                    <div className={styles.infoSection}>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Имя:</span>
-                            <input type="text" className={styles.infoInput} value={name} onChange={handleNameChange}/>
+
+                    {/* Password Section */}
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <i className="fas fa-lock"></i>
+                            <h2>Смена пароля</h2>
                         </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Телефон:</span>
-                            <input type="text" className={styles.infoInput} value={phone} onChange={handlePhoneChange}/>
+                        <div className={styles.formGrid}>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Текущий пароль</label>
+                                <input type="password" className={styles.formInput} value={currentPassword}
+                                       onChange={(e) => setCurrentPassword(e.target.value)}
+                                       placeholder="Введите текущий пароль"/>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Новый пароль</label>
+                                <input type="password" className={styles.formInput} value={newPassword}
+                                       onChange={(e) => setNewPassword(e.target.value)}
+                                       placeholder="Введите новый пароль"/>
+                            </div>
                         </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Email:</span>
-                            <input type="email" className={styles.infoInput} value={email}
-                                   onChange={handleEmailChange}/>
-                        </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Дата рождения:</span>
-                            <input type="date" className={styles.infoInput} value={birthday}
-                                   onChange={handleBirthdayChange}/>
-                        </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Специализация:</span>
-                            <select
-                                className={styles.infoInput}
-                                value={specialization || ''}
-                                onChange={e => setSpecialization(e.target.value ? Number(e.target.value) : null)} // сохраняем ID как число
-                            >
-                                <option value="">Выберите специализацию</option>
-                                {specializations.map(spec => (
-                                    <option key={spec.id} value={spec.id}>{spec.name}</option> // value теперь ID
-                                ))}
-                            </select>
-                        </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>О себе:</span>
-                            <textarea className={styles.infoInputTextArea} value={about} onChange={handleAboutChange}
-                                      placeholder="Расскажите о себе..."/>
-                        </div>
-                        <button className={styles.editBtn} onClick={handleSave}>
-                            Редактировать
-                        </button>
-                    </div>
-                    <div className={styles.passwordSection}>
-                        <div className={styles.passwordItem}>
-                            <span className={styles.label}>Текущий пароль:</span>
-                            <input type="password" className={styles.passwordInput} value={currentPassword}
-                                   onChange={handleCurrentPasswordChange}/>
-                        </div>
-                        <div className={styles.passwordItem}>
-                            <span className={styles.label}>Новый пароль:</span>
-                            <input type="password" className={styles.passwordInput} value={newPassword}
-                                   onChange={handleNewPasswordChange}/>
-                        </div>
-                        <button className={styles.changePasswordBtn} onClick={handleChangePassword}>
-                            Сменить пароль
+                        <button className={styles.primaryBtn} onClick={handleChangePassword}>
+                            <i className="fas fa-key"></i> Сменить пароль
                         </button>
                         {passwordChangeFeedback && (
                             <div
                                 className={
                                     passwordChangeFeedback.type === 'success'
-                                        ? styles.passwordFeedbackSuccess
-                                        : styles.passwordFeedbackError
+                                        ? styles.feedbackSuccess
+                                        : styles.feedbackError
                                 }
                             >
+                                <i className={`fas ${passwordChangeFeedback.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
                                 {passwordChangeFeedback.message}
                             </div>
                         )}
                     </div>
-                    <div className={styles.actionsSection}>
-                        <div className={styles.buttonWrapper}>
-                            <button className={styles.logoutBtn} onClick={handleLogout}>Выйти</button>
-                            <button className={styles.deleteAccountBtn} onClick={handleOpenDeleteModal}>
-                                Удалить аккаунт
+
+                    {/* Actions Section */}
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <i className="fas fa-cog"></i>
+                            <h2>Действия</h2>
+                        </div>
+                        <div className={styles.actionsRow}>
+                            <button className={styles.logoutBtn} onClick={handleLogout}>
+                                <i className="fas fa-sign-out-alt"></i> Выйти из аккаунта
+                            </button>
+                            <button className={styles.deleteBtn} onClick={() => setIsModalOpen(true)}>
+                                <i className="fas fa-trash-alt"></i> Удалить аккаунт
                             </button>
                         </div>
                     </div>
-                </div>)}
-            {isModalOpen && (<div className={styles.modal}>
-                    <div className={styles.modalContent}>
-                        <p>Вы уверены, что хотите удалить аккаунт?</p>
-                        <div>
-                            <button className={styles.confirmButton} onClick={handleDeleteAccount}>
-                                Удалить
-                            </button>
-                            <button className={styles.cancelButton} onClick={handleCancelDelete}>
+                </div>
+            </div>
+
+            {/* Delete Confirmation Modal */}
+            {isModalOpen && (
+                <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
+                    <div className={styles.modal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.modalIcon}>
+                            <i className="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3 className={styles.modalTitle}>Удаление аккаунта</h3>
+                        <p className={styles.modalText}>
+                            Вы уверены, что хотите удалить аккаунт? Это действие невозможно отменить.
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button className={styles.modalCancel} onClick={() => setIsModalOpen(false)}>
                                 Отмена
                             </button>
+                            <button className={styles.modalConfirm} onClick={handleDeleteAccount}>
+                                <i className="fas fa-trash-alt"></i> Удалить
+                            </button>
                         </div>
                     </div>
-                </div>)}
-        </div>);
+                </div>
+            )}
+        </>
+    );
 }
 
 export default PersonalMemberAccount;

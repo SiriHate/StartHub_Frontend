@@ -11,87 +11,14 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     const script = document.createElement('script');
-    //     script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
-    //     script.async = true;
-    //
-    //     script.onload = async () => {
-    //         const suggestInit = await safeYaAuthSuggestInit(
-    //             {
-    //                 client_id: `${config.YANDEX_CLIENT_ID}`,
-    //                 response_type: 'token',
-    //                 redirect_uri: `https://localhost/yandex-callback`
-    //             },
-    //             window.location.origin,
-    //             {
-    //                 view: 'button',
-    //                 parentId: 'buttonContainerId',
-    //                 buttonView: 'main',
-    //                 buttonTheme: 'light',
-    //                 buttonSize: 'm',
-    //                 buttonBorderRadius: 0
-    //             }
-    //         );
-    //
-    //
-    //         try {
-    //             const data = await suggestInit.handler();
-    //             if (!data || !data.access_token) return;
-    //
-    //             const response = await fetch(`${config.USER_SERVICE}/users/auth/yandex`, {
-    //                 method: 'POST',
-    //                 headers: { 'Content-Type': 'application/json' },
-    //                 body: JSON.stringify({
-    //                     token: data.access_token,
-    //                     client_secret: `${config.YANDEX_SECRET_KEY}`
-    //                 })
-    //             });
-    //
-    //             if (response.ok) {
-    //                 const userData = await response.json();
-    //                 document.cookie = `Authorization=Bearer ${userData.token}; path=/; SameSite=None; Secure`;
-    //                 navigate('/');
-    //             } else {
-    //                 console.error('Ошибка авторизации через Яндекс. Код:', response.status);
-    //                 setError('Ошибка авторизации через Яндекс');
-    //             }
-    //         } catch (error) {
-    //             console.error('Ошибка обработки токена от Яндекса:', error);
-    //             setError('Ошибка авторизации через Яндекс');
-    //         }
-    //     };
-    //
-    //     script.onerror = (e) => {
-    //         console.error('Не удалось загрузить скрипт YaAuthSuggest:', e);
-    //     };
-    //
-    //     document.body.appendChild(script);
-    //
-    //     return () => {
-    //         try {
-    //             const scriptElement = document.querySelector('script[src*="yastatic.net"]');
-    //             if (scriptElement) {
-    //                 scriptElement.remove();
-    //             }
-    //         } catch (error) {
-    //             console.error('Ошибка при удалении скрипта YaAuthSuggest:', error);
-    //         }
-    //     };
-    // }, [navigate]);
-
     useEffect(() => {
-        window.scrollTo({top: 50, behavior: 'smooth'});
+        window.scrollTo({top: 0, behavior: 'smooth'});
     }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
-
-        if (username === '' || password === '') {
-            setError("Пожалуйста, заполните все поля.");
-            return;
-        }
+        if (!username || !password) { setError("Пожалуйста, заполните все поля."); return; }
 
         try {
             const response = await fetch(`${config.USER_SERVICE}/users/auth/login`, {
@@ -103,12 +30,10 @@ const LoginPage = () => {
             if (response.status === 401) {
                 setError("Неверное имя пользователя или пароль.");
             } else if (!response.ok) {
-                console.error('Ошибка сети при авторизации');
                 setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
             } else {
                 const data = await response.json();
                 document.cookie = `Authorization=Bearer ${data.token}; path=/; SameSite=None; Secure`;
-
                 if (rememberMe) {
                     localStorage.setItem('username', username);
                     localStorage.setItem('password', password);
@@ -118,111 +43,56 @@ const LoginPage = () => {
                     localStorage.removeItem('password');
                     localStorage.removeItem('rememberMe');
                 }
-
                 navigate('/');
             }
-        } catch (error) {
-            console.error('Ошибка при авторизации пользователя:', error);
+        } catch (err) {
             setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
         }
     };
 
-    const handleForgotPassword = (e) => {
-        e.preventDefault();
-        navigate('/password-recovery');
-    };
-
-    const redirectToRegistration = (e) => {
-        e.preventDefault();
-        navigate('/registration');
-    };
-
-    return (<div className={styles.loginPage}>
+    return (
+        <>
             <Helmet>
-                <title>Авторизация</title>
-                <html className={styles.html}/>
-                <body className={styles.body}/>
+                <title>Авторизация — StartHub</title>
+                <body className={styles.body} />
             </Helmet>
-            <div className={styles.loginPageContainer}>
-                <img src="/logo.png" alt="Логотип" className={styles.logo}/>
-                <div className={styles.formContainer}>
-                    <div className={styles.wrapper}>
-                        <div className={styles.title}>Авторизация</div>
-                        <form onSubmit={handleLogin}>
-                            <div className={styles.field}>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    name="username"
-                                    value={username}
-                                    className={styles.fieldInput}
-                                    placeholder=" "
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                    autoComplete="username"
-                                />
-                                <label htmlFor="username" className={styles.fieldLabel}>Имя пользователя</label>
-                            </div>
-                            <div className={styles.field}>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    value={password}
-                                    className={styles.fieldInput}
-                                    placeholder=" "
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    autoComplete="current-password"
-                                />
-                                <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
-                            </div>
-                            {error && <div className={styles.errorMessage}>{error}</div>}
-                            <div className={styles.content}>
-                                <div className={styles.checkbox}>
-                                    <input
-                                        type="checkbox"
-                                        id="remember-me"
-                                        checked={rememberMe}
-                                        className={styles.checkboxInput}
-                                        onChange={(e) => setRememberMe(e.target.checked)}
-                                    />
-                                    <label htmlFor="remember-me" className={styles.checkboxLabel}>Запомнить меня</label>
-                                </div>
-                                <div className={styles.passLink}>
-                                    <button
-                                        onClick={handleForgotPassword}
-                                        id="forgot-password-link"
-                                        className={styles.linkButton}
-                                    >
-                                        Забыли пароль?
-                                    </button>
-                                </div>
-                            </div>
-                            <div className={styles.field}>
-                                <input type="submit" value="Войти" className={styles.submitButton}/>
-                            </div>
-                            {/*<div className={styles.socialLogin}>*/}
-                            {/*    <div className={styles.divider}>*/}
-                            {/*        <span>или войти через</span>*/}
-                            {/*    </div>*/}
-                            {/*    <div id="buttonContainerId" className={styles.yandexButton}></div>*/}
-                            {/*</div>*/}
-                            <div className={styles.signupLink}>
-                                Еще нет аккаунта?{' '}
-                                <button
-                                    onClick={redirectToRegistration}
-                                    id="registration-link"
-                                    className={styles.linkButton}
-                                >
-                                    Регистрация
-                                </button>
-                            </div>
-                        </form>
+            <div className={styles.page}>
+                <img src="/logo.png" alt="StartHub" className={styles.logo} />
+                <div className={styles.card}>
+                    <h1 className={styles.title}>Авторизация</h1>
+                    <p className={styles.subtitle}>Войдите в свой аккаунт</p>
+
+                    <form onSubmit={handleLogin} className={styles.form}>
+                        <div className={styles.fieldGroup}>
+                            <label><i className="fas fa-user"></i> Имя пользователя</label>
+                            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Введите имя пользователя" required autoComplete="username" />
+                        </div>
+                        <div className={styles.fieldGroup}>
+                            <label><i className="fas fa-lock"></i> Пароль</label>
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Введите пароль" required autoComplete="current-password" />
+                        </div>
+
+                        {error && <div className={styles.errorMsg}><i className="fas fa-exclamation-circle"></i> {error}</div>}
+
+                        <div className={styles.options}>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
+                                <span>Запомнить меня</span>
+                            </label>
+                            <button type="button" className={styles.linkBtn} onClick={() => navigate('/password-recovery')}>Забыли пароль?</button>
+                        </div>
+
+                        <button type="submit" className={styles.submitBtn}>Войти</button>
+                    </form>
+
+                    <div className={styles.footer}>
+                        Нет аккаунта?{' '}
+                        <button className={styles.linkBtn} onClick={() => navigate('/registration')}>Зарегистрироваться</button>
                     </div>
                 </div>
             </div>
-        </div>);
+        </>
+    );
 };
 
 export default LoginPage;

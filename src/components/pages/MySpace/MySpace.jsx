@@ -6,26 +6,30 @@ import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
 
-const categories = ["Мои проекты", "Мои статьи", "Мои новости"];
+const sidebarCategories = [
+    { key: "Мои проекты", icon: "fa-rocket", label: "Мои проекты" },
+    { key: "Мои статьи", icon: "fa-book-open", label: "Мои статьи" },
+    { key: "Мои новости", icon: "fa-newspaper", label: "Мои новости" },
+];
 
 const MySpace = () => {
     const [items, setItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState(categories[0]);
-    const [appliedCategory, setAppliedCategory] = useState(categories[0]);
-    const [tempCategory, setTempCategory] = useState(categories[0]);
+    const [selectedCategory, setSelectedCategory] = useState("Мои проекты");
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(4);
     const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const authorizationCookie = document.cookie.split("; ").find(row => row.startsWith("Authorization="));
+    const authorizationToken = authorizationCookie ? authorizationCookie.split("=")[1] : "";
 
-    const fetchItems = async (category, query, page, size) => {
+    const fetchItems = async (category, query, pg, sz) => {
         try {
+            setLoading(true);
             setItems([]);
-            
+
             let url;
             switch (category) {
                 case "Мои проекты":
@@ -41,59 +45,56 @@ const MySpace = () => {
                     url = `${config.MAIN_SERVICE}/me/projects`;
             }
 
-            const queryParams = new URLSearchParams();
-            queryParams.append('page', page);
-            queryParams.append('size', size);
-            if (query) {
-                queryParams.append('query', query);
-            }
+            const params = new URLSearchParams();
+            params.append("page", pg);
+            params.append("size", sz);
+            if (query) params.append("query", query);
 
-            const fullUrl = `${url}?${queryParams.toString()}`;
-
-            const response = await fetch(fullUrl, {
-                method: 'GET',
+            const response = await fetch(`${url}?${params.toString()}`, {
+                method: "GET",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
-                }
+                    "Content-Type": "application/json",
+                    Authorization: authorizationToken,
+                },
             });
 
-            if (!response.ok) {
-                return;
-            }
+            if (!response.ok) return;
 
             const data = await response.json();
-
             setItems(Array.isArray(data.content) ? data.content : []);
             setTotalPages(data.totalPages || 1);
         } catch (error) {
+            console.error("Failed to fetch items:", error);
             setItems([]);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchItems(appliedCategory, searchQuery, page, size);
-    }, [appliedCategory, page, size]);
+        fetchItems(selectedCategory, searchQuery, page, size);
+    }, [selectedCategory, page, size]);
 
     const handleSearch = (e) => {
-        e.preventDefault();
-        setAppliedCategory(selectedCategory);
+        if (e) e.preventDefault();
         setPage(0);
         fetchItems(selectedCategory, searchQuery, 0, size);
     };
 
-    const applyCategoryFilter = () => {
+    const handleSearchKeyDown = (e) => {
+        if (e.key === "Enter") handleSearch(e);
+    };
+
+    const handleCategoryChange = (cat) => {
+        setSelectedCategory(cat);
         setSearchQuery("");
-        setSelectedCategory(tempCategory);
-        setAppliedCategory(tempCategory);
         setPage(0);
-        fetchItems(tempCategory, "", 0, size);
     };
 
     const handleCreateItem = () => {
-        if (selectedCategory === "Мои проекты") navigate('/create_project');
-        if (selectedCategory === "Мои статьи") navigate('/create_article');
-        if (selectedCategory === "Мои новости") navigate('/create_news');
+        if (selectedCategory === "Мои проекты") navigate("/create_project");
+        if (selectedCategory === "Мои статьи") navigate("/create_article");
+        if (selectedCategory === "Мои новости") navigate("/create_news");
     };
 
     const openItem = (id) => {
@@ -118,9 +119,8 @@ const MySpace = () => {
     };
 
     const handleSizeChange = (event) => {
-        const newSize = parseInt(event.target.value, 10);
         setPage(0);
-        setSize(newSize);
+        setSize(parseInt(event.target.value, 10));
     };
 
     const handlePageChange = (newPage) => {
@@ -129,126 +129,164 @@ const MySpace = () => {
 
     const getSearchPlaceholder = () => {
         switch (selectedCategory) {
-            case "Мои проекты":
-                return "Введите название проекта";
-            case "Мои статьи":
-                return "Введите название статьи";
-            case "Мои новости":
-                return "Введите название публикации";
-            default:
-                return "Поиск";
+            case "Мои проекты": return "Поиск проектов...";
+            case "Мои статьи": return "Поиск статей...";
+            case "Мои новости": return "Поиск новостей...";
+            default: return "Поиск...";
         }
     };
 
     const getCreateButtonText = () => {
         switch (selectedCategory) {
-            case "Мои проекты":
-                return "Создать проект";
-            case "Мои статьи":
-                return "Создать статью";
-            case "Мои новости":
-                return "Создать публикацию";
-            default:
-                return "Создать";
+            case "Мои проекты": return "Создать проект";
+            case "Мои статьи": return "Создать статью";
+            case "Мои новости": return "Создать новость";
+            default: return "Создать";
+        }
+    };
+
+    const getCreateIcon = () => {
+        switch (selectedCategory) {
+            case "Мои проекты": return "fa-rocket";
+            case "Мои статьи": return "fa-pen";
+            case "Мои новости": return "fa-bullhorn";
+            default: return "fa-plus";
+        }
+    };
+
+    const getCategoryIcon = () => {
+        const found = sidebarCategories.find(c => c.key === selectedCategory);
+        return found ? found.icon : "fa-folder";
+    };
+
+    const getPreviewSrc = (item) => {
+        const url = item.logoUrl
+            || (selectedCategory === "Мои проекты"
+                ? (item.projectLogoUrl ? `${config.FILE_SERVER}${item.projectLogoUrl}` : "")
+                : (item.previewUrl ? `${config.FILE_SERVER}${item.previewUrl}` : ""));
+        if (!url || typeof url !== "string") return "";
+        const trimmed = url.trim();
+        if (!trimmed) return "";
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+        return `${config.FILE_SERVER || ""}${trimmed}`;
+    };
+
+    const getEmptyNoun = () => {
+        switch (selectedCategory) {
+            case "Мои проекты": return "проектов";
+            case "Мои статьи": return "статей";
+            case "Мои новости": return "новостей";
+            default: return "элементов";
         }
     };
 
     return (
         <>
             <Helmet>
-                <title>Мое пространство - StartHub</title>
-                <body className={styles.body}/>
+                <title>Мое пространство — StartHub</title>
+                <body className={styles.body} />
             </Helmet>
-            <Menu/>
-            <div className={styles.mySpacePage}>
-                <div className={styles.sidebar}>
-                    {categories.map((category) => (
-                        <div
-                            key={category}
-                            className={`${styles.category} ${tempCategory === category ? styles.activeCategory : ''}`}
-                            onClick={() => setTempCategory(category)}
-                        >
-                            {category}
-                        </div>
-                    ))}
-                    <button className={styles.applyButton} onClick={applyCategoryFilter}>
-                        Применить
-                    </button>
-                </div>
-                <div className={styles.content}>
-                    <div className={styles.controls}>
+            <Menu />
+            <div className={styles.page}>
+                <aside className={styles.sidebar}>
+                    <div className={styles.sidebarHeader}>
+                        <i className="fas fa-th-large"></i>
+                        <span>Мое пространство</span>
+                    </div>
+                    <div className={styles.filterList}>
+                        {sidebarCategories.map(cat => (
+                            <div
+                                key={cat.key}
+                                className={`${styles.filterItem} ${selectedCategory === cat.key ? styles.filterActive : ""}`}
+                                onClick={() => handleCategoryChange(cat.key)}
+                            >
+                                <i className={`fas ${cat.icon}`}></i>
+                                <span>{cat.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className={styles.sidebarActions}>
+                        <button onClick={handleCreateItem} className={styles.createBtn}>
+                            <i className={`fas ${getCreateIcon()}`}></i> {getCreateButtonText()}
+                        </button>
+                    </div>
+                </aside>
+
+                <main className={styles.content}>
+                    <div className={styles.topBar}>
+                        <h1 className={styles.pageTitle}>
+                            <i className={`fas ${getCategoryIcon()}`}></i> {selectedCategory}
+                        </h1>
                         <div className={styles.searchBar}>
                             <input
                                 type="text"
-                                className={styles.searchInput}
                                 placeholder={getSearchPlaceholder()}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyPress={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleSearch(e);
-                                    }
-                                }}
+                                onKeyDown={handleSearchKeyDown}
+                                className={styles.searchInput}
                             />
-                            <button 
-                                className={styles.button} 
-                                onClick={handleSearch}
-                                type="button"
-                            >
-                                Поиск
-                            </button>
-                            <button className={styles.createButton} onClick={handleCreateItem}>
-                                {getCreateButtonText()}
+                            <button onClick={handleSearch} className={styles.searchBtn}>
+                                <i className="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
-                    <h1 className={styles.mySpaceTitle}>{selectedCategory}</h1>
-                    <div className={styles.itemsList}>
-                        {items.length === 0 ? (
-                            <div className={styles.emptyItems}>
-                                Не найдено ни одного {selectedCategory.toLowerCase().split(" ")[1]}
+
+                    {loading ? (
+                        <div className={styles.loadingState}>
+                            <div className={styles.spinner}></div>
+                            <p>Загрузка...</p>
+                        </div>
+                    ) : items.length === 0 ? (
+                        <div className={styles.emptyState}>
+                            <i className={`fas ${getCategoryIcon()}`}></i>
+                            <p>Не найдено ни одного из ваших {getEmptyNoun()}</p>
+                            <button className={styles.emptyCreateBtn} onClick={handleCreateItem}>
+                                <i className="fas fa-plus"></i> {getCreateButtonText()}
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className={styles.grid}>
+                                {items.map(item => {
+                                    const itemTitle = item.name || item.title || item.projectName || item.eventName;
+                                    return (
+                                        <div key={item.id} className={styles.card} onClick={() => openItem(item.id)}>
+                                            <div className={styles.cardImage}>
+                                                <img
+                                                    src={getPreviewSrc(item) || "/default_list_element_logo.jpg"}
+                                                    alt={itemTitle}
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = "/default_list_element_logo.jpg"; }}
+                                                />
+                                            </div>
+                                            <div className={styles.cardBody}>
+                                                <h3 className={styles.cardTitle}>{itemTitle}</h3>
+                                                {item.category && (
+                                                    <span className={styles.cardCategory}>{item.category}</span>
+                                                )}
+                                                <button
+                                                    className={styles.manageBtn}
+                                                    onClick={(e) => manageItem(item.id, e)}
+                                                >
+                                                    <i className="fas fa-cog"></i> Управление
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        ) : (
-                            items.map(item => {
-                                const previewSrc = item.logoUrl
-                                    || (selectedCategory === "Мои проекты"
-                                        ? (item.projectLogoUrl ? `${config.FILE_SERVER}${item.projectLogoUrl}` : '')
-                                        : (item.previewUrl ? `${config.FILE_SERVER}${item.previewUrl}` : ''));
-                                return (
-                                <div key={item.id} className={styles.item} onClick={() => openItem(item.id)}>
-                                    <img
-                                        src={previewSrc || '/default_list_element_logo.jpg'}
-                                        alt={item.title || item.projectName || item.eventName}
-                                        className={styles.itemImage}
-                                        onError={(e) => e.target.src = '/default_list_element_logo.jpg'}
-                                    />
-                                    <div className={styles.itemContent}>
-                                        <div className={styles.itemName}>{item.title || item.projectName || item.eventName}</div>
-                                        <div className={styles.itemDetail}>{item.category}</div>
-                                    </div>
-                                    <button
-                                        className={styles.manageButton}
-                                        onClick={(e) => manageItem(item.id, e)}
-                                    >
-                                        {selectedCategory === "Мои проекты" ? "Управление проектом" : "Управление публикацией"}
-                                    </button>
-                                </div>
-                            ); })
-                        )}
-                    </div>
-                    {items.length > 0 && (
-                        <Pagination
-                            page={page}
-                            totalPages={totalPages}
-                            size={size}
-                            onPreviousPage={handlePreviousPage}
-                            onNextPage={handleNextPage}
-                            onSizeChange={handleSizeChange}
-                            onPageChange={handlePageChange}
-                        />
+                            <Pagination
+                                page={page}
+                                totalPages={totalPages}
+                                size={size}
+                                onPreviousPage={handlePreviousPage}
+                                onNextPage={handleNextPage}
+                                onSizeChange={handleSizeChange}
+                                onPageChange={handlePageChange}
+                            />
+                        </>
                     )}
-                </div>
+                </main>
             </div>
         </>
     );

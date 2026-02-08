@@ -1,56 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
-import styles from "./ArticlesAndNews.module.css";
+import styles from "./Projects.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
 
-const ArticlesAndNews = () => {
+const Projects = () => {
     const [items, setItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [currentTab, setCurrentTab] = useState("Новости");
-    const [categories, setCategories] = useState(["Все"]);
-    const [selectedCategory, setSelectedCategory] = useState("Все");
-    const [appliedCategory, setAppliedCategory] = useState("");
+    const [filters, setFilters] = useState(["Все"]);
+    const [selectedFilter, setSelectedFilter] = useState("Все");
+    const [appliedFilter, setAppliedFilter] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [size, setSize] = useState(4);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const fetchCategories = async (tab) => {
+    const fetchCategories = async () => {
         try {
-            const url = `${config.MAIN_SERVICE}/${tab === "Статьи" ? "article-categories" : "news-categories"}`;
-            const response = await fetch(url);
+            const response = await fetch(`${config.MAIN_SERVICE}/project-categories`);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             const categoryNames = data.map(category => category.name);
-            setCategories(["Все", ...categoryNames]);
+            setFilters(["Все", ...categoryNames]);
         } catch (error) {
             console.error("Failed to fetch categories:", error);
-            setCategories(["Все"]);
+            setFilters(["Все"]);
         }
     };
 
-    const fetchItems = async (query, category, tab, pg, sz) => {
+    const fetchItems = async (query, filter, pg, sz) => {
         try {
             setLoading(true);
-            const path = tab === "Статьи" ? "articles" : "news";
-            const params = new URLSearchParams();
-            params.set("page", String(pg));
-            params.set("size", String(sz));
-            params.set("moderationPassed", "true");
-            if (category) params.set("category", category);
-            if (query) params.set("query", query);
-            const url = `${config.MAIN_SERVICE}/${path}?${params.toString()}`;
+            const filterParam = filter ? `&category=${filter}` : "";
+            const queryParam = query ? `&query=${query}` : "";
+            const url = `${config.MAIN_SERVICE}/projects?page=${pg}&size=${sz}&moderationPassed=true${filterParam}${queryParam}`;
             const response = await fetch(url);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             setItems(data.content);
             setTotalPages(data.totalPages);
         } catch (error) {
-            console.error("Failed to fetch items:", error);
+            console.error("Failed to fetch projects:", error);
             setItems([]);
         } finally {
             setLoading(false);
@@ -58,56 +51,40 @@ const ArticlesAndNews = () => {
     };
 
     useEffect(() => {
-        fetchCategories(currentTab);
-        fetchItems("", "", currentTab, 0, size);
-    }, [currentTab]);
+        fetchCategories();
+        fetchItems("", "", 0, size);
+    }, []);
 
     const handleSearch = () => {
         setPage(0);
-        fetchItems(searchQuery, appliedCategory, currentTab, 0, size);
+        fetchItems(searchQuery, appliedFilter, 0, size);
     };
 
     const handleSearchKeyDown = (e) => {
         if (e.key === "Enter") handleSearch();
     };
 
-    const applyCategoryFilter = () => {
+    const applyFilter = () => {
         setPage(0);
         setSearchQuery("");
-        const categoryToApply = selectedCategory === "Все" ? "" : selectedCategory;
-        setAppliedCategory(categoryToApply);
-        fetchItems("", categoryToApply, currentTab, 0, size);
+        const filterToApply = selectedFilter === "Все" ? "" : selectedFilter;
+        setAppliedFilter(filterToApply);
+        fetchItems("", filterToApply, 0, size);
     };
 
     const resetFilters = () => {
-        setSelectedCategory("Все");
-        setAppliedCategory("");
+        setSelectedFilter("Все");
+        setAppliedFilter("");
         setSearchQuery("");
         setPage(0);
-        fetchItems("", "", currentTab, 0, size);
+        fetchItems("", "", 0, size);
     };
 
-    const handleTabChange = (tab) => {
-        setCurrentTab(tab);
-        setSelectedCategory("Все");
-        setAppliedCategory("");
-        setSearchQuery("");
-        setPage(0);
-    };
-
-    const openItem = (itemId) => {
-        if (currentTab === "Статьи") {
-            navigate(`/article/${itemId}`);
-        } else {
-            navigate(`/news/${itemId}`);
-        }
-    };
-
-    const getPreviewSrc = (item) => {
-        const url = item?.logoUrl ?? item?.logo_url ?? item?.previewUrl ?? item?.preview_url;
-        if (!url || typeof url !== "string") return "/default_list_element_logo.jpg";
+    const getImageUrl = (item) => {
+        const url = item.logoUrl ?? item.logo_url ?? item.projectLogoUrl ?? "";
+        if (!url || typeof url !== "string") return "";
         const trimmed = url.trim();
-        if (!trimmed) return "/default_list_element_logo.jpg";
+        if (!trimmed) return "";
         if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
         return `${config.FILE_SERVER || ""}${trimmed}`;
     };
@@ -116,7 +93,7 @@ const ArticlesAndNews = () => {
         if (page < totalPages - 1) {
             const newPage = page + 1;
             setPage(newPage);
-            fetchItems(searchQuery, appliedCategory, currentTab, newPage, size);
+            fetchItems(searchQuery, appliedFilter, newPage, size);
         }
     };
 
@@ -124,7 +101,7 @@ const ArticlesAndNews = () => {
         if (page > 0) {
             const newPage = page - 1;
             setPage(newPage);
-            fetchItems(searchQuery, appliedCategory, currentTab, newPage, size);
+            fetchItems(searchQuery, appliedFilter, newPage, size);
         }
     };
 
@@ -132,20 +109,18 @@ const ArticlesAndNews = () => {
         const newSize = parseInt(event.target.value, 10);
         setSize(newSize);
         setPage(0);
-        fetchItems(searchQuery, appliedCategory, currentTab, 0, newSize);
+        fetchItems(searchQuery, appliedFilter, 0, newSize);
     };
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
-        fetchItems(searchQuery, appliedCategory, currentTab, newPage, size);
+        fetchItems(searchQuery, appliedFilter, newPage, size);
     };
-
-    const tabIcon = currentTab === "Новости" ? "fa-newspaper" : "fa-book-open";
 
     return (
         <>
             <Helmet>
-                <title>{currentTab} — StartHub</title>
+                <title>Проекты — StartHub</title>
                 <body className={styles.body} />
             </Helmet>
             <Menu />
@@ -155,36 +130,19 @@ const ArticlesAndNews = () => {
                         <i className="fas fa-filter"></i>
                         <span>Категории</span>
                     </div>
-
-                    <div className={styles.tabRow}>
-                        <button
-                            className={`${styles.tabBtn} ${currentTab === "Новости" ? styles.tabActive : ""}`}
-                            onClick={() => handleTabChange("Новости")}
-                        >
-                            <i className="fas fa-newspaper"></i> Новости
-                        </button>
-                        <button
-                            className={`${styles.tabBtn} ${currentTab === "Статьи" ? styles.tabActive : ""}`}
-                            onClick={() => handleTabChange("Статьи")}
-                        >
-                            <i className="fas fa-book-open"></i> Статьи
-                        </button>
-                    </div>
-
                     <div className={styles.filterList}>
-                        {categories.map(cat => (
+                        {filters.map(filter => (
                             <div
-                                key={cat}
-                                className={`${styles.filterItem} ${selectedCategory === cat ? styles.filterActive : ""}`}
-                                onClick={() => setSelectedCategory(cat)}
+                                key={filter}
+                                className={`${styles.filterItem} ${selectedFilter === filter ? styles.filterActive : ""}`}
+                                onClick={() => setSelectedFilter(filter)}
                             >
-                                {cat}
+                                {filter}
                             </div>
                         ))}
                     </div>
-
                     <div className={styles.sidebarActions}>
-                        <button onClick={applyCategoryFilter} className={styles.applyBtn}>
+                        <button onClick={applyFilter} className={styles.applyBtn}>
                             <i className="fas fa-check"></i> Применить
                         </button>
                         <button onClick={resetFilters} className={styles.resetBtn}>
@@ -196,12 +154,12 @@ const ArticlesAndNews = () => {
                 <main className={styles.content}>
                     <div className={styles.topBar}>
                         <h1 className={styles.pageTitle}>
-                            <i className={`fas ${tabIcon}`}></i> {currentTab}
+                            <i className="fas fa-rocket"></i> Проекты
                         </h1>
                         <div className={styles.searchBar}>
                             <input
                                 type="text"
-                                placeholder={currentTab === "Статьи" ? "Поиск статей..." : "Поиск новостей..."}
+                                placeholder="Поиск проектов..."
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                                 onKeyDown={handleSearchKeyDown}
@@ -213,9 +171,9 @@ const ArticlesAndNews = () => {
                         </div>
                     </div>
 
-                    {appliedCategory && (
+                    {appliedFilter && (
                         <div className={styles.activeFilterBadge}>
-                            <span>Категория: {appliedCategory}</span>
+                            <span>Категория: {appliedFilter}</span>
                             <button onClick={resetFilters} className={styles.clearFilter}>
                                 <i className="fas fa-times"></i>
                             </button>
@@ -225,30 +183,48 @@ const ArticlesAndNews = () => {
                     {loading ? (
                         <div className={styles.loadingState}>
                             <div className={styles.spinner}></div>
-                            <p>Загрузка...</p>
+                            <p>Загрузка проектов...</p>
                         </div>
                     ) : items.length === 0 ? (
                         <div className={styles.emptyState}>
-                            <i className={`fas ${currentTab === "Новости" ? "fa-newspaper" : "fa-book-open"}`}></i>
-                            <p>{currentTab === "Новости" ? "Не найдено ни одной новости" : "Не найдено ни одной статьи"}</p>
+                            <i className="fas fa-folder-open"></i>
+                            <p>Не найдено ни одного проекта</p>
                         </div>
                     ) : (
                         <>
                             <div className={styles.grid}>
                                 {items.map(item => (
-                                    <div key={item.id} className={styles.card} onClick={() => openItem(item.id)}>
+                                    <div
+                                        key={item.id}
+                                        className={styles.card}
+                                        onClick={() => navigate(`/project/${item.id}`)}
+                                    >
                                         <div className={styles.cardImage}>
                                             <img
-                                                src={getPreviewSrc(item)}
-                                                alt={item.title}
-                                                referrerPolicy="no-referrer"
-                                                onError={(e) => { e.target.onerror = null; e.target.src = "/default_list_element_logo.jpg"; }}
+                                                src={getImageUrl(item) || "/default_list_element_logo.jpg"}
+                                                alt={item.name ?? item.projectName}
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = "/default_list_element_logo.jpg";
+                                                }}
                                             />
                                         </div>
                                         <div className={styles.cardBody}>
-                                            <h3 className={styles.cardTitle}>{item.title}</h3>
-                                            {item.category && (
-                                                <span className={styles.cardCategory}>{item.category}</span>
+                                            <h3 className={styles.cardTitle}>{item.name ?? item.projectName}</h3>
+                                            {(item.category ?? item.categoryName) && (
+                                                <span className={styles.cardCategory}>
+                                                    {item.category ?? item.categoryName}
+                                                </span>
+                                            )}
+                                            {item.owner && (
+                                                <span className={styles.cardOwner}>
+                                                    <i className="fas fa-user"></i> {typeof item.owner === 'object' ? item.owner.username : item.owner}
+                                                </span>
+                                            )}
+                                            {item.likes != null && (
+                                                <span className={styles.cardLikes}>
+                                                    <i className="fas fa-heart"></i> {item.likes}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
@@ -271,4 +247,4 @@ const ArticlesAndNews = () => {
     );
 };
 
-export default ArticlesAndNews;
+export default Projects;

@@ -8,7 +8,6 @@ import config from '../../../config';
 const LeaveFeedback = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
-    const [project, setProject] = useState(null);
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
     const [rating, setRating] = useState(0);
@@ -20,23 +19,9 @@ const LeaveFeedback = () => {
         try {
             setLoading(true);
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const surveyData = await response.json();
-            
-            setProject({
-                id: surveyData.projectId
-            });
-            
-            const formattedQuestions = surveyData.questions.map(question => ({
-                id: question.id,
-                text: question.questionText
-            }));
-            
-            setQuestions(formattedQuestions);
+            setQuestions(surveyData.questions.map(q => ({ id: q.id, text: q.questionText })));
             setError(null);
         } catch (err) {
             console.error('Ошибка при получении данных опроса:', err);
@@ -46,27 +31,10 @@ const LeaveFeedback = () => {
         }
     };
 
-    useEffect(() => {
-        fetchSurveyData();
-    }, [projectId]);
+    useEffect(() => { fetchSurveyData(); }, [projectId]);
 
     const handleAnswerChange = (questionId, answer) => {
-        setAnswers(prev => ({
-            ...prev,
-            [questionId]: answer
-        }));
-    };
-
-    const handleRatingChange = (value) => {
-        setRating(value);
-    };
-
-    const handleMouseEnter = (value) => {
-        setHoverRating(value);
-    };
-
-    const handleMouseLeave = () => {
-        setHoverRating(0);
+        setAnswers(prev => ({ ...prev, [questionId]: answer }));
     };
 
     const handleSubmit = async (e) => {
@@ -74,50 +42,37 @@ const LeaveFeedback = () => {
         try {
             const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
             const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
-            
-            if (!authorizationToken) {
-                setError('Необходима авторизация');
-                return;
-            }
+            if (!authorizationToken) { setError('Необходима авторизация'); return; }
 
             const surveyData = {
-                answers: questions.map(question => ({
-                    questionId: question.id,
-                    answerText: answers[question.id] || ''
-                }))
+                answers: questions.map(q => ({ questionId: q.id, answerText: answers[q.id] || '' }))
             };
 
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken },
                 body: JSON.stringify(surveyData)
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             navigate(`/project/${projectId}`);
         } catch (error) {
             console.error('Ошибка при отправке ответов:', error);
-            setError('Не удалось отправить отзыв. Пожалуйста, попробуйте позже.');
+            setError('Не удалось отправить отзыв. Попробуйте позже.');
         }
     };
 
     if (loading) {
         return (
             <>
-                <Helmet>
-                    <title>Загрузка... - StartHub</title>
-                    <body className={styles.body} />
-                </Helmet>
+                <Helmet><title>Загрузка... - StartHub</title><body className={styles.body} /></Helmet>
                 <Menu />
-                <div className={styles.leaveFeedbackPage}>
-                    <div className={styles.leaveFeedbackContainer}>
-                        <h1 className={styles.formTitle}>Загрузка...</h1>
+                <div className={styles.page}>
+                    <div className={styles.container}>
+                        <div className={styles.loadingState}>
+                            <div className={styles.spinner}></div>
+                            <span>Загрузка формы...</span>
+                        </div>
                     </div>
                 </div>
             </>
@@ -127,27 +82,24 @@ const LeaveFeedback = () => {
     if (error) {
         return (
             <>
-                <Helmet>
-                    <title>Ошибка - StartHub</title>
-                    <body className={styles.body} />
-                </Helmet>
+                <Helmet><title>Ошибка - StartHub</title><body className={styles.body} /></Helmet>
                 <Menu />
-                <div className={styles.leaveFeedbackPage}>
-                    <div className={styles.leaveFeedbackContainer}>
-                        <h1 className={styles.formTitle}>Ошибка</h1>
-                        <p className={styles.errorMessage}>{error}</p>
-                        <button 
-                            className={styles.backButton}
-                            onClick={() => navigate(`/project/${projectId}`)}
-                        >
-                            <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                            Вернуться к проекту
-                        </button>
+                <div className={styles.page}>
+                    <div className={styles.container}>
+                        <div className={styles.errorState}>
+                            <i className="fas fa-exclamation-triangle"></i>
+                            <p>{error}</p>
+                            <button className={styles.backBtn} onClick={() => navigate(`/project/${projectId}`)}>
+                                <i className="fas fa-arrow-left"></i> Вернуться к проекту
+                            </button>
+                        </div>
                     </div>
                 </div>
             </>
         );
     }
+
+    const answeredCount = questions.filter(q => answers[q.id]?.trim()).length;
 
     return (
         <>
@@ -156,59 +108,66 @@ const LeaveFeedback = () => {
                 <body className={styles.body} />
             </Helmet>
             <Menu />
-            <div className={styles.leaveFeedbackPage}>
-                <div className={styles.leaveFeedbackContainer}>
-                    <button 
-                        className={styles.backButton}
-                        onClick={() => navigate(`/project/${projectId}`)}
-                    >
-                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                        Вернуться к проекту
-                    </button>
+            <div className={styles.page}>
+                <div className={styles.container}>
+                    <div className={styles.topBar}>
+                        <button className={styles.backBtn} onClick={() => navigate(`/project/${projectId}`)}>
+                            <i className="fas fa-arrow-left"></i> Назад
+                        </button>
+                        <span className={styles.progress}>
+                            {answeredCount} / {questions.length} вопросов
+                        </span>
+                    </div>
 
-                    <h1 className={styles.formTitle}>Форма обратной связи</h1>
+                    <div className={styles.titleBlock}>
+                        <i className="fas fa-comment-dots"></i>
+                        <h1>Обратная связь</h1>
+                    </div>
 
                     <form onSubmit={handleSubmit}>
                         <div className={styles.questionsList}>
-                            {questions.map((question) => (
-                                <div 
-                                    key={question.id} 
-                                    className={`${styles.questionItem} ${answers[question.id]?.trim() ? styles.filled : ''}`}
+                            {questions.map((question, idx) => (
+                                <div
+                                    key={question.id}
+                                    className={`${styles.questionCard} ${answers[question.id]?.trim() ? styles.answered : ''}`}
                                 >
-                                    <div className={styles.questionText}>
-                                        {question.text}
+                                    <div className={styles.questionHeader}>
+                                        <span className={styles.questionNum}>{idx + 1}</span>
+                                        <span className={styles.questionText}>{question.text}</span>
                                     </div>
                                     <textarea
                                         className={styles.answerInput}
                                         value={answers[question.id] || ''}
                                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                                         placeholder="Введите ваш ответ..."
+                                        rows={3}
                                     />
                                 </div>
                             ))}
                         </div>
 
-                        <div className={styles.ratingContainer}>
-                            <div className={styles.ratingTitle}>Оцените проект</div>
-                            <div 
-                                className={styles.ratingStars}
-                                onMouseLeave={handleMouseLeave}
+                        <div className={styles.ratingSection}>
+                            <span className={styles.ratingLabel}>Оцените проект</span>
+                            <div
+                                className={styles.stars}
+                                onMouseLeave={() => setHoverRating(0)}
                             >
-                                {[5, 4, 3, 2, 1].map((value) => (
+                                {[1, 2, 3, 4, 5].map((value) => (
                                     <span
                                         key={value}
-                                        className={`${styles.star} ${(hoverRating || rating) >= value ? styles.active : ''}`}
-                                        onClick={() => handleRatingChange(value)}
-                                        onMouseEnter={() => handleMouseEnter(value)}
+                                        className={`${styles.star} ${(hoverRating || rating) >= value ? styles.starActive : ''}`}
+                                        onClick={() => setRating(value)}
+                                        onMouseEnter={() => setHoverRating(value)}
                                     >
                                         ★
                                     </span>
                                 ))}
                             </div>
+                            {rating > 0 && <span className={styles.ratingValue}>{rating} из 5</span>}
                         </div>
 
-                        <button type="submit" className={styles.submitButton}>
-                            Отправить обратную связь
+                        <button type="submit" className={styles.submitBtn}>
+                            <i className="fas fa-paper-plane"></i> Отправить отзыв
                         </button>
                     </form>
                 </div>

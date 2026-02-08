@@ -42,7 +42,6 @@ const NewsPage = () => {
                 console.error('Ошибка при проверке роли пользователя:', error);
             }
         };
-
         checkUserRole();
     }, [authorizationToken]);
 
@@ -62,7 +61,6 @@ const NewsPage = () => {
                     });
                     setLoading(false);
                 } else {
-                    console.error('Ошибка при получении данных:', response.status);
                     setRedirect(true);
                 }
             } catch (error) {
@@ -70,7 +68,6 @@ const NewsPage = () => {
                 setRedirect(true);
             }
         };
-
         fetchNews();
     }, [newsId]);
 
@@ -78,17 +75,10 @@ const NewsPage = () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}/moderationPassed`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken },
                 body: JSON.stringify(true)
             });
-
-            if (!response.ok) {
-                throw new Error('Ошибка при одобрении новости');
-            }
-
+            if (!response.ok) throw new Error('Ошибка при одобрении новости');
             setNews(prev => ({...prev, moderationPassed: true}));
         } catch (error) {
             console.error('Ошибка при одобрении новости:', error);
@@ -99,72 +89,102 @@ const NewsPage = () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`, {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
-                }
+                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken }
             });
-
-            if (!response.ok) {
-                throw new Error('Ошибка при блокировке новости');
-            }
-
+            if (!response.ok) throw new Error('Ошибка при блокировке новости');
             navigate('/articles-and-news');
         } catch (error) {
             console.error('Ошибка при блокировке новости:', error);
         }
     };
 
-    if (loading) {
-        return <div className={styles.loading}>Загрузка...</div>;
+    if (redirect) {
+        return <Navigate to="/not-found" replace />;
     }
 
-    if (redirect) {
-        return <Navigate to="/not-found" replace/>;
+    if (loading) {
+        return (
+            <>
+                <Helmet><title>Новость — StartHub</title><body className={styles.body} /></Helmet>
+                <Menu />
+                <div className={styles.page}>
+                    <div className={styles.loadingState}>
+                        <div className={styles.spinner}></div>
+                        <p>Загрузка новости...</p>
+                    </div>
+                </div>
+            </>
+        );
     }
 
     return (
         <>
             <Helmet>
-                <title>{news.title}</title>
-                <html className={styles.html}/>
-                <body className={styles.body}/>
+                <title>{news.title} — StartHub</title>
+                <body className={styles.body} />
             </Helmet>
-            {isMember && <Menu/>}
+
+            {isMember && <Menu />}
+
             {isModerator && (
-                <div className={styles.moderatorPanel}>
-                    <h3 className={styles.moderatorPanelTitle}>Действия модератора</h3>
-                    <div className={styles.moderatorPanelActions}>
+                <div className={styles.moderatorBar}>
+                    <span className={styles.moderatorLabel}>
+                        <i className="fas fa-shield-alt"></i> Модерация
+                    </span>
+                    <div className={styles.moderatorActions}>
                         {!news.moderationPassed && (
-                            <button onClick={handleApprove} className={styles.approveButton}>
-                                Одобрить
+                            <button onClick={handleApprove} className={styles.approveBtn}>
+                                <i className="fas fa-check"></i> Одобрить
                             </button>
                         )}
-                        <button onClick={handleBlock} className={styles.blockButton}>
-                            Заблокировать
+                        <button onClick={handleBlock} className={styles.blockBtn}>
+                            <i className="fas fa-ban"></i> Заблокировать
                         </button>
                     </div>
                 </div>
             )}
-            <div className={styles.newsContainer}>
-                <button onClick={() => navigate(-1)} className={styles.backButton}>
-                    <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                    <span>Назад</span>
-                </button>
-                <div className={styles.projectCardHeader}>
-                    <h1 className={styles.newsTitle}>{news.title}</h1>
-                    {news.logoUrl && <img src={news.logoUrl} alt="News preview" className={styles.newsPreview}/>}
-                </div>
-                <div className={styles.newsMetadata}>
-                    <div className={styles.projectCategory}>
-                        Автор: <span className={styles.newsOwner}>{news.owner}</span>
+
+            <div className={styles.page}>
+                <div className={styles.container}>
+                    <div className={styles.topBar}>
+                        <button className={styles.backBtn} onClick={() => navigate(-1)}>
+                            <i className="fas fa-arrow-left"></i> Назад
+                        </button>
                     </div>
-                    <div className={styles.projectCategory}>
-                        Категория: <span className={styles.categoryBadge}>{news.category}</span>
+
+                    <div className={styles.hero}>
+                        {news.logoUrl && (
+                            <img
+                                src={news.logoUrl}
+                                alt={news.title}
+                                className={styles.heroImage}
+                                onError={e => { e.target.onerror = null; e.target.src = '/default_list_element_logo.jpg'; }}
+                            />
+                        )}
+                        <div className={styles.heroInfo}>
+                            <h1 className={styles.heroTitle}>{news.title}</h1>
+                            <div className={styles.metaRow}>
+                                {news.category && (
+                                    <span className={styles.categoryBadge}>
+                                        <i className="fas fa-tag"></i> {news.category}
+                                    </span>
+                                )}
+                                {news.owner && (
+                                    <span className={styles.ownerBadge}>
+                                        <i className="fas fa-user"></i> {news.owner}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className={styles.projectDescription}>
-                    <div className={styles.newsText} dangerouslySetInnerHTML={{__html: news.content}}/>
+
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <i className="fas fa-align-left"></i>
+                            <h2>Содержание</h2>
+                        </div>
+                        <div className={styles.contentBody} dangerouslySetInnerHTML={{__html: news.content}} />
+                    </div>
                 </div>
             </div>
         </>

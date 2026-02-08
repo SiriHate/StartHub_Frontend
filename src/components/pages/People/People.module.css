@@ -34,7 +34,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 24px 20px 12px;
+    padding: 24px 20px 16px;
     font-size: 1rem;
     font-weight: 600;
     color: #fff;
@@ -46,42 +46,6 @@
     font-size: 1rem;
 }
 
-/* ── Tab Row inside sidebar ── */
-.tabRow {
-    display: flex;
-    gap: 6px;
-    padding: 14px 12px 8px;
-}
-
-.tabBtn {
-    flex: 1;
-    padding: 9px 0;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.tabBtn:hover {
-    background: rgba(74, 158, 237, 0.12);
-    color: #fff;
-}
-
-.tabActive {
-    background: rgba(74, 158, 237, 0.25);
-    border-color: rgba(74, 158, 237, 0.45);
-    color: #fff;
-    font-weight: 500;
-}
-
-/* ── Filter List ── */
 .filterList {
     flex: 1;
     overflow-y: auto;
@@ -261,74 +225,101 @@
     color: #fff;
 }
 
-/* ── Cards Grid ── */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 20px;
+/* ── People List ── */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin-bottom: 30px;
 }
 
 .card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 20px;
     background: rgba(30, 30, 65, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
-    overflow: hidden;
     cursor: pointer;
     transition: all 0.25s ease;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    border-color: rgba(74, 158, 237, 0.35);
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-color: rgba(74, 158, 237, 0.3);
+    background: rgba(35, 35, 75, 0.8);
 }
 
-.cardImage {
-    width: 100%;
-    height: 180px;
+.cardAvatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
     overflow: hidden;
+    flex-shrink: 0;
     background: rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-.cardImage img {
+.cardAvatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.card:hover .cardImage img {
-    transform: scale(1.05);
 }
 
 .cardBody {
-    padding: 16px;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    min-width: 0;
 }
 
-.cardTitle {
+.cardTop {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cardName {
     color: #fff;
     font-size: 1.05rem;
     font-weight: 600;
     margin: 0;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.cardCategory {
-    font-size: 0.78rem;
+.cardUsername {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.cardSpec {
+    font-size: 0.82rem;
     color: #a3d4ff;
-    background: rgba(74, 158, 237, 0.15);
-    padding: 4px 10px;
-    border-radius: 12px;
-    display: inline-block;
-    max-width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cardSpec i {
+    font-size: 0.7rem;
+    color: rgba(74, 158, 237, 0.6);
+}
+
+.cardArrow {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.card:hover .cardArrow {
+    color: rgba(74, 158, 237, 0.6);
 }
 
 /* ── States ── */
@@ -406,10 +397,6 @@
         flex-direction: row;
     }
 
-    .tabRow {
-        padding: 12px 12px 6px;
-    }
-
     .content {
         padding: 20px 16px;
     }
@@ -422,19 +409,16 @@
     .searchBar {
         max-width: 100%;
     }
-
-    .grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 14px;
-    }
 }
 
 @media (max-width: 480px) {
-    .grid {
-        grid-template-columns: 1fr;
+    .card {
+        padding: 12px 14px;
+        gap: 12px;
     }
 
-    .cardImage {
-        height: 160px;
+    .cardAvatar {
+        width: 44px;
+        height: 44px;
     }
 }

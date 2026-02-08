@@ -19,7 +19,8 @@ import ArticlePage from "./components/pages/ArticlePage/ArticlePage";
 import ManageArticle from "./components/pages/ManageArticle/ManageArticle";
 import ManageNews from "./components/pages/ManageNews/ManageNews";
 import MemberProfilePage from "./components/pages/MemberProfile/MemberProfile";
-import PeopleAndProjects from "./components/pages/PeopleAndProjects/PeopleAndProjects";
+import Projects from "./components/pages/Projects/Projects";
+import People from "./components/pages/People/People";
 import MySpace from "./components/pages/MySpace/MySpace";
 import CreateProject from "./components/pages/CreateProject/CreateProject";
 import ProjectDetails from "./components/pages/ProjectDetails/ProjectDetails";
@@ -54,7 +55,8 @@ const App = () => {
                             <Route path="/create_news" element={<CreateNews />} />
                             <Route path="/news/:newsId" element={<NewsPage />} />
                             <Route path="/manage_news/:newsId" element={<ManageNews />} />
-                            <Route path="/people_and_projects" element={<PeopleAndProjects />} />
+                            <Route path="/projects" element={<Projects />} />
+                            <Route path="/people" element={<People />} />
                             <Route path="/my_space" element={<MySpace />} />
                             <Route path="/create_project" element={<CreateProject />} />
                             <Route path="/project/:projectId" element={<ProjectDetails />} />

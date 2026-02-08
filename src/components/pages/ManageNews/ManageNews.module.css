@@ -1,194 +1,298 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-
-.html, .body {
-    height: 100%;
+.body {
+    min-height: 100vh;
+    width: 100%;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.body {
-    background-image: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
     background-attachment: fixed;
 }
 
-.backButton {
+.page {
+    min-height: 100vh;
+    padding: 30px 20px 60px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.container {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ── Top Bar ── */
+.topBar {
+    display: flex;
+    align-items: center;
+}
+
+.backBtn {
+    padding: 9px 18px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: rgba(46, 42, 80, 0.5);
-    color: #f0f0f0;
-    border: 1px solid rgba(62, 58, 109, 0.5);
-    border-radius: 8px;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
 }
 
-.backButton:hover {
-    background-color: rgba(46, 42, 80, 0.8);
-    transform: translateX(-3px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+.backBtn:hover {
+    background: rgba(74, 158, 237, 0.12);
+    border-color: rgba(74, 158, 237, 0.3);
+    color: #fff;
 }
 
-.backButton:active {
-    transform: translateX(1px);
+/* ── Card ── */
+.card {
+    background: rgba(30, 30, 65, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
 }
 
-.backIcon {
-    width: 16px;
-    height: 16px;
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.editArticlePage {
+.cardHeader i {
+    color: #4a9eed;
+    font-size: 1.2rem;
+}
+
+.cardHeader h1 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* ── Form ── */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* ── Logo Section ── */
+.logoSection {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
-    min-height: 100vh;
-}
-
-.editArticleContainer {
-    position: relative;
-    width: 80%;
-    max-width: 50%;
-    min-width: 50%;
-    background-color: #1b1739;
-    color: #f0f0f0;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.formTitle {
-    margin-top: 15px;
-    text-align: center;
-    margin-bottom: 50px;
-    font-size: 24px;
-    font-weight: 600;
-    color: #f0f0f0;
-}
-
-.editArticleForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.centerLabel {
-    text-align: center;
-    width: 100%;
-}
-
-.formGroup {
-    display: flex;
-    flex-direction: column;
-}
-
-.formGroup label {
-    margin-bottom: 5px;
-    color: #f0f0f0;
-}
-
-.formGroup input[type="text"],
-.formGroup textarea,
-.formGroup select {
-    padding: 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    width: 100%;
-    box-sizing: border-box;
-    background-color: #26243b;
-    color: #f0f0f0;
-}
-
-.formGroup input[type="file"] {
-    border: none;
-    color: #f0f0f0;
-}
-
-.formGroup textarea {
-    height: 100px;
+    gap: 12px;
 }
 
 .logoPreview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 180px;
-    height: 180px;
-    margin: 0 auto 10px;
-    border: 2px dashed #444;
-    border-radius: 10px;
+    width: 160px;
+    height: 160px;
+    border-radius: 12px;
+    border: 2px dashed rgba(74, 158, 237, 0.25);
     overflow: hidden;
     position: relative;
-    background-color: #26243b;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.logoPreview img,
-.logoImage {
+.logoPreview:hover {
+    border-color: rgba(74, 158, 237, 0.5);
+}
+
+.logoPreview img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.uploadButton {
-    padding: 10px 20px;
-    background-color: #4444aa;
+.logoOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.logoPreview:hover .logoOverlay {
+    opacity: 1;
+}
+
+.logoOverlay i {
     color: #fff;
-    text-align: center;
+    font-size: 1.6rem;
+}
+
+.uploadBtn {
+    padding: 8px 18px;
+    background: rgba(74, 158, 237, 0.12);
+    border: 1px solid rgba(74, 158, 237, 0.25);
+    border-radius: 8px;
+    color: #a3d4ff;
+    font-size: 0.84rem;
     cursor: pointer;
-    margin-top: 10px;
-    border: none;
-    border-radius: 5px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.uploadBtn:hover {
+    background: rgba(74, 158, 237, 0.2);
+    color: #fff;
+}
+
+/* ── Field Groups ── */
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fieldGroup label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.84rem;
     font-weight: 500;
-    transition: background-color 0.3s ease;
-    font-size: 14px;
 }
 
-.uploadButton:hover {
-    background-color: #5555bb;
-    box-shadow: 0 0 10px rgba(85, 85, 187, 0.5);
-}
-
-.uploadButton input[type="file"] {
-    display: none;
-}
-
-.submitButton {
-    margin-top: 25px;
-    padding: 10px 15px;
-    border: none;
-    background-color: #4444aa;
+.fieldGroup input[type="text"],
+.fieldGroup textarea,
+.fieldGroup select {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
     color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-weight: 600;
+    font-size: 0.92rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.submitButton:hover {
-    background-color: #5555bb;
+.fieldGroup input[type="text"]::placeholder,
+.fieldGroup textarea::placeholder {
+    color: rgba(255, 255, 255, 0.25);
 }
 
-.deleteButton {
-    margin-top: 15px;
-    padding: 10px 15px;
-    border: none;
-    background-color: #aa4444;
+.fieldGroup input[type="text"]:focus,
+.fieldGroup textarea:focus,
+.fieldGroup select:focus {
+    outline: none;
+    border-color: rgba(74, 158, 237, 0.4);
+}
+
+.fieldGroup select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23a3d4ff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+.fieldGroup select option {
+    background: #1a1a3e;
     color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-weight: 600;
 }
 
-.deleteButton:hover {
-    background-color: #bb5555;
+/* ── Buttons Row ── */
+.buttonsRow {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.submitBtn {
+    flex: 1;
+    padding: 13px 28px;
+    background: rgba(74, 158, 237, 0.15);
+    border: 1px solid rgba(74, 158, 237, 0.3);
+    border-radius: 10px;
+    color: #a3d4ff;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.submitBtn:hover {
+    background: rgba(74, 158, 237, 0.25);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.deleteBtn {
+    padding: 13px 24px;
+    background: rgba(220, 60, 60, 0.1);
+    border: 1px solid rgba(220, 60, 60, 0.2);
+    border-radius: 10px;
+    color: rgba(220, 100, 100, 0.8);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.deleteBtn:hover {
+    background: rgba(220, 60, 60, 0.2);
+    color: #f87171;
+    transform: translateY(-1px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .page {
+        padding: 20px 12px 40px;
+    }
+
+    .card {
+        padding: 24px 20px;
+    }
+
+    .cardHeader h1 {
+        font-size: 1.1rem;
+    }
+
+    .logoPreview {
+        width: 130px;
+        height: 130px;
+    }
+
+    .buttonsRow {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 18px 16px;
+    }
+
+    .logoPreview {
+        width: 110px;
+        height: 110px;
+    }
 }

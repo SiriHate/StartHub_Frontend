@@ -17,7 +17,7 @@ function MemberProfile() {
     const [redirect, setRedirect] = useState(false);
     const [isBlocked, setIsBlocked] = useState(false);
     const [isModerator, setIsModerator] = useState(false);
-    const [currentUserUsername, setCurrentUserUsername] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
@@ -33,12 +33,9 @@ function MemberProfile() {
                         'Authorization': authorizationToken
                     },
                 });
-                if (response.status !== 200) {
-                    throw new Error('Failed to fetch user role');
-                }
+                if (response.status !== 200) throw new Error('Failed to fetch user role');
                 const data = await response.json();
                 setIsModerator(data.role === 'MODERATOR');
-                setCurrentUserUsername(data.username);
             } catch (error) {
                 console.error('Error fetching user role:', error);
             }
@@ -54,9 +51,7 @@ function MemberProfile() {
             },
         })
             .then(response => {
-                if (response.status !== 200) {
-                    throw new Error('Failed to fetch user information');
-                }
+                if (response.status !== 200) throw new Error('Failed to fetch user information');
                 return response.json();
             })
             .then(data => {
@@ -71,6 +66,7 @@ function MemberProfile() {
                     : (raw.startsWith('http://') || raw.startsWith('https://')) ? raw
                         : `${config.FILE_SERVER || ''}${raw}`;
                 setAvatar(avatarSrc);
+                setIsLoading(false);
             })
             .catch(error => {
                 console.error('Fetch error:', error);
@@ -87,16 +83,13 @@ function MemberProfile() {
                     'Authorization': authorizationToken
                 },
             });
-
             if (response.ok) {
                 setIsBlocked(true);
-                alert('Пользователь успешно заблокирован');
             } else {
                 throw new Error('Не удалось заблокировать пользователя');
             }
         } catch (error) {
             console.error('Ошибка при блокировке пользователя:', error);
-            alert('Произошла ошибка при блокировке пользователя');
         }
     };
 
@@ -104,11 +97,8 @@ function MemberProfile() {
         try {
             const chatRequest = {
                 isGroup: false,
-                participants: [
-                    { username, role: 'MEMBER' }
-                ]
+                participants: [{ username, role: 'MEMBER' }]
             };
-
             const response = await fetch(`${config.CHAT_SERVICE}/chats`, {
                 method: 'POST',
                 headers: {
@@ -117,12 +107,10 @@ function MemberProfile() {
                 },
                 body: JSON.stringify(chatRequest)
             });
-
             await response.json();
             navigate('/chats');
         } catch (error) {
             console.error('Ошибка при создании чата:', error);
-            alert('Произошла ошибка при создании чата');
         }
     };
 
@@ -130,69 +118,127 @@ function MemberProfile() {
         return <Navigate to="/not-found" replace />;
     }
 
-    return (
-        <div>
-            {!isModerator && <NavigationBar />}
-            <div className={styles.profilePage}>
+    if (isLoading) {
+        return (
+            <>
                 <Helmet>
-                    <title>Профиль пользователя - {username}</title>
-                    <html className={styles.html} />
+                    <title>Профиль — StartHub</title>
                     <body className={styles.body} />
                 </Helmet>
-                <div className={styles.profileCard}>
-                    <button onClick={() => navigate(-1)} className={styles.backButton}>
-                        <img src="/back-arrow.png" alt="Назад" className={styles.backIcon} />
-                        <span>Назад</span>
-                    </button>
-                    {isModerator && (
-                        <button 
-                            onClick={handleBlockUser} 
-                            className={styles.blockButton}
-                            disabled={isBlocked}
-                        >
-                            {isBlocked ? 'Заблокирован' : 'Заблокировать'}
-                        </button>
-                    )}
-                    <div className={styles.profileCardHeader}>
-                        <img src={avatar} alt="Аватар пользователя" className={styles.avatar} onError={e => { e.target.onerror = null; e.target.src = '/default_user_avatar.jpg'; }} />
-                        <div className={styles.username}>{username}</div>
-                        <button onClick={handleSendMessage} className={styles.sendMessageButton}>
-                            <i className="fas fa-comments"></i> Написать сообщение
-                        </button>
-                    </div>
-                    <div className={styles.infoSection}>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Полное имя:</span>
-                            <span className={styles.infoText}>{name}</span>
-                        </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Номер телефона:</span>
-                            <span className={styles.infoText}>{phone}</span>
-                        </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Email-адрес:</span>
-                            <span className={styles.infoText}>{email}</span>
-                        </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Дата рождения:</span>
-                            <span className={styles.infoText}>{birthday}</span>
-                        </div>
-                        <div className={styles.infoItem}>
-                            <span className={styles.label}>Специализация:</span>
-                            <span className={styles.infoText}>{specialization}</span>
-                        </div>
-                    </div>
-                    <div className={styles.infoSection}>
-                        <div className={styles.infoItem}>
-                            <span className={styles.aboutLabel}>О себе:</span>
-                        </div>
-                        <div className={styles.aboutSection}>
-                            <div className={styles.aboutText}>{about}</div>
-                        </div>
+                {!isModerator && <NavigationBar />}
+                <div className={styles.page}>
+                    <div className={styles.loadingState}>
+                        <div className={styles.spinner}></div>
+                        <p>Загрузка профиля...</p>
                     </div>
                 </div>
+            </>
+        );
+    }
+
+    const infoFields = [
+        { icon: 'fa-user', label: 'Имя', value: name },
+        { icon: 'fa-phone', label: 'Телефон', value: phone },
+        { icon: 'fa-envelope', label: 'Email', value: email },
+        { icon: 'fa-calendar', label: 'Дата рождения', value: birthday },
+        { icon: 'fa-briefcase', label: 'Специализация', value: specialization },
+    ];
+
+    return (
+        <>
+            <Helmet>
+                <title>{username} — StartHub</title>
+                <body className={styles.body} />
+            </Helmet>
+
+            {!isModerator && <NavigationBar />}
+
+            {isModerator && (
+                <div className={styles.moderatorBar}>
+                    <span className={styles.moderatorLabel}>
+                        <i className="fas fa-shield-alt"></i> Модерация профиля
+                    </span>
+                    <div className={styles.moderatorActions}>
+                        <button
+                            onClick={handleBlockUser}
+                            className={styles.blockBtn}
+                            disabled={isBlocked}
+                        >
+                            <i className={`fas ${isBlocked ? 'fa-check' : 'fa-ban'}`}></i>
+                            {isBlocked ? 'Заблокирован' : 'Заблокировать'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <div className={styles.page}>
+                <div className={styles.container}>
+                    {/* Top Bar */}
+                    <div className={styles.topBar}>
+                        <button className={styles.backBtn} onClick={() => navigate(-1)}>
+                            <i className="fas fa-arrow-left"></i> Назад
+                        </button>
+                    </div>
+
+                    {/* Header Card */}
+                    <div className={styles.headerCard}>
+                        <div className={styles.avatarBlock}>
+                            <img
+                                src={avatar}
+                                alt={`Аватар ${username}`}
+                                className={styles.avatar}
+                                onError={e => { e.target.onerror = null; e.target.src = '/default_user_avatar.jpg'; }}
+                            />
+                        </div>
+                        <div className={styles.headerInfo}>
+                            <h1 className={styles.usernameTitle}>{username}</h1>
+                            {specialization && (
+                                <span className={styles.specBadge}>
+                                    <i className="fas fa-briefcase"></i> {specialization}
+                                </span>
+                            )}
+                            <button className={styles.messageBtn} onClick={handleSendMessage}>
+                                <i className="fas fa-comments"></i> Написать сообщение
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Info Section */}
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <i className="fas fa-id-card"></i>
+                            <h2>Информация</h2>
+                        </div>
+                        <div className={styles.infoGrid}>
+                            {infoFields.map((field, idx) => (
+                                field.value ? (
+                                    <div key={idx} className={styles.infoItem}>
+                                        <div className={styles.infoIcon}>
+                                            <i className={`fas ${field.icon}`}></i>
+                                        </div>
+                                        <div className={styles.infoContent}>
+                                            <span className={styles.infoLabel}>{field.label}</span>
+                                            <span className={styles.infoValue}>{field.value}</span>
+                                        </div>
+                                    </div>
+                                ) : null
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* About Section */}
+                    {about && (
+                        <div className={styles.section}>
+                            <div className={styles.sectionHeader}>
+                                <i className="fas fa-align-left"></i>
+                                <h2>О себе</h2>
+                            </div>
+                            <p className={styles.aboutText}>{about}</p>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

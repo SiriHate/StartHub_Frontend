@@ -1,0 +1,108 @@
+.body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to top, #2e1753, #1f1746, #131537, #0d1028, #050819);
+    background-attachment: fixed;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.logo { width: 200px; height: auto; margin-bottom: 32px; }
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(30, 30, 65, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 48px 32px;
+    backdrop-filter: blur(12px);
+    text-align: center;
+}
+
+.loadingState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.loadingState p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(74, 158, 237, 0.2);
+    border-top-color: #4a9eed;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.resultState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.successIcon {
+    font-size: 2.5rem;
+    color: #86efac;
+}
+
+.errorIcon {
+    font-size: 2.5rem;
+    color: #fca5a5;
+}
+
+.resultTitle {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+}
+
+.resultHint {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.linkBtn {
+    margin-top: 8px;
+    background: none;
+    border: none;
+    color: #4a9eed;
+    font-size: 0.88rem;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    transition: color 0.15s;
+}
+
+.linkBtn:hover {
+    color: #a3d4ff;
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .card { padding: 36px 20px; }
+    .logo { width: 160px; }
+}
