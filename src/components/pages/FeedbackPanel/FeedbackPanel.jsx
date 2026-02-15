@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import Menu from "../../menu/Menu";
 import styles from './FeedbackPanel.module.css';
 import config from "../../../config";
+import apiClient from "../../../api/apiClient";
 
 const FeedbackPanel = () => {
     const { projectId } = useParams();
@@ -24,7 +25,7 @@ const FeedbackPanel = () => {
 
     const handleDeleteSurvey = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -44,14 +45,8 @@ const FeedbackPanel = () => {
     const fetchFeedbacks = async () => {
         try {
             setLoading(true);
-            const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-            const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions?sort=${sortBy}`, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            });
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions?sort=${sortBy}`);
 
             if (!response.ok) {
                 throw new Error('Не удалось загрузить отзывы');

@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import Menu from "../../menu/Menu";
 import styles from './LeaveFeedback.module.css';
 import config from '../../../config';
+import apiClient, { getCookie } from '../../../api/apiClient';
 
 const LeaveFeedback = () => {
     const { projectId } = useParams();
@@ -18,7 +19,7 @@ const LeaveFeedback = () => {
     const fetchSurveyData = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`);
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const surveyData = await response.json();
             setQuestions(surveyData.questions.map(q => ({ id: q.id, text: q.questionText })));
@@ -40,17 +41,15 @@ const LeaveFeedback = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-            const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
-            if (!accessToken) { setError('Необходима авторизация'); return; }
+            if (!getCookie('accessToken')) { setError('Необходима авторизация'); return; }
 
             const surveyData = {
                 answers: questions.map(q => ({ questionId: q.id, answerText: answers[q.id] || '' }))
             };
 
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(surveyData)
             });
 

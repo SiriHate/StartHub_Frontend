@@ -4,14 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Menu from "../../menu/Menu";
 import styles from './CreateFeedbackForm.module.css';
 import config from "../../../config";
+import apiClient from "../../../api/apiClient";
 
 const CreateFeedbackForm = () => {
     const [questions, setQuestions] = useState([{ id: 1, text: '' }]);
     const containerRef = useRef(null);
     const navigate = useNavigate();
     const { projectId } = useParams();
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
     const addQuestion = () => {
         const newId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
@@ -38,9 +37,9 @@ const CreateFeedbackForm = () => {
 
         try {
             const surveyData = { questions: questions.map(q => ({ questionText: q.text.trim() })) };
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(surveyData)
             });
             if (response.ok) { navigate(`/manage_project/${projectId}`); }

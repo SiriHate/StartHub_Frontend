@@ -3,6 +3,7 @@ import styles from './ModeratorPanel.module.css';
 import Pagination from '../../pagination/Pagination';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
+import apiClient, { clearAuth } from '../../../api/apiClient';
 
 const ModeratorPanel = () => {
     const navigate = useNavigate();
@@ -21,12 +22,8 @@ const ModeratorPanel = () => {
     useEffect(() => {
         const checkUserRole = async () => {
             try {
-                const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-                const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
-                if (!accessToken) { navigate('/not-found'); return; }
-
-                const response = await fetch(`${config.USER_SERVICE}/users/me`, {
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
+                const response = await apiClient(`${config.USER_SERVICE}/users/me`, {
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 if (!response.ok) { navigate('/not-found'); return; }
                 const data = await response.json();
@@ -40,7 +37,7 @@ const ModeratorPanel = () => {
         try {
             setLoading(true);
             const params = new URLSearchParams({ username: search, page, size: itemsPerPage });
-            const response = await fetch(`${config.USER_SERVICE}/members?${params}`, { headers: { 'Content-Type': 'application/json' } });
+            const response = await apiClient(`${config.USER_SERVICE}/members?${params}`, { headers: { 'Content-Type': 'application/json' } });
             if (!response.ok) throw new Error();
             const data = await response.json();
             setUsers(data.content); setTotalPages(data.totalPages);
@@ -51,7 +48,7 @@ const ModeratorPanel = () => {
         try {
             setLoading(true);
             const moderationPassed = statusFilter === 'published' ? 'true' : 'false';
-            const response = await fetch(`${config.MAIN_SERVICE}/projects?moderationPassed=${moderationPassed}&page=${page}&size=${itemsPerPage}`, { headers: { 'Content-Type': 'application/json' } });
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects?moderationPassed=${moderationPassed}&page=${page}&size=${itemsPerPage}`, { headers: { 'Content-Type': 'application/json' } });
             if (!response.ok) { const d = await response.json(); if (d.errorMessage?.includes("No unmoderated")) { setProjects([]); setTotalPages(0); return; } throw new Error(); }
             const data = await response.json(); setProjects(data.content); setTotalPages(data.totalPages);
         } catch (error) { setProjects([]); setTotalPages(0); } finally { setLoading(false); }
@@ -61,7 +58,7 @@ const ModeratorPanel = () => {
         try {
             setLoading(true);
             const moderationPassed = statusFilter === 'published' ? 'true' : 'false';
-            const response = await fetch(`${config.MAIN_SERVICE}/news?moderationPassed=${moderationPassed}&page=${page}&size=${itemsPerPage}`, { headers: { 'Content-Type': 'application/json' } });
+            const response = await apiClient(`${config.MAIN_SERVICE}/news?moderationPassed=${moderationPassed}&page=${page}&size=${itemsPerPage}`, { headers: { 'Content-Type': 'application/json' } });
             if (!response.ok) { const d = await response.json(); if (d.errorMessage?.includes("No unmoderated")) { setNews([]); setTotalPages(0); return; } throw new Error(); }
             const data = await response.json(); setNews(data.content); setTotalPages(data.totalPages);
         } catch (error) { setNews([]); setTotalPages(0); } finally { setLoading(false); }
@@ -71,7 +68,7 @@ const ModeratorPanel = () => {
         try {
             setLoading(true);
             const moderationPassed = statusFilter === 'published' ? 'true' : 'false';
-            const response = await fetch(`${config.MAIN_SERVICE}/articles?moderationPassed=${moderationPassed}&page=${page}&size=${itemsPerPage}`, { headers: { 'Content-Type': 'application/json' } });
+            const response = await apiClient(`${config.MAIN_SERVICE}/articles?moderationPassed=${moderationPassed}&page=${page}&size=${itemsPerPage}`, { headers: { 'Content-Type': 'application/json' } });
             if (!response.ok) { const d = await response.json(); if (d.errorMessage?.includes("No unmoderated")) { setArticles([]); setTotalPages(0); return; } throw new Error(); }
             const data = await response.json(); setArticles(data.content); setTotalPages(data.totalPages);
         } catch (error) { setArticles([]); setTotalPages(0); } finally { setLoading(false); }
@@ -106,16 +103,16 @@ const ModeratorPanel = () => {
     const handleArticleClick = (id) => navigate(`/article/${id}`);
 
     const handleBlock = async (username) => {
-        try { const r = await fetch(`${config.USER_SERVICE}/members?username=${username}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchUsers(currentPage - 1, searchQuery); } catch (e) { console.error(e); }
+        try { const r = await apiClient(`${config.USER_SERVICE}/members?username=${username}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchUsers(currentPage - 1, searchQuery); } catch (e) { console.error(e); }
     };
     const handleDeleteProject = async (id) => {
-        try { const r = await fetch(`${config.MAIN_SERVICE}/projects/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchProjects(currentPage - 1); } catch (e) { console.error(e); }
+        try { const r = await apiClient(`${config.MAIN_SERVICE}/projects/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchProjects(currentPage - 1); } catch (e) { console.error(e); }
     };
     const handleDeleteNews = async (id) => {
-        try { const r = await fetch(`${config.MAIN_SERVICE}/news/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchNews(currentPage - 1); } catch (e) { console.error(e); }
+        try { const r = await apiClient(`${config.MAIN_SERVICE}/news/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchNews(currentPage - 1); } catch (e) { console.error(e); }
     };
     const handleDeleteArticle = async (id) => {
-        try { const r = await fetch(`${config.MAIN_SERVICE}/articles/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchArticles(currentPage - 1); } catch (e) { console.error(e); }
+        try { const r = await apiClient(`${config.MAIN_SERVICE}/articles/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error(); fetchArticles(currentPage - 1); } catch (e) { console.error(e); }
     };
     const handleApprove = async (id) => {
         try {
@@ -123,7 +120,7 @@ const ModeratorPanel = () => {
             if (activeTab === 'projects') endpoint = `${config.MAIN_SERVICE}/projects/${id}/moderation-passed`;
             else if (activeTab === 'news') endpoint = `${config.MAIN_SERVICE}/news/${id}/moderation-passed`;
             else if (activeTab === 'articles') endpoint = `${config.MAIN_SERVICE}/articles/${id}/moderation-passed`;
-            const r = await fetch(endpoint, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(true) });
+            const r = await apiClient(endpoint, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(true) });
             if (!r.ok) throw new Error();
             if (activeTab === 'projects') fetchProjects(currentPage - 1);
             else if (activeTab === 'news') fetchNews(currentPage - 1);

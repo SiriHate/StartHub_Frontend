@@ -4,6 +4,7 @@ import styles from './PersonalMemberAccount.module.css';
 import Menu from '../../menu/Menu';
 import {Helmet} from "react-helmet";
 import config from '../../../config';
+import apiClient, { clearAuth } from '../../../api/apiClient';
 
 function PersonalMemberAccount() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,8 +12,6 @@ function PersonalMemberAccount() {
     const navigate = useNavigate();
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -29,12 +28,9 @@ function PersonalMemberAccount() {
     const passwordFeedbackTimeoutRef = useRef(null);
 
     useEffect(() => {
-        fetch(`${config.USER_SERVICE}/members/me`, {
+        apiClient(`${config.USER_SERVICE}/members/me`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': accessToken ? `Bearer ${accessToken}` : '',
-            },
+            headers: { 'Content-Type': 'application/json' },
         })
             .then(response => {
                 if (response.status !== 200) {
@@ -66,7 +62,7 @@ function PersonalMemberAccount() {
                 setProfileError(error.message);
                 setIsLoading(false);
             });
-    }, [accessToken, specializations]);
+    }, [specializations]);
 
     useEffect(() => {
         return () => {
@@ -77,10 +73,9 @@ function PersonalMemberAccount() {
     }, []);
 
     useEffect(() => {
-        fetch(`${config.USER_SERVICE}/member-specializations`, {
-            method: 'GET', headers: {
-                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '',
-            },
+        apiClient(`${config.USER_SERVICE}/member-specializations`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
         })
             .then(response => {
                 if (response.status !== 200) {
@@ -92,16 +87,16 @@ function PersonalMemberAccount() {
                 setSpecializations(data);
             })
             .catch(error => console.error('Fetch error:', error));
-    }, [accessToken]);
+    }, []);
 
     const handleProfileHiddenChange = (event) => {
         const newProfileHiddenFlag = event.target.checked;
         setProfileHiddenFlag(newProfileHiddenFlag);
         const requestBody = JSON.stringify({profileHiddenFlag: newProfileHiddenFlag});
-        fetch(`${config.USER_SERVICE}/members/me/profile-hidden-flag`, {
-            method: 'PATCH', headers: {
-                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '',
-            }, body: requestBody,
+        apiClient(`${config.USER_SERVICE}/members/me/profile-hidden-flag`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: requestBody,
         })
             .then(response => {
                 if (response.status !== 200) {
@@ -123,12 +118,9 @@ function PersonalMemberAccount() {
             return;
         }
 
-        fetch(`${config.USER_SERVICE}/members/me`, {
+        apiClient(`${config.USER_SERVICE}/members/me`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': accessToken ? `Bearer ${accessToken}` : ''
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: name,
                 phone: phone,
@@ -149,7 +141,7 @@ function PersonalMemberAccount() {
     };
 
     const handleLogout = () => {
-        document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure';
+        clearAuth();
         navigate('/');
     };
 
@@ -165,10 +157,10 @@ function PersonalMemberAccount() {
     };
 
     const handleChangePassword = () => {
-        fetch(`${config.USER_SERVICE}/members/me/password`, {
-            method: 'PATCH', headers: {
-                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '',
-            }, body: JSON.stringify({
+        apiClient(`${config.USER_SERVICE}/members/me/password`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
                 currentPassword: currentPassword, newPassword: newPassword,
             }),
         })
@@ -192,10 +184,9 @@ function PersonalMemberAccount() {
     };
 
     const handleDeleteAccount = () => {
-        fetch(`${config.USER_SERVICE}/members/me`, {
-            method: 'DELETE', headers: {
-                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : ''
-            },
+        apiClient(`${config.USER_SERVICE}/members/me`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
         })
             .then(response => {
                 if (response.status !== 204) {
@@ -219,9 +210,9 @@ function PersonalMemberAccount() {
     const handleSubmitUpload = (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        const headers = accessToken ? {'Authorization': `Bearer ${accessToken}`} : {};
-        fetch(`${config.USER_SERVICE}/members/me/avatar`, {
-            method: 'PATCH', headers, body: formData,
+        apiClient(`${config.USER_SERVICE}/members/me/avatar`, {
+            method: 'PATCH',
+            body: formData,
         })
             .then(response => {
                 if (!response.ok) {

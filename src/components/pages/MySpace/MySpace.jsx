@@ -5,6 +5,7 @@ import styles from "./MySpace.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
+import apiClient from "../../../api/apiClient";
 
 const sidebarCategories = [
     { key: "Мои проекты", icon: "fa-rocket", label: "Мои проекты" },
@@ -21,9 +22,6 @@ const MySpace = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
-    const accessTokenCookie = document.cookie.split("; ").find(row => row.startsWith("accessToken="));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split("=")[1] : "";
 
     const fetchItems = async (category, query, pg, sz) => {
         try {
@@ -50,11 +48,10 @@ const MySpace = () => {
             params.append("size", sz);
             if (query) params.append("query", query);
 
-            const response = await fetch(`${url}?${params.toString()}`, {
+            const response = await apiClient(`${url}?${params.toString()}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
                 },
             });
 

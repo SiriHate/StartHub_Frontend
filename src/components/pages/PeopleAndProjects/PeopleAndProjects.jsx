@@ -5,6 +5,7 @@ import styles from "./PeopleAndProjects.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
+import apiClient from '../../../api/apiClient';
 
 const PeopleAndProjects = () => {
     const [items, setItems] = useState([]);
@@ -23,7 +24,7 @@ const PeopleAndProjects = () => {
             const url = tab === "project"
                 ? `${config.MAIN_SERVICE}/project-categories`
                 : `${config.USER_SERVICE}/member-specializations`;
-            const response = await fetch(url);
+            const response = await apiClient(url);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
@@ -44,7 +45,7 @@ const PeopleAndProjects = () => {
             const moderationParam = currentTab === "project" ? "&moderationPassed=true" : "";
             const profileHiddenParam = currentTab === "member" ? "&profileHiddenFlag=false" : "";
             const url = `${serviceUrl}/${currentTab === "project" ? "projects" : "members"}?page=${page}&size=${size}${moderationParam}${filterParam}${queryParam}${profileHiddenParam}`;
-            const response = await fetch(url);
+            const response = await apiClient(url);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }

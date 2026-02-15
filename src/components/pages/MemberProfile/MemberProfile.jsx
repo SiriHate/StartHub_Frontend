@@ -4,6 +4,7 @@ import styles from './MemberProfile.module.css';
 import NavigationBar from '../../menu/Menu';
 import { Helmet } from "react-helmet";
 import config from '../../../config';
+import apiClient from '../../../api/apiClient';
 
 function MemberProfile() {
     const { username } = useParams();
@@ -20,17 +21,13 @@ function MemberProfile() {
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
-
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`${config.USER_SERVICE}/users/me`, {
+                const response = await apiClient(`${config.USER_SERVICE}/users/me`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
                     },
                 });
                 if (response.status !== 200) throw new Error('Failed to fetch user role');
@@ -43,11 +40,10 @@ function MemberProfile() {
 
         fetchUserData();
 
-        fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
+        apiClient(`${config.USER_SERVICE}/members/by-username/${username}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
             },
         })
             .then(response => {
@@ -72,15 +68,14 @@ function MemberProfile() {
                 console.error('Fetch error:', error);
                 setRedirect(true);
             });
-    }, [username, accessToken]);
+    }, [username]);
 
     const handleBlockUser = async () => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members/by-username/${username}`, {
+            const response = await apiClient(`${config.USER_SERVICE}/members/by-username/${username}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
                 },
             });
             if (response.ok) {
@@ -99,11 +94,10 @@ function MemberProfile() {
                 isGroup: false,
                 participants: [{ username, role: 'MEMBER' }]
             };
-            const response = await fetch(`${config.CHAT_SERVICE}/chats`, {
+            const response = await apiClient(`${config.CHAT_SERVICE}/chats`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify(chatRequest)
             });

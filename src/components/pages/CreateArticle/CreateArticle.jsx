@@ -5,6 +5,7 @@ import Menu from "../../menu/Menu";
 import RichTextEditor from "../../editor/RichTextEditor";
 import {useNavigate} from "react-router-dom";
 import config from "../../../config";
+import apiClient from "../../../api/apiClient";
 
 const CreateArticle = () => {
     const [articleTitle, setArticleTitle] = useState("");
@@ -14,14 +15,12 @@ const CreateArticle = () => {
     const [articleContent, setArticleContent] = useState('');
     const [articleCategory, setArticleCategory] = useState(null);
     const [categories, setCategories] = useState([]);
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/article-categories`);
+                const response = await apiClient(`${config.MAIN_SERVICE}/article-categories`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setCategories(data);
@@ -48,9 +47,8 @@ const CreateArticle = () => {
         formData.append('logo', articleLogo);
 
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/articles`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/articles`, {
                 method: 'POST',
-                headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' },
                 body: formData
             });
             if (response.ok) {

@@ -4,6 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import styles from "./ManageProject.module.css";
 import Menu from "../../menu/Menu";
 import config from "../../../config";
+import apiClient from "../../../api/apiClient";
 
 function ManageProject() {
     const [projectName, setProjectName] = useState("");
@@ -20,8 +21,6 @@ function ManageProject() {
     const [username, setUsername] = useState("");
     const [role, setRole] = useState("");
     const {projectId} = useParams();
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const [foundUsers, setFoundUsers] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const searchTimeoutRef = useRef(null);
@@ -29,10 +28,10 @@ function ManageProject() {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            try { const r = await fetch(`${config.MAIN_SERVICE}/project-categories`); const d = await r.json(); if (r.ok) setCategories(d); } catch (e) { console.error(e); }
+            try { const r = await apiClient(`${config.MAIN_SERVICE}/project-categories`); const d = await r.json(); if (r.ok) setCategories(d); } catch (e) { console.error(e); }
         };
         const fetchSpecializations = async () => {
-            try { const r = await fetch(`${config.USER_SERVICE}/member-specializations`); const d = await r.json(); if (r.ok) setSpecializations(d); } catch (e) { console.error(e); }
+            try { const r = await apiClient(`${config.USER_SERVICE}/member-specializations`); const d = await r.json(); if (r.ok) setSpecializations(d); } catch (e) { console.error(e); }
         };
         fetchCategories(); fetchSpecializations();
     }, []);
@@ -40,7 +39,7 @@ function ManageProject() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`);
+                const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}`);
                 const data = await response.json();
                 if (response.ok) {
                     setProjectName(data.name || '');
@@ -64,8 +63,8 @@ function ManageProject() {
             const formData = new FormData();
             formData.append('project', new Blob([JSON.stringify(projectData)], { type: 'application/json' }));
             if (projectLogo instanceof File) formData.append('logo', projectLogo);
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
-                method: 'PATCH', headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }, body: formData
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}`, {
+                method: 'PATCH', body: formData
             });
             if (response.ok) navigate(-1);
             else console.error('Error updating project');
@@ -81,8 +80,8 @@ function ManageProject() {
     const handleDeleteProject = async () => {
         if (!window.confirm('Вы уверены, что хотите удалить проект?')) return;
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
-                method: 'DELETE', headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}`, {
+                method: 'DELETE'
             });
             if (response.status === 204 || response.ok) navigate('/my_space');
         } catch (error) { console.error('Error deleting project:', error); }
@@ -96,12 +95,10 @@ function ManageProject() {
     const searchUsers = useCallback(async (searchTerm) => {
         if (!searchTerm) { setFoundUsers([]); return; }
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members?username=${encodeURIComponent(searchTerm)}&page=0&size=5`, {
-                headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
-            });
+            const response = await apiClient(`${config.USER_SERVICE}/members?username=${encodeURIComponent(searchTerm)}&page=0&size=5`);
             if (response.ok) { const data = await response.json(); setFoundUsers(data.content || []); }
         } catch (e) { setFoundUsers([]); }
-    }, [accessToken]);
+    }, []);
 
     const handleUsernameChange = (e) => {
         const value = e.target.value; setUsername(value); setSelectedUser(null);

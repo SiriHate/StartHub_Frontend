@@ -5,6 +5,7 @@ import styles from "./People.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
+import apiClient from '../../../api/apiClient';
 
 const People = () => {
     const [items, setItems] = useState([]);
@@ -20,7 +21,7 @@ const People = () => {
 
     const fetchSpecializations = async () => {
         try {
-            const response = await fetch(`${config.USER_SERVICE}/member-specializations`);
+            const response = await apiClient(`${config.USER_SERVICE}/member-specializations`);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             const specNames = data.map(s => s.name);
@@ -37,7 +38,7 @@ const People = () => {
             const filterParam = filter ? `&specialization=${filter}` : "";
             const queryParam = query ? `&username=${query}` : "";
             const url = `${config.USER_SERVICE}/members?page=${pg}&size=${sz}&profileHiddenFlag=false${filterParam}${queryParam}`;
-            const response = await fetch(url);
+            const response = await apiClient(url);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             setItems(data.content);

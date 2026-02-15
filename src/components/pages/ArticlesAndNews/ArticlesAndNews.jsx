@@ -5,6 +5,7 @@ import styles from "./ArticlesAndNews.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
+import apiClient from '../../../api/apiClient';
 
 const ArticlesAndNews = () => {
     const [items, setItems] = useState([]);
@@ -22,7 +23,7 @@ const ArticlesAndNews = () => {
     const fetchCategories = async (tab) => {
         try {
             const url = `${config.MAIN_SERVICE}/${tab === "Статьи" ? "article-categories" : "news-categories"}`;
-            const response = await fetch(url);
+            const response = await apiClient(url);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             const categoryNames = data.map(category => category.name);
@@ -44,7 +45,7 @@ const ArticlesAndNews = () => {
             if (category) params.set("category", category);
             if (query) params.set("query", query);
             const url = `${config.MAIN_SERVICE}/${path}?${params.toString()}`;
-            const response = await fetch(url);
+            const response = await apiClient(url);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             setItems(data.content);

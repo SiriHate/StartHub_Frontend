@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import styles from "./CreateProject.module.css";
 import Menu from "../../menu/Menu";
 import config from "../../../config";
+import apiClient from "../../../api/apiClient";
 
 function CreateProject() {
     const [projectName, setProjectName] = useState("");
@@ -22,27 +23,25 @@ function CreateProject() {
     const [selectedUser, setSelectedUser] = useState(null);
     const searchTimeoutRef = useRef(null);
     const dropdownRef = useRef(null);
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`${config.MAIN_SERVICE}/project-categories`, {
-            headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
+        apiClient(`${config.MAIN_SERVICE}/project-categories`, {
+            headers: { 'Content-Type': 'application/json' }
         })
             .then(r => r.json()).then(setCategories).catch(console.error);
 
-        fetch(`${config.USER_SERVICE}/member-specializations`, {
-            headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
+        apiClient(`${config.USER_SERVICE}/member-specializations`, {
+            headers: { 'Content-Type': 'application/json' }
         })
             .then(r => r.json()).then(setSpecializations).catch(console.error);
-    }, [accessToken]);
+    }, []);
 
     const searchUsers = async (query) => {
         if (query.length < 2) { setSearchResults([]); setShowDropdown(false); return; }
         try {
-            const response = await fetch(`${config.USER_SERVICE}/members?username=${query}`, {
-                headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
+            const response = await apiClient(`${config.USER_SERVICE}/members?username=${query}`, {
+                headers: { 'Content-Type': 'application/json' }
             });
             if (response.ok) {
                 const data = await response.json();
@@ -76,8 +75,8 @@ function CreateProject() {
         formData.append('project', new Blob([JSON.stringify(projectData)], { type: 'application/json' }));
         if (projectLogo instanceof File) formData.append('logo', projectLogo);
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects`, {
-                method: 'POST', headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }, body: formData
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects`, {
+                method: 'POST', body: formData
             });
             if (response.ok) navigate(-1);
             else console.error('Ошибка при создании проекта');

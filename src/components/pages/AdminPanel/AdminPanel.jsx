@@ -4,6 +4,7 @@ import styles from "./AdminPanel.module.css";
 import {Helmet} from "react-helmet";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
+import apiClient, { clearAuth } from "../../../api/apiClient";
 
 const AdminPanel = () => {
     const navigate = useNavigate();
@@ -25,16 +26,14 @@ const AdminPanel = () => {
         params.set("page", String(pageNum));
         params.set("size", String(pageSize));
         if (usernameQuery) params.set("usernameQuery", usernameQuery);
-        fetch(`${config.USER_SERVICE}/moderators?${params.toString()}`)
+        apiClient(`${config.USER_SERVICE}/moderators?${params.toString()}`)
             .then(r => { if (!r.ok) { if (r.status === 404) { setModerators([]); setTotalPages(0); } throw new Error(); } return r.json(); })
             .then(data => { setModerators(data.content || []); setTotalPages(data.totalPages ?? 1); })
             .catch(() => {});
     };
 
     useEffect(() => {
-        const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-        const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
-        fetch(`${config.USER_SERVICE}/users/me`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` } })
+        apiClient(`${config.USER_SERVICE}/users/me`, { headers: { 'Content-Type': 'application/json' } })
             .then(r => { if (r.status !== 200) throw new Error(); return r.json(); })
             .then(data => { if (data.role !== 'ADMIN') { navigate('/'); return; } setIsLoading(false); fetchModerators(0, size, ""); })
             .catch(() => navigate('/'));
@@ -50,11 +49,11 @@ const AdminPanel = () => {
     }
 
     const searchModerators = () => { setPage(0); fetchModerators(0, size, searchQuery); };
-    const deleteModerator = (id) => { fetch(`${config.USER_SERVICE}/moderators/${id}`, { method: "DELETE" }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
-    const createModerator = (m) => { fetch(`${config.USER_SERVICE}/moderators`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(m) }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
-    const updateModerator = (m) => { fetch(`${config.USER_SERVICE}/moderators/${m.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(m) }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
+    const deleteModerator = (id) => { apiClient(`${config.USER_SERVICE}/moderators/${id}`, { method: "DELETE" }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
+    const createModerator = (m) => { apiClient(`${config.USER_SERVICE}/moderators`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(m) }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
+    const updateModerator = (m) => { apiClient(`${config.USER_SERVICE}/moderators/${m.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(m) }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
 
-    const handleLogout = () => { document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; navigate('/'); };
+    const handleLogout = () => { clearAuth(); navigate('/'); };
     const handleNextPage = () => { if (page < totalPages - 1) { setPage(page + 1); fetchModerators(page + 1, size, searchQuery); } };
     const handlePreviousPage = () => { if (page > 0) { setPage(page - 1); fetchModerators(page - 1, size, searchQuery); } };
     const handleSizeChange = (e) => { const s = parseInt(e.target.value, 10); setSize(s); setPage(0); fetchModerators(0, s, searchQuery); };

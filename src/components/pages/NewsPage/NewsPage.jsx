@@ -4,6 +4,7 @@ import {Navigate, useNavigate, useParams} from "react-router-dom";
 import styles from "./NewsPage.module.css";
 import Menu from "../../menu/Menu";
 import config from '../../../config';
+import apiClient from '../../../api/apiClient';
 
 const NewsPage = () => {
     const {newsId} = useParams();
@@ -21,17 +22,11 @@ const NewsPage = () => {
     const [isMember, setIsMember] = useState(false);
     const [isModerator, setIsModerator] = useState(false);
 
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
-
     useEffect(() => {
         const checkUserRole = async () => {
             try {
-                const response = await fetch(`${config.USER_SERVICE}/users/me`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    }
+                const response = await apiClient(`${config.USER_SERVICE}/users/me`, {
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -43,12 +38,12 @@ const NewsPage = () => {
             }
         };
         checkUserRole();
-    }, [accessToken]);
+    }, []);
 
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`);
+                const response = await apiClient(`${config.MAIN_SERVICE}/news/${newsId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setNews({
@@ -73,9 +68,9 @@ const NewsPage = () => {
 
     const handleApprove = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}/moderationPassed`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/news/${newsId}/moderationPassed`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(true)
             });
             if (!response.ok) throw new Error('Ошибка при одобрении новости');
@@ -87,9 +82,9 @@ const NewsPage = () => {
 
     const handleBlock = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/news/${newsId}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
+                headers: { 'Content-Type': 'application/json' }
             });
             if (!response.ok) throw new Error('Ошибка при блокировке новости');
             navigate('/articles-and-news');

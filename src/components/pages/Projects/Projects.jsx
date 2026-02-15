@@ -5,6 +5,7 @@ import styles from "./Projects.module.css";
 import Menu from "../../menu/Menu";
 import Pagination from "../../pagination/Pagination";
 import config from "../../../config";
+import apiClient from '../../../api/apiClient';
 
 const Projects = () => {
     const [items, setItems] = useState([]);
@@ -20,7 +21,7 @@ const Projects = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/project-categories`);
+            const response = await apiClient(`${config.MAIN_SERVICE}/project-categories`);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             const categoryNames = data.map(category => category.name);
@@ -37,7 +38,7 @@ const Projects = () => {
             const filterParam = filter ? `&category=${filter}` : "";
             const queryParam = query ? `&query=${query}` : "";
             const url = `${config.MAIN_SERVICE}/projects?page=${pg}&size=${sz}&moderationPassed=true${filterParam}${queryParam}`;
-            const response = await fetch(url);
+            const response = await apiClient(url);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             setItems(data.content);

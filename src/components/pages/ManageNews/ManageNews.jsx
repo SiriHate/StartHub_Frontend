@@ -5,6 +5,7 @@ import Menu from "../../menu/Menu";
 import RichTextEditor from "../../editor/RichTextEditor";
 import {useNavigate, useParams} from "react-router-dom";
 import config from "../../../config";
+import apiClient from "../../../api/apiClient";
 
 const ManageNews = () => {
     const [articleTitle, setArticleTitle] = useState("");
@@ -15,15 +16,13 @@ const ManageNews = () => {
     const [articleContent, setArticleContent] = useState('');
     const [articleCategory, setArticleCategory] = useState(null);
     const [categories, setCategories] = useState([]);
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const navigate = useNavigate();
     const {newsId} = useParams();
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/news-categories`);
+                const response = await apiClient(`${config.MAIN_SERVICE}/news-categories`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setCategories(data);
@@ -36,7 +35,7 @@ const ManageNews = () => {
 
         const fetchArticle = async (categoriesList) => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`);
+                const response = await apiClient(`${config.MAIN_SERVICE}/news/${newsId}`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setArticleTitle(data.title);
@@ -70,9 +69,8 @@ const ManageNews = () => {
         if (articleLogo instanceof File) formData.append('logo', articleLogo);
 
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/news/${newsId}`, {
                 method: 'PATCH',
-                headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' },
                 body: formData
             });
             if (response.ok) {
@@ -101,9 +99,8 @@ const ManageNews = () => {
     const handleDelete = async () => {
         if (window.confirm('Вы уверены, что хотите удалить эту новость?')) {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/news/${newsId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
+                const response = await apiClient(`${config.MAIN_SERVICE}/news/${newsId}`, {
+                    method: 'DELETE'
                 });
                 if (response.ok) {
                     navigate('/my_space');

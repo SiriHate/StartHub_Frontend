@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import Menu from '../../menu/Menu';
 import { useNavigate, useParams } from 'react-router-dom';
 import config from '../../../config';
+import apiClient, { getCookie } from '../../../api/apiClient';
 
 function ProjectDetails() {
     const { projectId } = useParams();
@@ -18,15 +19,12 @@ function ProjectDetails() {
     const [isSubscribed, setIsSubscribed] = useState(false);
     const navigate = useNavigate();
 
-    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
-    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
-
     useEffect(() => {
         const checkUserRole = async () => {
             try {
-                if (!accessToken) return;
-                const response = await fetch(`${config.USER_SERVICE}/users/me`, {
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
+                if (!getCookie('accessToken')) return;
+                const response = await apiClient(`${config.USER_SERVICE}/users/me`, {
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -43,10 +41,8 @@ function ProjectDetails() {
     useEffect(() => {
         const checkSubscription = async () => {
             try {
-                if (!accessToken) return;
-                const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
+                if (!getCookie('accessToken')) return;
+                const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`);
                 if (response.ok) {
                     const data = await response.json();
                     setIsSubscribed(data);
@@ -56,13 +52,11 @@ function ProjectDetails() {
             }
         };
         checkSubscription();
-    }, [projectId, accessToken]);
+    }, [projectId]);
 
     const fetchLikesCount = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/likes/count`, {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/likes/count`);
             if (!response.ok) throw new Error('Не удалось получить количество лайков');
             const data = await response.json();
             setLikes(data);
@@ -73,7 +67,7 @@ function ProjectDetails() {
 
     const fetchComments = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/comments`);
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/comments`);
             if (!response.ok) throw new Error('Не удалось загрузить комментарии');
             const data = await response.json();
             setComments(data.map(c => ({
@@ -90,7 +84,7 @@ function ProjectDetails() {
     useEffect(() => {
         const fetchProject = async () => {
             try {
-                const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`);
+                const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}`);
                 if (!response.ok) throw new Error('Проект не найден');
                 const data = await response.json();
                 setProject(data);
@@ -107,9 +101,9 @@ function ProjectDetails() {
 
     const handleLike = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/likes`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/likes`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' }
             });
             if (!response.ok) throw new Error('Не удалось поставить лайк');
             await fetchLikesCount();
@@ -120,11 +114,11 @@ function ProjectDetails() {
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        if (!newComment.trim() || !accessToken) return;
+        if (!newComment.trim() || !getCookie('accessToken')) return;
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/comments`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/comments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: newComment })
             });
             if (!response.ok) throw new Error('Не удалось создать комментарий');
@@ -137,9 +131,8 @@ function ProjectDetails() {
 
     const handleDeleteComment = async (commentId) => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/comments/${commentId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${accessToken}` }
+            const response = await apiClient(`${config.MAIN_SERVICE}/comments/${commentId}`, {
+                method: 'DELETE'
             });
             if (!response.ok) throw new Error('Не удалось удалить комментарий');
             await fetchComments();
@@ -166,9 +159,9 @@ function ProjectDetails() {
 
     const handleApprove = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/moderationPassed`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/moderationPassed`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(true)
             });
             if (!response.ok) throw new Error('Ошибка при одобрении проекта');
@@ -180,9 +173,9 @@ function ProjectDetails() {
 
     const handleBlock = async () => {
         try {
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
+                headers: { 'Content-Type': 'application/json' }
             });
             if (!response.ok) throw new Error('Ошибка при блокировке проекта');
             navigate('/projects');
@@ -194,9 +187,8 @@ function ProjectDetails() {
     const handleSubscription = async () => {
         try {
             const method = isSubscribed ? 'DELETE' : 'POST';
-            const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`, {
-                method,
-                headers: { 'Authorization': `Bearer ${accessToken}` }
+            const response = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`, {
+                method
             });
             if (response.ok) setIsSubscribed(!isSubscribed);
         } catch (error) {
@@ -278,7 +270,7 @@ function ProjectDetails() {
                         <button className={styles.backBtn} onClick={handleGoBack}>
                             <i className="fas fa-arrow-left"></i> Назад
                         </button>
-                        {!isModerator && accessToken && (
+                        {!isModerator && getCookie('accessToken') && (
                             <button
                                 className={`${styles.subscribeBtn} ${isSubscribed ? styles.subscribed : ''}`}
                                 onClick={handleSubscription}
@@ -387,7 +379,7 @@ function ProjectDetails() {
                                 </div>
                             </div>
 
-                            {accessToken ? (
+                            {getCookie('accessToken') ? (
                                 <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
                                     <textarea
                                         value={newComment}
