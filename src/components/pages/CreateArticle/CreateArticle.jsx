@@ -14,8 +14,8 @@ const CreateArticle = () => {
     const [articleContent, setArticleContent] = useState('');
     const [articleCategory, setArticleCategory] = useState(null);
     const [categories, setCategories] = useState([]);
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,7 +50,7 @@ const CreateArticle = () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/articles`, {
                 method: 'POST',
-                headers: { 'Authorization': authorizationToken ? ` ${authorizationToken}` : '' },
+                headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' },
                 body: formData
             });
             if (response.ok) {

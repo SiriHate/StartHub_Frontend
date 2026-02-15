@@ -22,27 +22,27 @@ function CreateProject() {
     const [selectedUser, setSelectedUser] = useState(null);
     const searchTimeoutRef = useRef(null);
     const dropdownRef = useRef(null);
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`${config.MAIN_SERVICE}/project-categories`, {
-            headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken || '' }
+            headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
         })
             .then(r => r.json()).then(setCategories).catch(console.error);
 
         fetch(`${config.USER_SERVICE}/member-specializations`, {
-            headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken || '' }
+            headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
         })
             .then(r => r.json()).then(setSpecializations).catch(console.error);
-    }, [authorizationToken]);
+    }, [accessToken]);
 
     const searchUsers = async (query) => {
         if (query.length < 2) { setSearchResults([]); setShowDropdown(false); return; }
         try {
             const response = await fetch(`${config.USER_SERVICE}/members?username=${query}`, {
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken || '' }
+                headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
             });
             if (response.ok) {
                 const data = await response.json();
@@ -77,7 +77,7 @@ function CreateProject() {
         if (projectLogo instanceof File) formData.append('logo', projectLogo);
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/projects`, {
-                method: 'POST', headers: { 'Authorization': authorizationToken ? ` ${authorizationToken}` : '' }, body: formData
+                method: 'POST', headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }, body: formData
             });
             if (response.ok) navigate(-1);
             else console.error('Ошибка при создании проекта');

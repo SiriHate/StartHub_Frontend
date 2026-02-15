@@ -12,7 +12,7 @@ const HomePage = () => {
 
     const checkAuth = useCallback(async () => {
         const token = document.cookie.split('; ')
-            .find(row => row.startsWith('Authorization='))?.split('=')[1];
+            .find(row => row.startsWith('accessToken='))?.split('=')[1];
 
         if (!token) {
             setIsChecking(false);
@@ -25,7 +25,7 @@ const HomePage = () => {
 
         try {
             const response = await fetch(`${config.USER_SERVICE}/users/me`, {
-                headers: { 'Authorization': token }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.ok) {

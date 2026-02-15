@@ -20,8 +20,8 @@ function ManageProject() {
     const [username, setUsername] = useState("");
     const [role, setRole] = useState("");
     const {projectId} = useParams();
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const [foundUsers, setFoundUsers] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const searchTimeoutRef = useRef(null);
@@ -65,7 +65,7 @@ function ManageProject() {
             formData.append('project', new Blob([JSON.stringify(projectData)], { type: 'application/json' }));
             if (projectLogo instanceof File) formData.append('logo', projectLogo);
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
-                method: 'PATCH', headers: { 'Authorization': authorizationToken ? ` ${authorizationToken}` : '' }, body: formData
+                method: 'PATCH', headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }, body: formData
             });
             if (response.ok) navigate(-1);
             else console.error('Error updating project');
@@ -82,7 +82,7 @@ function ManageProject() {
         if (!window.confirm('Вы уверены, что хотите удалить проект?')) return;
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
-                method: 'DELETE', headers: { 'Authorization': authorizationToken ? ` ${authorizationToken}` : '' }
+                method: 'DELETE', headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
             });
             if (response.status === 204 || response.ok) navigate('/my_space');
         } catch (error) { console.error('Error deleting project:', error); }
@@ -97,11 +97,11 @@ function ManageProject() {
         if (!searchTerm) { setFoundUsers([]); return; }
         try {
             const response = await fetch(`${config.USER_SERVICE}/members?username=${encodeURIComponent(searchTerm)}&page=0&size=5`, {
-                headers: { 'Authorization': authorizationToken ? ` ${authorizationToken}` : '' }
+                headers: { 'Authorization': accessToken ? `Bearer ${accessToken}` : '' }
             });
             if (response.ok) { const data = await response.json(); setFoundUsers(data.content || []); }
         } catch (e) { setFoundUsers([]); }
-    }, [authorizationToken]);
+    }, [accessToken]);
 
     const handleUsernameChange = (e) => {
         const value = e.target.value; setUsername(value); setSelectedUser(null);

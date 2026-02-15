@@ -21,8 +21,8 @@ const ArticlePage = () => {
     const [isMember, setIsMember] = useState(false);
     const [isModerator, setIsModerator] = useState(false);
 
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
     useEffect(() => {
         const checkUserRole = async () => {
@@ -30,7 +30,7 @@ const ArticlePage = () => {
                 const response = await fetch(`${config.USER_SERVICE}/users/me`, {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': authorizationToken
+                        'Authorization': `Bearer ${accessToken}`
                     }
                 });
                 if (response.ok) {
@@ -43,7 +43,7 @@ const ArticlePage = () => {
             }
         };
         checkUserRole();
-    }, [authorizationToken]);
+    }, [accessToken]);
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -75,7 +75,7 @@ const ArticlePage = () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}/moderationPassed`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
                 body: JSON.stringify(true)
             });
             if (!response.ok) throw new Error('Ошибка при одобрении статьи');
@@ -89,7 +89,7 @@ const ArticlePage = () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/articles/${articleId}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken }
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
             });
             if (!response.ok) throw new Error('Ошибка при блокировке статьи');
             navigate('/articles-and-news');

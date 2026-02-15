@@ -20,8 +20,8 @@ function MemberProfile() {
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -30,7 +30,7 @@ function MemberProfile() {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': authorizationToken
+                        'Authorization': `Bearer ${accessToken}`
                     },
                 });
                 if (response.status !== 200) throw new Error('Failed to fetch user role');
@@ -47,7 +47,7 @@ function MemberProfile() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': authorizationToken
+                'Authorization': `Bearer ${accessToken}`
             },
         })
             .then(response => {
@@ -72,7 +72,7 @@ function MemberProfile() {
                 console.error('Fetch error:', error);
                 setRedirect(true);
             });
-    }, [username, authorizationToken]);
+    }, [username, accessToken]);
 
     const handleBlockUser = async () => {
         try {
@@ -80,7 +80,7 @@ function MemberProfile() {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
+                    'Authorization': `Bearer ${accessToken}`
                 },
             });
             if (response.ok) {
@@ -103,7 +103,7 @@ function MemberProfile() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify(chatRequest)
             });

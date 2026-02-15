@@ -59,8 +59,8 @@ function MyChats() {
     selectedChatRef.current = selectedChat;
 
     const navigate = useNavigate();
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
     const openProfile = (username) => {
         if (username && username !== currentUsername) {
@@ -76,7 +76,7 @@ function MyChats() {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': authorizationToken
+                        'Authorization': `Bearer ${accessToken}`
                     },
                 }
             );
@@ -107,7 +107,7 @@ function MyChats() {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': authorizationToken
+                        'Authorization': `Bearer ${accessToken}`
                     },
                 });
                 if (!response.ok) {
@@ -133,7 +133,7 @@ function MyChats() {
         };
 
         loadInitial();
-    }, [authorizationToken]);
+    }, [accessToken]);
 
     const connectToWebSocket = (chatId) => {
         try {
@@ -155,7 +155,7 @@ function MyChats() {
             client.debug = () => {};
             
             const headers = {
-                Authorization: authorizationToken,
+                Authorization: `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'heart-beat': '10000,10000',
@@ -291,7 +291,7 @@ function MyChats() {
                 }
 
                 const headers = {
-                    Authorization: authorizationToken,
+                    Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 };
 
@@ -377,7 +377,7 @@ function MyChats() {
             };
 
             const headers = {
-                Authorization: authorizationToken,
+                Authorization: `Bearer ${accessToken}`,
                 'Content-Type': 'application/json'
             };
 
@@ -405,7 +405,7 @@ function MyChats() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify({
                     type: 'PRIVATE',
@@ -434,7 +434,7 @@ function MyChats() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': authorizationToken
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify({
                     type: 'GROUP',
@@ -469,7 +469,7 @@ function MyChats() {
         try {
             const response = await fetch(`${config.USER_SERVICE}/members?username=${query}&page=0&size=10`, {
                 headers: {
-                    'Authorization': authorizationToken
+                    'Authorization': `Bearer ${accessToken}`
                 }
             });
 
@@ -557,7 +557,7 @@ function MyChats() {
         setLoadingMoreMessages(true);
         pendingHistoryPageRef.current = nextPage;
         const headers = {
-            Authorization: authorizationToken,
+            Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         };
         stompClient.send(
@@ -599,7 +599,7 @@ function MyChats() {
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': authorizationToken
+                        'Authorization': `Bearer ${accessToken}`
                     }
                 }
             );
@@ -652,7 +652,7 @@ function MyChats() {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': authorizationToken
+                        'Authorization': `Bearer ${accessToken}`
                     },
                     body: JSON.stringify({ role: newRole })
                 }
@@ -669,7 +669,7 @@ function MyChats() {
         try {
             const response = await fetch(
                 `${config.CHAT_SERVICE}/chats/members/${memberId}`,
-                { method: 'DELETE', headers: { 'Authorization': authorizationToken } }
+                { method: 'DELETE', headers: { 'Authorization': `Bearer ${accessToken}` } }
             );
             if (!response.ok) throw new Error('Failed to exclude');
             await fetchChatMembers(selectedChat.id);
@@ -684,7 +684,7 @@ function MyChats() {
         }
         try {
             const response = await fetch(`${config.USER_SERVICE}/members?username=${query}&page=0&size=10`, {
-                headers: { 'Authorization': authorizationToken }
+                headers: { 'Authorization': `Bearer ${accessToken}` }
             });
             if (!response.ok) return;
             const data = await response.json();
@@ -716,7 +716,7 @@ function MyChats() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': authorizationToken
+                        'Authorization': `Bearer ${accessToken}`
                     },
                     body: JSON.stringify({ username, role: 'MEMBER' })
                 }

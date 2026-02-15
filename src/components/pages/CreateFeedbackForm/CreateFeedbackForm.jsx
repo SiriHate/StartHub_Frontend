@@ -10,8 +10,8 @@ const CreateFeedbackForm = () => {
     const containerRef = useRef(null);
     const navigate = useNavigate();
     const { projectId } = useParams();
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
     const addQuestion = () => {
         const newId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
@@ -40,7 +40,7 @@ const CreateFeedbackForm = () => {
             const surveyData = { questions: questions.map(q => ({ questionText: q.text.trim() })) };
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken ? ` ${authorizationToken}` : '' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '' },
                 body: JSON.stringify(surveyData)
             });
             if (response.ok) { navigate(`/manage_project/${projectId}`); }

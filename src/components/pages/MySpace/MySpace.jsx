@@ -22,8 +22,8 @@ const MySpace = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const authorizationCookie = document.cookie.split("; ").find(row => row.startsWith("Authorization="));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split("=")[1] : "";
+    const accessTokenCookie = document.cookie.split("; ").find(row => row.startsWith("accessToken="));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split("=")[1] : "";
 
     const fetchItems = async (category, query, pg, sz) => {
         try {
@@ -54,7 +54,7 @@ const MySpace = () => {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: authorizationToken,
+                    Authorization: `Bearer ${accessToken}`,
                 },
             });
 

@@ -1,35 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import config from '../../../config';
+import AuthContext from '../../security/AuthContext';
 
 const YandexCallback = () => {
-    const [status, setStatus] = useState('Загрузка...');
+    const [status, setStatus] = useState('Обработка...');
+    const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
 
     useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js';
-        script.async = true;
+        const hash = window.location.hash.slice(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
 
-        script.onload = () => {
-            setStatus('Получение токена...');
-            setTimeout(() => {
-                window.YaSendSuggestToken(window.location.origin, {
-                    flag: true
+        if (!accessToken) {
+            setStatus('Токен не получен. Вернитесь на страницу входа.');
+            return;
+        }
+
+        const authYandex = async () => {
+            setStatus('Вход в аккаунт...');
+            try {
+                const response = await fetch(`${config.USER_SERVICE}/members/auth/oauth/yandex`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        token: accessToken,
+                        client_secret: config.YANDEX_SECRET_KEY
+                    })
                 });
-                setStatus('Токен отправлен, перенаправление...');
-            }, 1000);
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    login(userData.access_token, userData.refresh_token);
+                    navigate('/');
+                } else {
+                    setStatus('Ошибка авторизации. Попробуйте снова.');
+                }
+            } catch (err) {
+                setStatus('Ошибка. Попробуйте снова.');
+            }
         };
 
-        script.onerror = (error) => {
-            console.error('Ошибка загрузки скрипта Yandex ID:', error);
-            setStatus('Ошибка загрузки сервиса Яндекс');
-        };
-
-        document.body.appendChild(script);
-
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, []);
+        authYandex();
+    }, [navigate]);
 
     return (
         <div style={{
@@ -67,25 +82,42 @@ const YandexCallback = () => {
                 
                 <div style={{
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '1rem'
+                    gap: '1rem'
                 }}>
                     <div style={{
-                        width: '40px',
-                        height: '40px',
-                        border: '3px solid #f3f3f3',
-                        borderTop: '3px solid #FC3F1D',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite',
-                        marginRight: '1rem'
-                    }}></div>
-                    <div style={{
-                        fontSize: '16px',
-                        color: '#666'
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                     }}>
-                        {status}
+                        <div style={{
+                            width: '40px',
+                            height: '40px',
+                            border: '3px solid #f3f3f3',
+                            borderTop: '3px solid #FC3F1D',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                            marginRight: '1rem'
+                        }}></div>
+                        <div style={{ fontSize: '16px', color: '#666' }}>{status}</div>
                     </div>
+                    {(status.includes('Токен не получен') || status.includes('Ошибка')) && (
+                        <button
+                            onClick={() => navigate('/login')}
+                            style={{
+                                padding: '8px 16px',
+                                background: '#FC3F1D',
+                                border: 'none',
+                                borderRadius: '6px',
+                                color: '#fff',
+                                cursor: 'pointer',
+                                fontSize: '14px'
+                            }}
+                        >
+                            Вернуться на страницу входа
+                        </button>
+                    )}
                 </div>
             </div>
 

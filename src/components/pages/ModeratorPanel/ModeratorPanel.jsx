@@ -21,12 +21,12 @@ const ModeratorPanel = () => {
     useEffect(() => {
         const checkUserRole = async () => {
             try {
-                const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-                const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
-                if (!authorizationToken) { navigate('/not-found'); return; }
+                const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+                const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
+                if (!accessToken) { navigate('/not-found'); return; }
 
                 const response = await fetch(`${config.USER_SERVICE}/users/me`, {
-                    headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken }
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!response.ok) { navigate('/not-found'); return; }
                 const data = await response.json();
@@ -99,7 +99,7 @@ const ModeratorPanel = () => {
     };
 
     const handleSearch = () => { setCurrentPage(1); if (activeTab === 'users') fetchUsers(0, searchQuery); };
-    const handleLogout = () => { document.cookie = 'Authorization=; Max-Age=0; path=/; SameSite=None; Secure'; navigate('/'); };
+    const handleLogout = () => { document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; navigate('/'); };
     const handleUserClick = (username) => navigate(`/members/profile/${username}`);
     const handleProjectClick = (id) => navigate(`/project/${id}`);
     const handleNewsClick = (id) => navigate(`/news/${id}`);

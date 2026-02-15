@@ -1,8 +1,19 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Helmet} from 'react-helmet';
 import styles from './LoginPage.module.css';
 import config from '../../../config';
+import AuthContext from '../../security/AuthContext';
+
+const getYandexAuthUrl = () => {
+    const redirectUri = `${window.location.origin}/yandex-callback`;
+    const params = new URLSearchParams({
+        response_type: 'token',
+        client_id: config.YANDEX_CLIENT_ID
+    });
+    params.append('redirect_uri', redirectUri);
+    return `https://oauth.yandex.ru/authorize?${params.toString()}`;
+};
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -10,6 +21,11 @@ const LoginPage = () => {
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
+
+    const handleYandexLogin = () => {
+        window.location.href = getYandexAuthUrl();
+    };
 
     useEffect(() => {
         window.scrollTo({top: 0, behavior: 'smooth'});
@@ -33,7 +49,7 @@ const LoginPage = () => {
                 setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
             } else {
                 const data = await response.json();
-                document.cookie = `Authorization=Bearer ${data.token}; path=/; SameSite=None; Secure`;
+                login(data.access_token, data.refresh_token);
                 if (rememberMe) {
                     localStorage.setItem('username', username);
                     localStorage.setItem('password', password);
@@ -83,6 +99,15 @@ const LoginPage = () => {
                         </div>
 
                         <button type="submit" className={styles.submitBtn}>Войти</button>
+
+                        <div className={styles.socialLogin}>
+                            <div className={styles.divider}>
+                                <span>или войти через</span>
+                            </div>
+                            <button type="button" className={styles.yandexBtn} onClick={handleYandexLogin}>
+                                Войти через Яндекс
+                            </button>
+                        </div>
                     </form>
 
                     <div className={styles.footer}>

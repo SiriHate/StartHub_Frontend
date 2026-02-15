@@ -40,9 +40,9 @@ const LeaveFeedback = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-            const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
-            if (!authorizationToken) { setError('Необходима авторизация'); return; }
+            const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+            const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
+            if (!accessToken) { setError('Необходима авторизация'); return; }
 
             const surveyData = {
                 answers: questions.map(q => ({ questionId: q.id, answerText: answers[q.id] || '' }))
@@ -50,7 +50,7 @@ const LeaveFeedback = () => {
 
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
                 body: JSON.stringify(surveyData)
             });
 

@@ -11,8 +11,8 @@ function PersonalMemberAccount() {
     const navigate = useNavigate();
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -33,7 +33,7 @@ function PersonalMemberAccount() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': authorizationToken ? `${authorizationToken}` : '',
+                'Authorization': accessToken ? `Bearer ${accessToken}` : '',
             },
         })
             .then(response => {
@@ -66,7 +66,7 @@ function PersonalMemberAccount() {
                 setProfileError(error.message);
                 setIsLoading(false);
             });
-    }, [authorizationToken, specializations]);
+    }, [accessToken, specializations]);
 
     useEffect(() => {
         return () => {
@@ -79,7 +79,7 @@ function PersonalMemberAccount() {
     useEffect(() => {
         fetch(`${config.USER_SERVICE}/member-specializations`, {
             method: 'GET', headers: {
-                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : '',
+                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '',
             },
         })
             .then(response => {
@@ -92,7 +92,7 @@ function PersonalMemberAccount() {
                 setSpecializations(data);
             })
             .catch(error => console.error('Fetch error:', error));
-    }, [authorizationToken]);
+    }, [accessToken]);
 
     const handleProfileHiddenChange = (event) => {
         const newProfileHiddenFlag = event.target.checked;
@@ -100,7 +100,7 @@ function PersonalMemberAccount() {
         const requestBody = JSON.stringify({profileHiddenFlag: newProfileHiddenFlag});
         fetch(`${config.USER_SERVICE}/members/me/profile-hidden-flag`, {
             method: 'PATCH', headers: {
-                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : '',
+                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '',
             }, body: requestBody,
         })
             .then(response => {
@@ -127,7 +127,7 @@ function PersonalMemberAccount() {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': authorizationToken ? `${authorizationToken}` : ''
+                'Authorization': accessToken ? `Bearer ${accessToken}` : ''
             },
             body: JSON.stringify({
                 name: name,
@@ -149,7 +149,7 @@ function PersonalMemberAccount() {
     };
 
     const handleLogout = () => {
-        document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure';
         navigate('/');
     };
 
@@ -167,7 +167,7 @@ function PersonalMemberAccount() {
     const handleChangePassword = () => {
         fetch(`${config.USER_SERVICE}/members/me/password`, {
             method: 'PATCH', headers: {
-                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : '',
+                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : '',
             }, body: JSON.stringify({
                 currentPassword: currentPassword, newPassword: newPassword,
             }),
@@ -194,7 +194,7 @@ function PersonalMemberAccount() {
     const handleDeleteAccount = () => {
         fetch(`${config.USER_SERVICE}/members/me`, {
             method: 'DELETE', headers: {
-                'Content-Type': 'application/json', 'Authorization': authorizationToken ? `${authorizationToken}` : ''
+                'Content-Type': 'application/json', 'Authorization': accessToken ? `Bearer ${accessToken}` : ''
             },
         })
             .then(response => {
@@ -219,7 +219,7 @@ function PersonalMemberAccount() {
     const handleSubmitUpload = (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        const headers = authorizationToken ? {'Authorization': `${authorizationToken}`} : {};
+        const headers = accessToken ? {'Authorization': `Bearer ${accessToken}`} : {};
         fetch(`${config.USER_SERVICE}/members/me/avatar`, {
             method: 'PATCH', headers, body: formData,
         })

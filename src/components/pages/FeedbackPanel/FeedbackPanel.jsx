@@ -44,12 +44,12 @@ const FeedbackPanel = () => {
     const fetchFeedbacks = async () => {
         try {
             setLoading(true);
-            const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-            const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+            const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+            const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/surveys/submissions?sort=${sortBy}`, {
                 headers: {
-                    'Authorization': authorizationToken
+                    'Authorization': `Bearer ${accessToken}`
                 }
             });
 

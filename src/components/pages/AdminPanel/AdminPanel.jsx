@@ -32,9 +32,9 @@ const AdminPanel = () => {
     };
 
     useEffect(() => {
-        const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-        const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
-        fetch(`${config.USER_SERVICE}/users/me`, { headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken } })
+        const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+        const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
+        fetch(`${config.USER_SERVICE}/users/me`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` } })
             .then(r => { if (r.status !== 200) throw new Error(); return r.json(); })
             .then(data => { if (data.role !== 'ADMIN') { navigate('/'); return; } setIsLoading(false); fetchModerators(0, size, ""); })
             .catch(() => navigate('/'));
@@ -54,7 +54,7 @@ const AdminPanel = () => {
     const createModerator = (m) => { fetch(`${config.USER_SERVICE}/moderators`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(m) }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
     const updateModerator = (m) => { fetch(`${config.USER_SERVICE}/moderators/${m.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(m) }).then(r => { if (!r.ok) throw new Error(); fetchModerators(page, size, searchQuery); }).catch(() => {}); };
 
-    const handleLogout = () => { document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; navigate('/'); };
+    const handleLogout = () => { document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; navigate('/'); };
     const handleNextPage = () => { if (page < totalPages - 1) { setPage(page + 1); fetchModerators(page + 1, size, searchQuery); } };
     const handlePreviousPage = () => { if (page > 0) { setPage(page - 1); fetchModerators(page - 1, size, searchQuery); } };
     const handleSizeChange = (e) => { const s = parseInt(e.target.value, 10); setSize(s); setPage(0); fetchModerators(0, s, searchQuery); };

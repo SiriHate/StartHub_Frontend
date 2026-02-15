@@ -18,15 +18,15 @@ function ProjectDetails() {
     const [isSubscribed, setIsSubscribed] = useState(false);
     const navigate = useNavigate();
 
-    const authorizationCookie = document.cookie.split('; ').find(row => row.startsWith('Authorization='));
-    const authorizationToken = authorizationCookie ? authorizationCookie.split('=')[1] : '';
+    const accessTokenCookie = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+    const accessToken = accessTokenCookie ? accessTokenCookie.split('=')[1] : '';
 
     useEffect(() => {
         const checkUserRole = async () => {
             try {
-                if (!authorizationToken) return;
+                if (!accessToken) return;
                 const response = await fetch(`${config.USER_SERVICE}/users/me`, {
-                    headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken }
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -43,9 +43,9 @@ function ProjectDetails() {
     useEffect(() => {
         const checkSubscription = async () => {
             try {
-                if (!authorizationToken) return;
+                if (!accessToken) return;
                 const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`, {
-                    headers: { 'Authorization': authorizationToken }
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -56,12 +56,12 @@ function ProjectDetails() {
             }
         };
         checkSubscription();
-    }, [projectId, authorizationToken]);
+    }, [projectId, accessToken]);
 
     const fetchLikesCount = async () => {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/likes/count`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${accessToken}` }
             });
             if (!response.ok) throw new Error('Не удалось получить количество лайков');
             const data = await response.json();
@@ -109,7 +109,7 @@ function ProjectDetails() {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/likes`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' }
+                headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
             });
             if (!response.ok) throw new Error('Не удалось поставить лайк');
             await fetchLikesCount();
@@ -120,11 +120,11 @@ function ProjectDetails() {
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        if (!newComment.trim() || !authorizationToken) return;
+        if (!newComment.trim() || !accessToken) return;
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/comments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
                 body: JSON.stringify({ text: newComment })
             });
             if (!response.ok) throw new Error('Не удалось создать комментарий');
@@ -139,7 +139,7 @@ function ProjectDetails() {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/comments/${commentId}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': authorizationToken }
+                headers: { 'Authorization': `Bearer ${accessToken}` }
             });
             if (!response.ok) throw new Error('Не удалось удалить комментарий');
             await fetchComments();
@@ -168,7 +168,7 @@ function ProjectDetails() {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/moderationPassed`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
                 body: JSON.stringify(true)
             });
             if (!response.ok) throw new Error('Ошибка при одобрении проекта');
@@ -182,7 +182,7 @@ function ProjectDetails() {
         try {
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authorizationToken }
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }
             });
             if (!response.ok) throw new Error('Ошибка при блокировке проекта');
             navigate('/projects');
@@ -196,7 +196,7 @@ function ProjectDetails() {
             const method = isSubscribed ? 'DELETE' : 'POST';
             const response = await fetch(`${config.MAIN_SERVICE}/projects/${projectId}/subscriptions`, {
                 method,
-                headers: { 'Authorization': authorizationToken }
+                headers: { 'Authorization': `Bearer ${accessToken}` }
             });
             if (response.ok) setIsSubscribed(!isSubscribed);
         } catch (error) {
@@ -278,7 +278,7 @@ function ProjectDetails() {
                         <button className={styles.backBtn} onClick={handleGoBack}>
                             <i className="fas fa-arrow-left"></i> Назад
                         </button>
-                        {!isModerator && authorizationToken && (
+                        {!isModerator && accessToken && (
                             <button
                                 className={`${styles.subscribeBtn} ${isSubscribed ? styles.subscribed : ''}`}
                                 onClick={handleSubscription}
@@ -387,7 +387,7 @@ function ProjectDetails() {
                                 </div>
                             </div>
 
-                            {authorizationToken ? (
+                            {accessToken ? (
                                 <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
                                     <textarea
                                         value={newComment}
