@@ -23,7 +23,6 @@
     gap: 20px;
 }
 
-/* ── Top Bar ── */
 .topBar {
     display: flex;
     align-items: center;
@@ -50,7 +49,6 @@
     color: #fff;
 }
 
-/* ── Header Card ── */
 .headerCard {
     background: rgba(30, 30, 65, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -66,8 +64,8 @@
 }
 
 .avatar {
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(74, 158, 237, 0.35);
@@ -78,37 +76,45 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
     min-width: 0;
+    justify-content: center;
 }
 
-.usernameTitle {
+.usernameLabel {
+    color: rgba(74, 158, 237, 0.8);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.displayName {
     color: #fff;
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
-.specBadge {
+.locationBadge {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 5px 14px;
-    background: rgba(74, 158, 237, 0.15);
-    border: 1px solid rgba(74, 158, 237, 0.25);
-    border-radius: 20px;
-    color: #a3d4ff;
-    font-size: 0.82rem;
-    align-self: flex-start;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.84rem;
+    margin-top: 2px;
 }
 
-.specBadge i {
+.locationBadge i {
     font-size: 0.75rem;
+    color: rgba(74, 158, 237, 0.5);
 }
 
 .messageBtn {
+    margin-top: 8px;
     padding: 10px 20px;
     background: linear-gradient(135deg, #4a9eed 0%, #3578c4 100%);
     color: #fff;
@@ -129,7 +135,6 @@
     transform: translateY(-1px);
 }
 
-/* ── Sections ── */
 .section {
     background: rgba(30, 30, 65, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -160,7 +165,6 @@
     font-weight: 600;
 }
 
-/* ── Info Grid ── */
 .infoGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -216,7 +220,6 @@
     word-break: break-word;
 }
 
-/* ── About ── */
 .aboutText {
     color: rgba(255, 255, 255, 0.75);
     font-size: 0.92rem;
@@ -225,7 +228,78 @@
     white-space: pre-wrap;
 }
 
-/* ── Moderator Bar ── */
+.roleList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.roleCard {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.roleHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.roleHeader i {
+    color: #4a9eed;
+    width: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.roleBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: rgba(74, 158, 237, 0.12);
+    border: 1px solid rgba(74, 158, 237, 0.2);
+    border-radius: 16px;
+    color: #a3d4ff;
+    font-size: 0.8rem;
+    align-self: flex-start;
+}
+
+.roleBadge i {
+    font-size: 0.7rem;
+}
+
+.roleAreas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.areaTag {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.78rem;
+    background: rgba(74, 158, 237, 0.1);
+    border: 1px solid rgba(74, 158, 237, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.roleDesc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
 .moderatorBar {
     display: flex;
     align-items: center;
@@ -275,10 +349,8 @@
 .blockBtn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
 }
 
-/* ── States ── */
 .loadingState {
     display: flex;
     flex-direction: column;
@@ -303,7 +375,6 @@
     to { transform: rotate(360deg); }
 }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
     .page {
         padding: 20px 12px 40px;
@@ -320,10 +391,6 @@
     }
 
     .messageBtn {
-        align-self: center;
-    }
-
-    .specBadge {
         align-self: center;
     }
 
@@ -346,7 +413,7 @@
         height: 90px;
     }
 
-    .usernameTitle {
+    .displayName {
         font-size: 1.2rem;
     }
 

@@ -378,6 +378,219 @@
 
 .emptyMembers i { font-size: 1.3rem; opacity: 0.5; }
 
+/* ── Searches ── */
+.searchTypeRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.addSearchBtn {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.addSearchBtn:hover {
+    background: rgba(74, 158, 237, 0.1);
+    border-color: rgba(74, 158, 237, 0.3);
+    color: #a3d4ff;
+}
+
+.addSearchBtn i { font-size: 0.78rem; }
+
+.searchItem {
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.searchItemHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.searchItemActions {
+    display: flex;
+    gap: 4px;
+}
+
+.searchBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(74, 158, 237, 0.12);
+    border-radius: 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #a3d4ff;
+}
+
+.searchBadge i { font-size: 0.72rem; }
+
+.saveSearchBtn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    background: rgba(74, 158, 237, 0.12);
+    color: #a3d4ff;
+    border: 1px solid rgba(74, 158, 237, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.saveSearchBtn:hover {
+    background: rgba(74, 158, 237, 0.2);
+    color: #fff;
+}
+
+.editSearchBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.35);
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.editSearchBtn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.editSearchBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.searchFieldInput {
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.searchFieldInput::placeholder { color: rgba(255, 255, 255, 0.25); }
+.searchFieldInput:focus { outline: none; border-color: rgba(74, 158, 237, 0.4); }
+
+select.searchFieldInput {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23a3d4ff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+select.searchFieldInput option {
+    background: #1a1a3e;
+    color: #fff;
+}
+
+.searchFieldTextarea {
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.88rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.searchFieldTextarea::placeholder { color: rgba(255, 255, 255, 0.25); }
+.searchFieldTextarea:focus { outline: none; border-color: rgba(74, 158, 237, 0.4); }
+
+.searchFormActions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.cancelSearchBtn {
+    padding: 7px 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.cancelSearchBtn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+.searchItemSaved {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+}
+
+.searchItemSaved:hover { border-color: rgba(255, 255, 255, 0.15); }
+
+.searchSubLabel {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.5);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.searchAboutText {
+    margin: 0;
+    font-size: 0.84rem;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
 /* ── Bottom Buttons ── */
 .buttonsRow {
     display: flex;

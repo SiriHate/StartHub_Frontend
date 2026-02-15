@@ -351,6 +351,45 @@ function ProjectDetails() {
                         </div>
                     </div>
 
+                    {/* Searches */}
+                    {(() => {
+                        const searchGroups = [
+                            { key: 'employeeSearches', label: 'Поиск сотрудников', icon: 'fa-briefcase', color: '#4a9eed' },
+                            { key: 'founderSearches', label: 'Поиск сооснователей / Партнеров', icon: 'fa-handshake', color: '#fbbf24' },
+                            { key: 'investorSearches', label: 'Поиск инвесторов', icon: 'fa-chart-line', color: '#34d399' },
+                            { key: 'mentorSearches', label: 'Поиск менторов', icon: 'fa-graduation-cap', color: '#a78bfa' },
+                        ];
+                        const hasAny = searchGroups.some(g => project[g.key]?.length > 0);
+                        if (!hasAny) return null;
+                        return (
+                            <div className={styles.section}>
+                                <div className={styles.sectionHeader}>
+                                    <i className="fas fa-bullhorn"></i>
+                                    <h2>Объявления</h2>
+                                </div>
+                                <div className={styles.searchList}>
+                                    {searchGroups.map(group => (
+                                        project[group.key]?.map(item => (
+                                            <div key={`${group.key}-${item.id}`} className={styles.searchCard}>
+                                                <div className={styles.searchCardHeader}>
+                                                    <span className={styles.searchTypeBadge} style={{ '--badge-color': group.color }}>
+                                                        <i className={`fas ${group.icon}`}></i> {group.label}
+                                                    </span>
+                                                    {(item.specialization || item.domain) && (
+                                                        <span className={styles.searchSubBadge}>
+                                                            {item.specialization || item.domain}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {item.about && <p className={styles.searchDesc}>{item.about}</p>}
+                                            </div>
+                                        ))
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })()}
+
                     {/* Actions + Comments (non-moderator) */}
                     {!isModerator && (
                         <div className={styles.section}>
