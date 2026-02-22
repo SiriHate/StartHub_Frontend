@@ -249,16 +249,17 @@ const FeedbackPanel = () => {
                                                 <span>{feedback.respondentUsername}</span>
                                             </div>
                                             <div className={styles.cardMeta}>
-                                                {feedback.averageRating !== undefined && (
+                                                {feedback.rating != null && feedback.rating > 0 && (
                                                     <div className={styles.cardRating}>
                                                         {[1, 2, 3, 4, 5].map((star) => (
-                                                            <span 
-                                                                key={star} 
-                                                                className={`${styles.star} ${star <= feedback.averageRating ? styles.starActive : ''}`}
+                                                            <span
+                                                                key={star}
+                                                                className={`${styles.star} ${star <= feedback.rating ? styles.starActive : ''}`}
                                                             >
                                                                 ★
                                                             </span>
                                                         ))}
+                                                        
                                                     </div>
                                                 )}
                                                 <span className={styles.cardDate}>
@@ -271,11 +272,11 @@ const FeedbackPanel = () => {
                                             {feedback.answers.map((answer) => (
                                                 <div key={answer.id} className={styles.answerBlock}>
                                                     <div className={styles.answerQuestion}>
-                                                        <span className={styles.qLabel}>В</span>
+                                                        <span className={styles.qLabel}><i className="fas fa-question-circle"></i> Вопрос</span>
                                                         {answer.questionText}
                                                     </div>
                                                     <div className={styles.answerText}>
-                                                        <span className={styles.aLabel}>О</span>
+                                                        <span className={styles.aLabel}><i className="fas fa-comment"></i> Ответ</span>
                                                         {answer.answerText}
                                                     </div>
                                                 </div>

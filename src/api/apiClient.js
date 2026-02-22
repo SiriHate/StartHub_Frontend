@@ -30,7 +30,7 @@ const refreshAccessToken = async () => {
             const response = await fetch(`${config.USER_SERVICE}/auth/refresh`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ refresh_token: refreshToken })
+                body: JSON.stringify({ refreshToken: refreshToken })
             });
 
             if (!response.ok) {
@@ -39,8 +39,8 @@ const refreshAccessToken = async () => {
             }
 
             const data = await response.json();
-            setCookie("accessToken", data.access_token);
-            return data.access_token;
+            setCookie("accessToken", data.accessToken);
+            return data.accessToken;
         } catch {
             clearAuth();
             return null;

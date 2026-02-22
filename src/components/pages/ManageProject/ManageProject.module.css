@@ -420,12 +420,14 @@
 .searchItemHeader {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
 }
 
 .searchItemActions {
     display: flex;
     gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 .searchBadge {
@@ -574,10 +576,15 @@ select.searchFieldInput option {
 .searchItemSaved:hover { border-color: rgba(255, 255, 255, 0.15); }
 
 .searchSubLabel {
-    font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.5);
-    flex: 1;
-    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background: rgba(163, 212, 255, 0.1);
+    border-radius: 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(163, 212, 255, 0.7);
+    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

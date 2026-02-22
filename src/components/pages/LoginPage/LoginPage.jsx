@@ -49,7 +49,7 @@ const LoginPage = () => {
                 setError("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
             } else {
                 const data = await response.json();
-                login(data.access_token, data.refresh_token);
+                login(data.accessToken, data.refreshToken);
                 if (rememberMe) {
                     localStorage.setItem('username', username);
                     localStorage.setItem('password', password);

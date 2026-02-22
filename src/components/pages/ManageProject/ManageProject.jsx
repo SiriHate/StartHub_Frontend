@@ -58,7 +58,7 @@ function ManageProject() {
                 if (response.ok) {
                     setProjectName(data.name || '');
                     setProjectDescription(data.description || '');
-                    setMembers(data.members || []);
+                    setMembers((data.members || []).map(m => ({ memberId: m.memberId, username: m.username, role: m.role })));
                     if (data.logoUrl) { setProjectLogo(data.logoUrl); setProjectLogoPreview(data.logoUrl); }
                     setHasSurvey(data.hasSurvey);
                     const matchingCategory = categories.find(cat => cat.name === data.category);
@@ -85,7 +85,7 @@ function ManageProject() {
         e.preventDefault();
         if (!projectName || !projectDescription || !category) return;
         try {
-            const projectData = { name: projectName, description: projectDescription, categoryId: category ? category.id : null, members: members.map(m => ({ username: m.username, role: m.role })) };
+            const projectData = { name: projectName, description: projectDescription, categoryId: category ? category.id : null };
             const formData = new FormData();
             formData.append('project', new Blob([JSON.stringify(projectData)], { type: 'application/json' }));
             if (projectLogo instanceof File) formData.append('logo', projectLogo);
@@ -190,13 +190,28 @@ function ManageProject() {
     };
 
     const handleUserSelect = (user) => { setUsername(user.username); setSelectedUser(user); setFoundUsers([]); setIsDropdownOpen(false); };
-    const addMember = () => {
-        if (selectedUser && role) {
-            if (members.some(m => m.username === selectedUser.username)) { alert('Этот пользователь уже добавлен'); return; }
-            setMembers([...members, { username: selectedUser.username, role }]); setUsername(""); setRole(""); setSelectedUser(null);
-        }
+    const addMember = async () => {
+        if (!selectedUser || !role) return;
+        if (members.some(m => m.username === selectedUser.username)) { alert('Этот пользователь уже добавлен'); return; }
+        try {
+            const res = await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/members`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: selectedUser.username, role }),
+            });
+            if (res.ok) {
+                const created = await res.json();
+                setMembers(prev => [...prev, { memberId: created.memberId, username: created.username, role: created.role }]);
+            }
+        } catch {}
+        setUsername(""); setRole(""); setSelectedUser(null);
     };
-    const removeMember = index => setMembers(members.filter((_, i) => i !== index));
+    const removeMember = async (index) => {
+        const m = members[index];
+        if (m.memberId) {
+            try { await apiClient(`${config.MAIN_SERVICE}/projects/${projectId}/members/${m.memberId}`, { method: 'DELETE' }); } catch {}
+        }
+        setMembers(prev => prev.filter((_, i) => i !== index));
+    };
 
     return (
         <>

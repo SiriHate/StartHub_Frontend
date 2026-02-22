@@ -194,6 +194,7 @@
 
 .cardRating {
     display: flex;
+    align-items: center;
     gap: 2px;
 }
 
@@ -235,40 +236,45 @@
     padding: 14px 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+}
+
+.answerQuestion,
+.answerText {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 .answerQuestion {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
     font-weight: 500;
-    font-size: 0.9rem;
     color: #e0e0f0;
-    line-height: 1.5;
 }
 
 .answerText {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    font-size: 0.9rem;
     color: #c0c0d8;
-    line-height: 1.5;
+    padding-top: 6px;
+    border-top: 1px solid rgba(99, 102, 241, 0.06);
 }
 
 .qLabel,
 .aLabel {
-    flex-shrink: 0;
+    align-self: flex-start;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
+    gap: 5px;
+    padding: 3px 10px;
     border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.qLabel i,
+.aLabel i {
+    font-size: 0.68rem;
 }
 
 .qLabel {

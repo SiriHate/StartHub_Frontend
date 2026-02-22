@@ -9,10 +9,10 @@ import apiClient from '../../../api/apiClient';
 
 const ROLE_FILTERS = [
     { key: '', label: 'Все', icon: 'fa-users' },
-    { key: 'job-seeker', label: 'Соискатели', icon: 'fa-briefcase' },
-    { key: 'investor', label: 'Инвесторы', icon: 'fa-chart-line' },
-    { key: 'founder', label: 'Предприниматели', icon: 'fa-rocket' },
-    { key: 'mentor', label: 'Менторы', icon: 'fa-graduation-cap' },
+    { key: 'JOB_SEEKER', label: 'Соискатели', icon: 'fa-briefcase' },
+    { key: 'INVESTOR', label: 'Инвесторы', icon: 'fa-chart-line' },
+    { key: 'FOUNDER', label: 'Предприниматели', icon: 'fa-rocket' },
+    { key: 'MENTOR', label: 'Менторы', icon: 'fa-graduation-cap' },
 ];
 
 const People = () => {
@@ -136,7 +136,7 @@ const People = () => {
         fetchItems(searchQuery, appliedRole, appliedSub, newPage, size);
     };
 
-    const subItems = selectedRole === 'job-seeker'
+    const subItems = selectedRole === 'JOB_SEEKER'
         ? specializations.map(s => s.name)
         : selectedRole ? domains.map(d => d.name) : [];
 

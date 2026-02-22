@@ -44,6 +44,7 @@ const LeaveFeedback = () => {
             if (!getCookie('accessToken')) { setError('Необходима авторизация'); return; }
 
             const surveyData = {
+                rating: rating,
                 answers: questions.map(q => ({ questionId: q.id, answerText: answers[q.id] || '' }))
             };
 

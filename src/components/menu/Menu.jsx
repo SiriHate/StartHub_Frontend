@@ -16,7 +16,7 @@ const Menu = () => {
                     <ul className={styles.navList}>
                         <li className={styles.navItem}>
                             <Link to="/articles-and-news" className={getActiveClass("/articles-and-news")}>
-                                Новости и обучение
+                                <i className={`fas fa-newspaper ${styles.faUser}`}/> Новости и обучение
                             </Link>
                         </li>
                         <li className={styles.navItem}>
@@ -31,7 +31,7 @@ const Menu = () => {
                         </li>
                         <li className={styles.navItem}>
                             <Link to="/my_space" className={getActiveClass("/my_space")}>
-                                Мое пространство
+                                <i className={`fas fa-th-large ${styles.faUser}`}/> Мое пространство
                             </Link>
                         </li>
                         <li className={styles.navItem}>
