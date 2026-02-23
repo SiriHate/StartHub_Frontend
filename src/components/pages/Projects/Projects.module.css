@@ -14,7 +14,7 @@
     background-attachment: fixed;
 }
 
-/* ── Sidebar ── */
+
 .sidebar {
     width: 260px;
     min-width: 260px;
@@ -144,7 +144,7 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* ── Content ── */
+
 .content {
     flex: 1;
     padding: 30px 36px;
@@ -257,7 +257,7 @@
     color: #fff;
 }
 
-/* ── Cards Grid ── */
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -351,7 +351,7 @@
     font-size: 0.75rem;
 }
 
-/* ── States ── */
+
 .loadingState {
     display: flex;
     flex-direction: column;
@@ -395,7 +395,7 @@
     margin: 0;
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 900px) {
     .page {
         flex-direction: column;

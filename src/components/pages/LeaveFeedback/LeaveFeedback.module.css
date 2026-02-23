@@ -9,7 +9,7 @@
     min-height: 100vh;
 }
 
-/* ── Layout ── */
+
 
 .page {
     display: flex;
@@ -29,7 +29,7 @@
     backdrop-filter: blur(10px);
 }
 
-/* ── Top bar ── */
+
 
 .topBar {
     display: flex;
@@ -67,7 +67,7 @@
     border-radius: 8px;
 }
 
-/* ── Title ── */
+
 
 .titleBlock {
     text-align: center;
@@ -88,7 +88,7 @@
     color: #f0f0f0;
 }
 
-/* ── Questions ── */
+
 
 .questionsList {
     display: flex;
@@ -170,7 +170,7 @@
     color: #6b6b90;
 }
 
-/* ── Rating ── */
+
 
 .ratingSection {
     display: flex;
@@ -217,7 +217,7 @@
     color: #a0a0c0;
 }
 
-/* ── Submit ── */
+
 
 .submitBtn {
     display: flex;
@@ -242,7 +242,7 @@
     box-shadow: 0 5px 16px rgba(34, 197, 94, 0.4);
 }
 
-/* ── Loading / Error ── */
+
 
 .loadingState {
     display: flex;
@@ -288,7 +288,7 @@
     color: #e0e0f0;
 }
 
-/* ── Responsive ── */
+
 
 @media screen and (max-width: 600px) {
     .container {

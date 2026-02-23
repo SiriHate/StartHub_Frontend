@@ -37,7 +37,7 @@ const AdminPanel = () => {
             .then(r => { if (r.status !== 200) throw new Error(); return r.json(); })
             .then(data => { if (data.role !== 'ADMIN') { navigate('/'); return; } setIsLoading(false); fetchModerators(0, size, ""); })
             .catch(() => navigate('/'));
-    }, [navigate]);
+    }, [navigate, size]);
 
     if (isLoading) {
         return (
@@ -66,7 +66,7 @@ const AdminPanel = () => {
             </Helmet>
             <div className={styles.page}>
                 <div className={styles.container}>
-                    {/* Header */}
+                    {}
                     <div className={styles.header}>
                         <div className={styles.headerLeft}>
                             <i className="fas fa-user-shield"></i>
@@ -77,7 +77,7 @@ const AdminPanel = () => {
                         </button>
                     </div>
 
-                    {/* Card */}
+                    {}
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.cardTitle}>
@@ -90,7 +90,7 @@ const AdminPanel = () => {
                             </button>
                         </div>
 
-                        {/* Search */}
+                        {}
                         <div className={styles.searchRow}>
                             <div className={styles.searchWrap}>
                                 <i className="fas fa-search"></i>
@@ -99,7 +99,7 @@ const AdminPanel = () => {
                             <button className={styles.searchBtn} onClick={searchModerators}>Найти</button>
                         </div>
 
-                        {/* List */}
+                        {}
                         <div className={styles.list}>
                             {moderators.length === 0 ? (
                                 <div className={styles.emptyState}>
@@ -132,7 +132,7 @@ const AdminPanel = () => {
                             )}
                         </div>
 
-                        {/* Pagination */}
+                        {}
                         {(moderators.length > 0 || totalPages > 1) && (
                             <div className={styles.paginationWrap}>
                                 <Pagination page={page} totalPages={totalPages > 0 ? totalPages : 1} size={size} onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} onSizeChange={handleSizeChange} onPageChange={handlePageChange} />
@@ -142,7 +142,7 @@ const AdminPanel = () => {
                 </div>
             </div>
 
-            {/* Delete modal */}
+            {}
             {isModalOpen && (
                 <div className={styles.overlay} onClick={() => setIsModalOpen(false)}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -157,7 +157,7 @@ const AdminPanel = () => {
                 </div>
             )}
 
-            {/* Create modal */}
+            {}
             {isCreateModalOpen && (
                 <div className={styles.overlay} onClick={() => setIsCreateModalOpen(false)}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -177,7 +177,7 @@ const AdminPanel = () => {
                 </div>
             )}
 
-            {/* Edit modal */}
+            {}
             {isEditModalOpen && (
                 <div className={styles.overlay} onClick={() => setIsEditModalOpen(false)}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>

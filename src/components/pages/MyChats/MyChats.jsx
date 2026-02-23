@@ -4,9 +4,17 @@ import styles from './MyChats.module.css';
 import NavigationBar from '../../menu/Menu';
 import { Helmet } from "react-helmet";
 import config from '../../../config';
-import apiClient, { getCookie } from '../../../api/apiClient';
-import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+import apiClient from '../../../api/apiClient';
+import {
+    getMyChats as fetchChatsApi,
+    createChat as createChatApi,
+    uploadChatImage,
+    getChatMembers,
+    addChatMember,
+    removeChatMember,
+    changeMemberRole,
+} from '../../../api/chatClient';
+import chatWsClient from '../../../api/chatWsClient';
 
 function MyChats() {
     const [chats, setChats] = useState([]);
@@ -14,9 +22,7 @@ function MyChats() {
     const [selectedChat, setSelectedChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [stompClient, setStompClient] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
-    const [reconnectAttempts, setReconnectAttempts] = useState(0);
     const [currentUsername, setCurrentUsername] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [chatPage, setChatPage] = useState(0);
@@ -43,8 +49,10 @@ function MyChats() {
     const [managePanelSearchQuery, setManagePanelSearchQuery] = useState('');
     const [managePanelSearchResults, setManagePanelSearchResults] = useState([]);
     const [managePanelShowDropdown, setManagePanelShowDropdown] = useState(false);
-    const RECONNECT_INTERVAL_MS = 7000;
-    const MAX_RECONNECT_ATTEMPTS = 18;
+    const [pendingImageKey, setPendingImageKey] = useState(null);
+    const [pendingImagePreview, setPendingImagePreview] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [imageModalUrl, setImageModalUrl] = useState(null);
     const messagesEndRef = useRef(null);
     const searchTimeoutRef = useRef(null);
     const dropdownRef = useRef(null);
@@ -58,6 +66,7 @@ function MyChats() {
     messagePageRef.current = messagePage;
     const selectedChatRef = useRef(selectedChat);
     selectedChatRef.current = selectedChat;
+    const fileInputRef = useRef(null);
 
     const navigate = useNavigate();
 
@@ -69,18 +78,8 @@ function MyChats() {
 
     const fetchMyChats = async (page, append = false) => {
         try {
-            const response = await apiClient(
-                `${config.CHAT_SERVICE}/chats/me?page=${page}&size=${CHAT_PAGE_SIZE}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            if (!response.ok) {
-                throw new Error('Failed to fetch chats');
-            }
+            const response = await fetchChatsApi(page, CHAT_PAGE_SIZE);
+            if (!response.ok) throw new Error('Failed to fetch chats');
             const data = await response.json();
             setTotalChatPages(data.totalPages ?? 0);
             if (append) {
@@ -133,137 +132,43 @@ function MyChats() {
     }, []);
 
     const connectToWebSocket = (chatId) => {
-        try {
-            if (stompClient && !isConnected) {
-                stompClient.disconnect();
-                setStompClient(null);
-            }
+        pendingHistoryPageRef.current = 0;
 
-            const wsUrl = `${config.CHAT_SERVICE_WEB_SOCKET}/ws`;
+        chatWsClient.connect(chatId, {
+            initialPageSize: MESSAGE_PAGE_SIZE,
 
-            const socket = new SockJS(wsUrl, null, {
-                transports: ['websocket', 'xhr-streaming', 'xhr-polling'],
-                timeout: 10000,
-                secure: true
-            });
+            onConnectionChange: (connected) => setIsConnected(connected),
 
-            const client = Stomp.over(socket);
-            
-            client.debug = () => {};
-            
-            const headers = {
-                Authorization: `Bearer ${getCookie('accessToken')}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'heart-beat': '10000,10000',
-                'simpMessageType': 'CONNECT',
-                'simpDestination': '/app/chat/subscribe'
-            };
+            onMessage: (msg) => {
+                setMessages(prev => {
+                    if (msg?.id != null && prev.some(m => m?.id === msg.id)) return prev;
+                    const updated = [...prev, msg];
+                    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+                    return updated;
+                });
+            },
 
-            client.connect(headers, 
-                (frame) => {
-                    setIsConnected(true);
-                    setReconnectAttempts(0);
-                    
-                    const subscription = client.subscribe(`/topic/chat/${chatId}`, (message) => {
-                        try {
-                            const newMessage = JSON.parse(message.body);
-                            setMessages(prevMessages => {
-                                const hasId = newMessage?.id != null;
-                                const duplicate = hasId && prevMessages.some(m => m?.id === newMessage.id);
-                                if (duplicate) return prevMessages;
-                                const updatedMessages = [...prevMessages, newMessage];
-                                setTimeout(() => {
-                                    if (messagesEndRef.current) {
-                                        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                                    }
-                                }, 100);
-                                return updatedMessages;
-                            });
-                        } catch (error) {}
-                    });
-
-                    const historySubscription = client.subscribe(`/topic/chat/${chatId}/history`, (message) => {
-                        try {
-                            if (pendingHistoryPageRef.current == null) return;
-                            const raw = JSON.parse(message.body);
-                            const list = Array.isArray(raw) ? raw : (raw?.content ?? []);
-                            const page = pendingHistoryPageRef.current;
-                            pendingHistoryPageRef.current = null;
-                            setLoadingMoreMessages(false);
-                            if (page === 0) {
-                                setMessages(list);
-                                setMessagePage(0);
-                                setHasMoreMessages(list.length >= MESSAGE_PAGE_SIZE);
-                                setTimeout(() => {
-                                    if (messagesEndRef.current) {
-                                        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                                    }
-                                }, 100);
-                            } else {
-                                const el = messagesContainerRef.current;
-                                if (el) {
-                                    scrollRestoreRef.current = { scrollHeight: el.scrollHeight, scrollTop: el.scrollTop };
-                                }
-                                setMessages(prev => [...list, ...prev]);
-                                setMessagePage(page);
-                                setHasMoreMessages(list.length >= MESSAGE_PAGE_SIZE);
-                            }
-                        } catch (error) {}
-                    });
-
-                    pendingHistoryPageRef.current = 0;
-                    setTimeout(() => {
-                        if (client.connected) {
-                            client.send("/app/chat/subscribe", headers, JSON.stringify({ 
-                                chatId: chatId,
-                                page: 0,
-                                size: MESSAGE_PAGE_SIZE
-                            }));
-                        }
-                    }, 1000);
-                },
-                () => {
-                    setIsConnected(false);
-                    handleReconnect(chatId);
+            onHistory: (list) => {
+                if (pendingHistoryPageRef.current == null) return;
+                const page = pendingHistoryPageRef.current;
+                pendingHistoryPageRef.current = null;
+                setLoadingMoreMessages(false);
+                if (page === 0) {
+                    setMessages(list);
+                    setMessagePage(0);
+                    setHasMoreMessages(list.length >= MESSAGE_PAGE_SIZE);
+                    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+                } else {
+                    const el = messagesContainerRef.current;
+                    if (el) {
+                        scrollRestoreRef.current = { scrollHeight: el.scrollHeight, scrollTop: el.scrollTop };
+                    }
+                    setMessages(prev => [...list, ...prev]);
+                    setMessagePage(page);
+                    setHasMoreMessages(list.length >= MESSAGE_PAGE_SIZE);
                 }
-            );
-
-            client.onStompError = () => {
-                setIsConnected(false);
-                handleReconnect(chatId);
-            };
-
-            client.onWebSocketClose = () => {
-                setIsConnected(false);
-                handleReconnect(chatId);
-            };
-
-            setStompClient(client);
-        } catch (error) {
-            setIsConnected(false);
-            handleReconnect(chatId);
-        }
-    };
-
-    const handleReconnect = (chatId) => {
-        if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-            setReconnectAttempts(prev => prev + 1);
-            setTimeout(() => {
-                if (selectedChatRef.current?.id === chatId) {
-                    connectToWebSocket(chatId);
-                }
-            }, RECONNECT_INTERVAL_MS);
-        }
-    };
-
-    const disconnectFromWebSocket = () => {
-        if (stompClient) {
-            stompClient.disconnect(() => {
-                setIsConnected(false);
-                setStompClient(null);
-            });
-        }
+            },
+        });
     };
 
     const handleChatSelect = async (chat) => {
@@ -278,117 +183,55 @@ function MyChats() {
         setLoadingMoreMessages(false);
         pendingHistoryPageRef.current = null;
 
-        if (stompClient?.connected && isConnected) {
-            try {
-                const subscriptions = stompClient.subscriptions;
-                if (subscriptions) {
-                    Object.keys(subscriptions).forEach(key => {
-                        subscriptions[key].unsubscribe();
-                    });
-                }
+        connectToWebSocket(chat.id);
+    };
 
-                const headers = {
-                    Authorization: `Bearer ${getCookie('accessToken')}`,
-                    'Content-Type': 'application/json'
-                };
+    const handleImageSelect = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file || !selectedChat) return;
 
-                stompClient.subscribe(`/topic/chat/${chat.id}`, (message) => {
-                    try {
-                        const newMessage = JSON.parse(message.body);
-                        setMessages(prevMessages => {
-                            const hasId = newMessage?.id != null;
-                            const duplicate = hasId && prevMessages.some(m => m?.id === newMessage.id);
-                            if (duplicate) return prevMessages;
-                            const updatedMessages = [...prevMessages, newMessage];
-                            setTimeout(() => {
-                                if (messagesEndRef.current) {
-                                    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                                }
-                            }, 100);
-                            return updatedMessages;
-                        });
-                    } catch (error) {}
-                });
+        const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!allowed.includes(file.type)) return;
 
-                stompClient.subscribe(`/topic/chat/${chat.id}/history`, (message) => {
-                    try {
-                        if (pendingHistoryPageRef.current == null) return;
-                        const raw = JSON.parse(message.body);
-                        const list = Array.isArray(raw) ? raw : (raw?.content ?? []);
-                        const page = pendingHistoryPageRef.current;
-                        pendingHistoryPageRef.current = null;
-                        setLoadingMoreMessages(false);
-                        if (page === 0) {
-                            setMessages(list);
-                            setMessagePage(0);
-                            setHasMoreMessages(list.length >= MESSAGE_PAGE_SIZE);
-                            setTimeout(() => {
-                                if (messagesEndRef.current) {
-                                    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                                }
-                            }, 100);
-                        } else {
-                            const el = messagesContainerRef.current;
-                            if (el) {
-                                scrollRestoreRef.current = { scrollHeight: el.scrollHeight, scrollTop: el.scrollTop };
-                            }
-                            setMessages(prev => [...list, ...prev]);
-                            setMessagePage(page);
-                            setHasMoreMessages(list.length >= MESSAGE_PAGE_SIZE);
-                        }
-                    } catch (error) {}
-                });
+        setPendingImagePreview(URL.createObjectURL(file));
+        setUploadingImage(true);
 
-                pendingHistoryPageRef.current = 0;
-                stompClient.send(
-                    "/app/chat/subscribe",
-                    headers,
-                    JSON.stringify({ 
-                        chatId: chat.id,
-                        page: 0,
-                        size: MESSAGE_PAGE_SIZE
-                    })
-                );
-            } catch (error) {
-                console.error('Error updating subscriptions:', error);
-                connectToWebSocket(chat.id);
-            }
-        } else {
-            connectToWebSocket(chat.id);
+        try {
+            const response = await uploadChatImage(selectedChat.id, file);
+            if (!response.ok) throw new Error('Upload failed');
+            const data = await response.json();
+            setPendingImageKey(data.imageKey);
+        } catch {
+            setPendingImagePreview(null);
+            setPendingImageKey(null);
+        } finally {
+            setUploadingImage(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
+    };
+
+    const cancelPendingImage = () => {
+        setPendingImageKey(null);
+        setPendingImagePreview(null);
     };
 
     const handleSendMessage = (e) => {
         e.preventDefault();
-        if (!newMessage.trim() || !selectedChat || !stompClient || !stompClient.connected || !isConnected) {
-            if (selectedChat && (!stompClient || !stompClient.connected)) {
-                handleReconnect(selectedChat.id);
-            }
+        const hasText = newMessage.trim().length > 0;
+        const hasImage = !!pendingImageKey;
+
+        if ((!hasText && !hasImage) || !selectedChat || !chatWsClient.connected || !isConnected) {
             return;
         }
 
-        try {
-            const messageRequest = {
-                content: newMessage.trim(),
-                chatId: selectedChat.id
-            };
+        const messageRequest = { chatId: selectedChat.id };
+        if (hasText) messageRequest.content = newMessage.trim();
+        if (hasImage) messageRequest.imageKey = pendingImageKey;
 
-            const headers = {
-                Authorization: `Bearer ${getCookie('accessToken')}`,
-                'Content-Type': 'application/json'
-            };
-
-            stompClient.send(
-                `/app/chat/${selectedChat.id}/send`,
-                headers,
-                JSON.stringify(messageRequest)
-            );
-            setNewMessage('');
-        } catch (error) {
-            if (selectedChat) {
-                handleReconnect(selectedChat.id);
-            }
-        }
+        chatWsClient.sendMessage(selectedChat.id, messageRequest);
+        setNewMessage('');
+        setPendingImageKey(null);
+        setPendingImagePreview(null);
     };
 
     const handleCreateChat = () => {
@@ -398,60 +241,44 @@ function MyChats() {
     const handleCreatePrivateChat = async () => {
         if (!selectedUser) return;
         try {
-            const response = await apiClient(`${config.CHAT_SERVICE}/chats`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    type: 'PRIVATE',
-                    members: [
-                        { username: selectedUser.username, role: 'MEMBER' }
-                    ]
-                })
+            const response = await createChatApi({
+                type: 'PRIVATE',
+                members: [{ username: selectedUser.username, role: 'MEMBER' }],
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to create private chat');
-            }
-
+            if (!response.ok) throw new Error('Failed to create private chat');
             const newChat = await response.json();
+            if (!newChat.name && newChat.type === 'PRIVATE') {
+                newChat.name = selectedUser.username;
+            }
             setChats(prevChats => [...prevChats, newChat]);
             setShowPrivateChatModal(false);
             setShowCreateChatModal(false);
             setSearchUsername('');
             setSelectedUser(null);
-        } catch (error) {}
+            handleChatSelect(newChat);
+        } catch (error) {
+            console.error('Error creating private chat:', error);
+        }
     };
 
     const handleCreateGroupChat = async () => {
         try {
-            const response = await apiClient(`${config.CHAT_SERVICE}/chats`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    type: 'GROUP',
-                    name: groupChatName,
-                    members: groupParticipants.map(username => ({
-                        username,
-                        role: 'MEMBER'
-                    }))
-                })
+            const response = await createChatApi({
+                type: 'GROUP',
+                name: groupChatName,
+                members: groupParticipants.map(username => ({ username, role: 'MEMBER' })),
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to create group chat');
-            }
-
+            if (!response.ok) throw new Error('Failed to create group chat');
             const newChat = await response.json();
             setChats(prevChats => [...prevChats, newChat]);
             setShowGroupChatModal(false);
             setShowCreateChatModal(false);
             setGroupChatName('');
             setGroupParticipants([]);
-        } catch (error) {}
+            handleChatSelect(newChat);
+        } catch (error) {
+            console.error('Error creating group chat:', error);
+        }
     };
 
     const searchUsers = async (query) => {
@@ -507,14 +334,26 @@ function MyChats() {
     }, []);
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleString('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        if (!dateString) return '';
+        const match = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/);
+        if (match) {
+            const [, day, month, year, hour, minute] = match;
+            const date = new Date(year, month - 1, day, hour, minute);
+            if (!isNaN(date.getTime())) {
+                return date.toLocaleString('ru-RU', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit',
+                });
+            }
+        }
+        const fallback = new Date(dateString);
+        if (!isNaN(fallback.getTime())) {
+            return fallback.toLocaleString('ru-RU', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit',
+            });
+        }
+        return dateString;
     };
 
     const getChatName = (chat) => {
@@ -543,19 +382,11 @@ function MyChats() {
     );
 
     const loadMoreMessages = () => {
-        if (!selectedChat || !stompClient || !stompClient.connected || !isConnected || loadingMoreMessages || !hasMoreMessages) return;
+        if (!selectedChat || !chatWsClient.connected || !isConnected || loadingMoreMessages || !hasMoreMessages) return;
         const nextPage = messagePageRef.current + 1;
         setLoadingMoreMessages(true);
         pendingHistoryPageRef.current = nextPage;
-        const headers = {
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-            'Content-Type': 'application/json'
-        };
-        stompClient.send(
-            "/app/chat/subscribe",
-            headers,
-            JSON.stringify({ chatId: selectedChat.id, page: nextPage, size: MESSAGE_PAGE_SIZE })
-        );
+        chatWsClient.requestHistory(selectedChat.id, nextPage, MESSAGE_PAGE_SIZE);
     };
 
     useEffect(() => {
@@ -578,21 +409,15 @@ function MyChats() {
 
     useEffect(() => {
         return () => {
-            disconnectFromWebSocket();
+            chatWsClient.disconnect();
+            setIsConnected(false);
         };
     }, []);
 
-    const fetchChatMembers = async (chatId, page = 0, size = 50) => {
+    const fetchChatMembers = async (chatId) => {
         setLoadingMembers(true);
         try {
-            const response = await apiClient(
-                `${config.CHAT_SERVICE}/chats/${chatId}/members?page=${page}&size=${size}`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                }
-            );
+            const response = await getChatMembers(chatId);
             if (!response.ok) throw new Error('Failed to fetch members');
             const data = await response.json();
             const list = data.content || [];
@@ -608,15 +433,18 @@ function MyChats() {
         }
     };
 
+    const isGroupChat = selectedChat?.type === 'GROUP';
+
     useEffect(() => {
-        if (selectedChat?.type === 'GROUP') {
+        if (isGroupChat) {
             fetchChatMembers(selectedChat.id);
         } else {
             setCurrentUserRoleInChat(null);
             setChatMembers([]);
             setShowChatManagePanel(false);
         }
-    }, [selectedChat?.id, selectedChat?.type === 'GROUP']);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedChat?.id, isGroupChat]);
 
     const canExcludeMember = (member) => {
         if (!member || member.username === currentUsername || (member.userUsername && member.userUsername === currentUsername)) return false;
@@ -636,33 +464,25 @@ function MyChats() {
 
     const handleChangeMemberRole = async (memberId, newRole) => {
         try {
-            const response = await apiClient(
-                `${config.CHAT_SERVICE}/chats/members/${memberId}/role`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ role: newRole })
-                }
-            );
+            const response = await changeMemberRole(memberId, newRole);
             if (!response.ok) throw new Error('Failed to change role');
             if (selectedChat?.type === 'GROUP') {
                 await fetchChatMembers(selectedChat.id);
             }
-        } catch (err) {}
+        } catch (err) {
+            console.error('Error changing member role:', err);
+        }
     };
 
     const handleExcludeMember = async (memberId) => {
         if (selectedChat?.type !== 'GROUP') return;
         try {
-            const response = await apiClient(
-                `${config.CHAT_SERVICE}/chats/members/${memberId}`,
-                { method: 'DELETE' }
-            );
+            const response = await removeChatMember(memberId);
             if (!response.ok) throw new Error('Failed to exclude');
             await fetchChatMembers(selectedChat.id);
-        } catch (err) {}
+        } catch (err) {
+            console.error('Error excluding member:', err);
+        }
     };
 
     const searchUsersForManagePanel = async (query) => {
@@ -697,22 +517,15 @@ function MyChats() {
     const handleInviteToChat = async (username) => {
         if (selectedChat?.type !== 'GROUP') return;
         try {
-            const response = await apiClient(
-                `${config.CHAT_SERVICE}/chats/${selectedChat.id}/members`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, role: 'MEMBER' })
-                }
-            );
+            const response = await addChatMember(selectedChat.id, username);
             if (!response.ok) return;
             await fetchChatMembers(selectedChat.id);
             setManagePanelSearchQuery('');
             setManagePanelSearchResults([]);
             setManagePanelShowDropdown(false);
-        } catch (err) {}
+        } catch (err) {
+            console.error('Error inviting member:', err);
+        }
     };
 
     const getMemberDisplayName = (member) => member?.username ?? member?.userUsername ?? '—';
@@ -826,29 +639,65 @@ function MyChats() {
                                                     className={`${styles.messageAuthor} ${message.sender !== currentUsername ? styles.clickable : ''}`}
                                                     onClick={(e) => { e.stopPropagation(); openProfile(message.sender); }}
                                                 >{message.sender}</span>
-                                                <span className={styles.messageTime}>{formatDate(message.sendAt ?? message.timestamp)}</span>
+                                                <span className={styles.messageTime}>{formatDate(message.sendAt)}</span>
                                             </div>
-                                            <div className={styles.messageText}>{message.content}</div>
+                                            {message.imageUrl && (
+                                                <img
+                                                    src={message.imageUrl}
+                                                    alt=""
+                                                    className={styles.messageImage}
+                                                    onClick={() => setImageModalUrl(message.imageUrl)}
+                                                />
+                                            )}
+                                            {message.content && (
+                                                <div className={styles.messageText}>{message.content}</div>
+                                            )}
                                         </div>
                                     ))
                                 )}
                                 <div ref={messagesEndRef} />
                             </div>
                             <form onSubmit={handleSendMessage} className={styles.messageForm}>
-                                <textarea
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    placeholder="Введите сообщение..."
-                                    className={styles.messageInput}
-                                    disabled={!isConnected}
-                                />
-                                <button 
-                                    type="submit" 
-                                    className={styles.sendButton}
-                                    disabled={!isConnected}
-                                >
-                                    <i className="fas fa-paper-plane"></i> Отправить
-                                </button>
+                                {pendingImagePreview && (
+                                    <div className={styles.imagePreviewContainer}>
+                                        <img src={pendingImagePreview} alt="" className={styles.imagePreview} />
+                                        {uploadingImage && <div className={styles.imagePreviewOverlay}>Загрузка...</div>}
+                                        <button type="button" className={styles.imagePreviewRemove} onClick={cancelPendingImage}>
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                )}
+                                <div className={styles.messageFormRow}>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp,image/gif"
+                                        style={{ display: 'none' }}
+                                        onChange={handleImageSelect}
+                                    />
+                                    <button
+                                        type="button"
+                                        className={styles.attachButton}
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={!isConnected || uploadingImage}
+                                    >
+                                        <i className="fas fa-image"></i>
+                                    </button>
+                                    <textarea
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        placeholder="Введите сообщение..."
+                                        className={styles.messageInput}
+                                        disabled={!isConnected}
+                                    />
+                                    <button
+                                        type="submit"
+                                        className={styles.sendButton}
+                                        disabled={!isConnected || (uploadingImage && !newMessage.trim())}
+                                    >
+                                        <i className="fas fa-paper-plane"></i> Отправить
+                                    </button>
+                                </div>
                             </form>
                         </>
                     ) : (
@@ -1081,6 +930,17 @@ function MyChats() {
                                 Создать чат
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {imageModalUrl && (
+                <div className={styles.modalOverlay} onClick={() => setImageModalUrl(null)}>
+                    <div className={styles.imageModalContent} onClick={e => e.stopPropagation()}>
+                        <button type="button" className={styles.modalClose} onClick={() => setImageModalUrl(null)}>
+                            <i className="fas fa-times"></i>
+                        </button>
+                        <img src={imageModalUrl} alt="" className={styles.imageModalFull} />
                     </div>
                 </div>
             )}

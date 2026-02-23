@@ -21,7 +21,7 @@
     gap: 16px;
 }
 
-/* ── Top bar ── */
+
 .topBar {
     display: flex;
     align-items: center;
@@ -48,7 +48,7 @@
     color: #fff;
 }
 
-/* ── Card ── */
+
 .card {
     background: rgba(30, 30, 65, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -81,14 +81,14 @@
     color: rgba(255, 255, 255, 0.35);
 }
 
-/* ── Form ── */
+
 .form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* ── Questions list ── */
+
 .questionsList {
     display: flex;
     flex-direction: column;
@@ -172,7 +172,7 @@
     border-color: rgba(74, 158, 237, 0.35);
 }
 
-/* ── Buttons ── */
+
 .addBtn {
     padding: 12px;
     background: rgba(255, 255, 255, 0.04);

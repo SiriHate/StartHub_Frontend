@@ -88,8 +88,6 @@ function ProjectDetails() {
                 if (!response.ok) throw new Error('Проект не найден');
                 const data = await response.json();
                 setProject(data);
-                await fetchLikesCount();
-                await fetchComments();
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -97,6 +95,9 @@ function ProjectDetails() {
             }
         };
         fetchProject();
+        fetchLikesCount();
+        fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectId]);
 
     const handleLike = async () => {
@@ -265,7 +266,7 @@ function ProjectDetails() {
             <div className={styles.page}>
                 <div className={styles.container}>
 
-                    {/* Top bar */}
+                    {}
                     <div className={styles.topBar}>
                         <button className={styles.backBtn} onClick={handleGoBack}>
                             <i className="fas fa-arrow-left"></i> Назад
@@ -281,7 +282,7 @@ function ProjectDetails() {
                         )}
                     </div>
 
-                    {/* Hero + Description */}
+                    {}
                     <div className={styles.hero}>
                         <div className={styles.heroTop}>
                             <img
@@ -314,7 +315,7 @@ function ProjectDetails() {
                         )}
                     </div>
 
-                    {/* Team */}
+                    {}
                     <div className={styles.section}>
                         <div className={styles.sectionHeader}>
                             <i className="fas fa-users"></i>
@@ -351,7 +352,7 @@ function ProjectDetails() {
                         </div>
                     </div>
 
-                    {/* Searches */}
+                    {}
                     {(() => {
                         const searchGroups = [
                             { key: 'employeeSearches', label: 'Поиск сотрудников', icon: 'fa-briefcase', color: '#4a9eed' },
@@ -390,7 +391,7 @@ function ProjectDetails() {
                         );
                     })()}
 
-                    {/* Actions + Comments (non-moderator) */}
+                    {}
                     {!isModerator && (
                         <div className={styles.section}>
                             <div className={styles.actionsBar}>

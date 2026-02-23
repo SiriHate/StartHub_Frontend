@@ -3,7 +3,7 @@ import styles from './ModeratorPanel.module.css';
 import Pagination from '../../pagination/Pagination';
 import { useNavigate } from 'react-router-dom';
 import config from '../../../config';
-import apiClient, { clearAuth } from '../../../api/apiClient';
+import apiClient from '../../../api/apiClient';
 
 const ModeratorPanel = () => {
     const navigate = useNavigate();
@@ -83,7 +83,7 @@ const ModeratorPanel = () => {
         else if (activeTab === 'projects') fetchProjects(currentPage - 1);
         else if (activeTab === 'news') fetchNews(currentPage - 1);
         else if (activeTab === 'articles') fetchArticles(currentPage - 1);
-    }, [activeTab, currentPage, searchQuery, statusFilter, itemsPerPage]);
+    }, [activeTab, currentPage, searchQuery, statusFilter, itemsPerPage, fetchUsers, fetchProjects, fetchNews, fetchArticles]);
 
     const getCurrentData = () => {
         switch (activeTab) {
@@ -172,7 +172,7 @@ const ModeratorPanel = () => {
     return (
         <div className={styles.page}>
             <div className={styles.container}>
-                {/* Header */}
+                {}
                 <div className={styles.header}>
                     <div className={styles.headerLeft}>
                         <i className="fas fa-shield-alt"></i>
@@ -183,7 +183,7 @@ const ModeratorPanel = () => {
                     </button>
                 </div>
 
-                {/* Tabs */}
+                {}
                 <div className={styles.tabs}>
                     {tabs.map(t => (
                         <button key={t.key} className={`${styles.tab} ${activeTab === t.key ? styles.tabActive : ''}`} onClick={() => setActiveTab(t.key)}>
@@ -192,7 +192,7 @@ const ModeratorPanel = () => {
                     ))}
                 </div>
 
-                {/* Toolbar: search + status filter */}
+                {}
                 <div className={styles.toolbar}>
                     {activeTab === 'users' && (
                         <div className={styles.searchRow}>
@@ -215,7 +215,7 @@ const ModeratorPanel = () => {
                     )}
                 </div>
 
-                {/* List */}
+                {}
                 <div className={styles.list}>
                     {loading ? (
                         <div className={styles.emptyState}>
@@ -254,7 +254,7 @@ const ModeratorPanel = () => {
                     )}
                 </div>
 
-                {/* Pagination */}
+                {}
                 {!loading && getCurrentData().length > 0 && (
                     <div className={styles.paginationWrap}>
                         <Pagination

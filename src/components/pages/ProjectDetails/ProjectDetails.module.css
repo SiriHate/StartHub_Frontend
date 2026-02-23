@@ -23,7 +23,7 @@
     gap: 20px;
 }
 
-/* ── Top Bar ── */
+
 .topBar {
     display: flex;
     justify-content: space-between;
@@ -75,7 +75,7 @@
     border-color: rgba(74, 158, 237, 0.4);
 }
 
-/* ── Hero + Description (merged) ── */
+
 .hero {
     background: rgba(30, 30, 65, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -174,7 +174,7 @@
     white-space: pre-wrap;
 }
 
-/* ── Section card (Team, Interaction) ── */
+
 .section {
     background: rgba(30, 30, 65, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -205,7 +205,7 @@
     font-weight: 600;
 }
 
-/* ── Team Grid ── */
+
 .teamGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -268,7 +268,7 @@
     margin-top: 2px;
 }
 
-/* ── Search banners ── */
+
 .searchList {
     display: flex;
     flex-direction: column;
@@ -335,7 +335,7 @@
     white-space: pre-wrap;
 }
 
-/* ── Actions bar (inside merged section) ── */
+
 .actionsBar {
     display: flex;
     align-items: center;
@@ -413,7 +413,7 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
-/* ── Comments divider (inside merged section) ── */
+
 .commentsDivider {
     margin-top: 4px;
 }
@@ -607,7 +607,7 @@
     margin: 0;
 }
 
-/* ── Moderator Bar ── */
+
 .moderatorBar {
     display: flex;
     align-items: center;
@@ -672,7 +672,7 @@
     color: #e25555;
 }
 
-/* ── States ── */
+
 .loadingState {
     display: flex;
     flex-direction: column;
@@ -722,7 +722,7 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 768px) {
     .page {
         padding: 20px 12px 40px;

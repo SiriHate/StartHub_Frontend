@@ -23,7 +23,7 @@
     gap: 20px;
 }
 
-/* ── Top Bar ── */
+
 .topBar {
     display: flex;
     align-items: center;
@@ -49,7 +49,7 @@
     color: #fff;
 }
 
-/* ── Card ── */
+
 .card {
     background: rgba(30, 30, 65, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -71,14 +71,14 @@
 .cardHeader i { color: #4a9eed; font-size: 1.2rem; }
 .cardHeader h1 { margin: 0; font-size: 1.3rem; font-weight: 700; color: #fff; }
 
-/* ── Form ── */
+
 .form {
     display: flex;
     flex-direction: column;
     gap: 22px;
 }
 
-/* ── Logo ── */
+
 .logoSection {
     display: flex;
     flex-direction: column;
@@ -132,7 +132,7 @@
 
 .uploadBtn:hover { background: rgba(74, 158, 237, 0.2); color: #fff; }
 
-/* ── Fields ── */
+
 .fieldGroup {
     display: flex;
     flex-direction: column;
@@ -182,7 +182,7 @@
 
 .fieldGroup select option { background: #1a1a3e; color: #fff; }
 
-/* ── Team Section ── */
+
 .teamSection {
     display: flex;
     flex-direction: column;
@@ -378,7 +378,7 @@
 
 .emptyMembers i { font-size: 1.3rem; opacity: 0.5; }
 
-/* ── Searches ── */
+
 .searchTypeRow {
     display: flex;
     flex-wrap: wrap;
@@ -598,7 +598,7 @@ select.searchFieldInput option {
     white-space: pre-wrap;
 }
 
-/* ── Bottom Buttons ── */
+
 .buttonsRow {
     display: flex;
     gap: 12px;
@@ -665,7 +665,7 @@ select.searchFieldInput option {
     border-color: rgba(220, 60, 60, 0.25);
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 768px) {
     .page { padding: 20px 12px 40px; }
     .card { padding: 24px 20px; }

@@ -10,7 +10,7 @@
     background-attachment: fixed;
 }
 
-/* ── Layout ── */
+
 
 .feedbackPanelPage {
     display: flex;
@@ -32,7 +32,7 @@
     backdrop-filter: blur(10px);
 }
 
-/* ── Header row ── */
+
 
 .headerRow {
     display: flex;
@@ -87,7 +87,7 @@
     border-color: rgba(248, 113, 113, 0.4);
 }
 
-/* ── Title block ── */
+
 
 .titleBlock {
     text-align: center;
@@ -107,7 +107,7 @@
     font-weight: 400;
 }
 
-/* ── Toolbar ── */
+
 
 .toolbar {
     display: flex;
@@ -139,7 +139,7 @@
     border-color: rgba(99, 102, 241, 0.5);
 }
 
-/* ── Feedback cards ── */
+
 
 .feedbackList {
     display: flex;
@@ -220,7 +220,7 @@
     font-size: 0.75rem;
 }
 
-/* ── Answers ── */
+
 
 .cardAnswers {
     padding: 16px 20px 20px;
@@ -287,7 +287,7 @@
     color: #86efac;
 }
 
-/* ── Pagination ── */
+
 
 .pagination {
     display: flex;
@@ -331,7 +331,7 @@
     font-weight: 600;
 }
 
-/* ── Empty state ── */
+
 
 .emptyState {
     display: flex;
@@ -362,7 +362,7 @@
     line-height: 1.5;
 }
 
-/* ── Loading / Error ── */
+
 
 .loadingState {
     display: flex;
@@ -408,7 +408,7 @@
     color: #e0e0f0;
 }
 
-/* ── Modal ── */
+
 
 .modalOverlay {
     position: fixed;

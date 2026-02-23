@@ -1,4 +1,4 @@
-/* Обёртка редактора — вписывается в тёмную форму */
+
 .editor {
     border-radius: 8px;
     overflow: hidden;
@@ -7,7 +7,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Панель инструментов */
+
 .editor :global(.ql-toolbar) {
     background-color: #2e2a50;
     border: none;
@@ -33,7 +33,7 @@
     padding-right: 0;
 }
 
-/* Контейнер области ввода */
+
 .editor :global(.ql-container) {
     border: none;
     border-radius: 0 0 8px 8px;
@@ -55,7 +55,7 @@
     font-style: normal;
 }
 
-/* Контент внутри редактора (ссылки, цитаты и т.д.) */
+
 .editor :global(.ql-editor a) {
     color: #7b9cff;
 }
@@ -65,7 +65,7 @@
     color: #c0c0c0;
 }
 
-/* Кнопки панели */
+
 .editor :global(.ql-toolbar button) {
     width: 32px;
     height: 32px;
@@ -106,7 +106,7 @@
     fill: #e0e0e0;
 }
 
-/* Выпадающие списки (размер, заголовок и т.д.) */
+
 .editor :global(.ql-toolbar .ql-picker) {
     height: 32px;
     color: #e0e0e0;
@@ -160,7 +160,7 @@
     color: #fff;
 }
 
-/* Разделитель между тулбаром и контентом — убираем дублирование */
+
 .editor :global(.ql-snow .ql-toolbar) {
     border: none;
     border-bottom: 1px solid #3e3a6d;

@@ -14,7 +14,7 @@
     background-attachment: fixed;
 }
 
-/* ── Sidebar ── */
+
 .sidebar {
     width: 260px;
     min-width: 260px;
@@ -144,7 +144,7 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* ── Content ── */
+
 .content {
     flex: 1;
     padding: 30px 36px;
@@ -257,7 +257,7 @@
     color: #fff;
 }
 
-/* ── People List ── */
+
 .list {
     display: flex;
     flex-direction: column;
@@ -354,7 +354,7 @@
     color: rgba(74, 158, 237, 0.6);
 }
 
-/* ── States ── */
+
 .loadingState {
     display: flex;
     flex-direction: column;
@@ -398,7 +398,7 @@
     margin: 0;
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 900px) {
     .page {
         flex-direction: column;

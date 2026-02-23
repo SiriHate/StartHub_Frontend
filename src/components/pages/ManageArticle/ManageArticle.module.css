@@ -23,7 +23,7 @@
     gap: 20px;
 }
 
-/* ── Top Bar ── */
+
 .topBar {
     display: flex;
     align-items: center;
@@ -49,7 +49,7 @@
     color: #fff;
 }
 
-/* ── Card ── */
+
 .card {
     background: rgba(30, 30, 65, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -80,14 +80,14 @@
     color: #fff;
 }
 
-/* ── Form ── */
+
 .form {
     display: flex;
     flex-direction: column;
     gap: 22px;
 }
 
-/* ── Logo Section ── */
+
 .logoSection {
     display: flex;
     flex-direction: column;
@@ -157,7 +157,7 @@
     color: #fff;
 }
 
-/* ── Field Groups ── */
+
 .fieldGroup {
     display: flex;
     flex-direction: column;
@@ -210,7 +210,7 @@
     color: #fff;
 }
 
-/* ── Buttons Row ── */
+
 .buttonsRow {
     display: flex;
     gap: 12px;
@@ -262,7 +262,7 @@
     transform: translateY(-1px);
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 768px) {
     .page {
         padding: 20px 12px 40px;

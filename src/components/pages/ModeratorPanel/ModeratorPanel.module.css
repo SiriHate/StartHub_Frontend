@@ -13,7 +13,7 @@
     gap: 20px;
 }
 
-/* ── Header ── */
+
 .header {
     display: flex;
     align-items: center;
@@ -59,7 +59,7 @@
     color: #fff;
 }
 
-/* ── Tabs ── */
+
 .tabs {
     display: flex;
     gap: 6px;
@@ -102,7 +102,7 @@
     color: #a3d4ff;
 }
 
-/* ── Toolbar ── */
+
 .toolbar {
     display: flex;
     align-items: center;
@@ -205,7 +205,7 @@
     color: #a3d4ff;
 }
 
-/* ── List ── */
+
 .list {
     display: flex;
     flex-direction: column;
@@ -307,7 +307,7 @@
     color: #fff;
 }
 
-/* ── Empty state ── */
+
 .emptyState {
     display: flex;
     flex-direction: column;
@@ -324,7 +324,7 @@
     color: rgba(74, 158, 237, 0.3);
 }
 
-/* ── Pagination ── */
+
 .paginationWrap {
     padding-top: 8px;
 }

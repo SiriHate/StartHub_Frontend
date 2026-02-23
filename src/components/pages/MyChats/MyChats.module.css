@@ -7,14 +7,14 @@
     background-attachment: fixed;
 }
 
-/* ── Layout ── */
+
 .chatsContainer {
     display: flex;
     height: calc(100vh - 60px);
     color: #fff;
 }
 
-/* ── Chat List Sidebar ── */
+
 .chatsList {
     width: 320px;
     min-width: 320px;
@@ -125,7 +125,7 @@
     padding: 8px 0;
 }
 
-/* ── Chat Window ── */
+
 .chatWindow {
     flex: 1;
     display: flex;
@@ -175,7 +175,7 @@
     color: #fff;
 }
 
-/* ── Messages ── */
+
 .messagesContainer {
     flex: 1;
     overflow-y: auto;
@@ -252,14 +252,36 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
-/* ── Message Form ── */
+
+.messageImage {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 4px;
+    object-fit: contain;
+    transition: opacity 0.15s;
+}
+
+.messageImage:hover {
+    opacity: 0.85;
+}
+
+
 .messageForm {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 8px;
     padding: 16px 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(30, 30, 60, 0.5);
     flex-shrink: 0;
+}
+
+.messageFormRow {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
 }
 
 .messageInput {
@@ -312,7 +334,109 @@
     filter: none;
 }
 
-/* ── Empty / Loading States ── */
+
+.attachButton {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.attachButton:hover:not(:disabled) {
+    background: rgba(74, 158, 237, 0.12);
+    border-color: rgba(74, 158, 237, 0.3);
+    color: #4a9eed;
+}
+
+.attachButton:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+
+.imagePreviewContainer {
+    position: relative;
+    display: inline-block;
+    max-width: 200px;
+}
+
+.imagePreview {
+    max-width: 200px;
+    max-height: 120px;
+    border-radius: 8px;
+    object-fit: contain;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.imagePreviewOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.82rem;
+}
+
+.imagePreviewRemove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.65rem;
+    transition: background 0.15s;
+}
+
+.imagePreviewRemove:hover {
+    background: rgba(220, 60, 60, 0.8);
+}
+
+
+.imageModalContent {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imageModalFull {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+}
+
+.imageModalContent .modalClose {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    z-index: 1;
+}
+
+
 .emptyState {
     display: flex;
     align-items: center;
@@ -322,7 +446,7 @@
     font-size: 0.95rem;
 }
 
-/* ── Dropdown ── */
+
 .dropdown {
     position: absolute;
     top: 100%;
@@ -362,7 +486,7 @@
     color: rgba(74, 158, 237, 0.6);
 }
 
-/* ── Modals ── */
+
 .modalOverlay {
     position: fixed;
     inset: 0;
@@ -536,7 +660,7 @@
     transform: none;
 }
 
-/* ── Group Chat Form ── */
+
 .groupChatForm {
     display: flex;
     flex-direction: column;
@@ -620,7 +744,7 @@
     background: rgba(220, 60, 60, 0.15);
 }
 
-/* ── Manage Panel (slide-in) ── */
+
 .managePanelOverlay {
     position: fixed;
     inset: 0;
@@ -690,7 +814,7 @@
     gap: 8px;
 }
 
-/* ── Member List ── */
+
 .memberList {
     list-style: none;
     margin: 0;
@@ -784,7 +908,7 @@
     color: #e25555;
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 768px) {
     .chatsList {
         width: 240px;

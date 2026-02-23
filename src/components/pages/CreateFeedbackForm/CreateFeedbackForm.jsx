@@ -56,14 +56,14 @@ const CreateFeedbackForm = () => {
             <Menu />
             <div className={styles.page}>
                 <div className={styles.container} ref={containerRef}>
-                    {/* Top bar */}
+                    {}
                     <div className={styles.topBar}>
                         <button className={styles.backBtn} onClick={() => navigate(`/manage_project/${projectId}`)}>
                             <i className="fas fa-arrow-left"></i> Назад
                         </button>
                     </div>
 
-                    {/* Card */}
+                    {}
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
                             <i className="fas fa-clipboard-list"></i>

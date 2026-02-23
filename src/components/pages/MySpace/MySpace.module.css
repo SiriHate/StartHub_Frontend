@@ -14,7 +14,7 @@
     background-attachment: fixed;
 }
 
-/* ── Sidebar ── */
+
 .sidebar {
     width: 260px;
     min-width: 260px;
@@ -119,7 +119,7 @@
     transform: translateY(-1px);
 }
 
-/* ── Content ── */
+
 .content {
     flex: 1;
     padding: 30px 36px;
@@ -195,7 +195,7 @@
     filter: brightness(1.15);
 }
 
-/* ── Cards Grid ── */
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -290,7 +290,7 @@
     color: #fff;
 }
 
-/* ── States ── */
+
 .loadingState {
     display: flex;
     flex-direction: column;
@@ -355,7 +355,7 @@
     transform: translateY(-1px);
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 900px) {
     .page {
         flex-direction: column;
