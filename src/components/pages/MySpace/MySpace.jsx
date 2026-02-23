@@ -238,9 +238,6 @@ const MySpace = () => {
                         <div className={styles.emptyState}>
                             <i className={`fas ${getCategoryIcon()}`}></i>
                             <p>Не найдено ни одного из ваших {getEmptyNoun()}</p>
-                            <button className={styles.emptyCreateBtn} onClick={handleCreateItem}>
-                                <i className="fas fa-plus"></i> {getCreateButtonText()}
-                            </button>
                         </div>
                     ) : (
                         <>
