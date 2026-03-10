@@ -108,6 +108,28 @@
     white-space: nowrap;
 }
 
+.chatHead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chatDate {
+    margin-left: auto;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.72rem;
+}
+
+.chatPreview {
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .loadingInList {
     display: flex;
     align-items: center;
@@ -153,6 +175,31 @@
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.muteChatButton {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.82rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.muteChatButton:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.24);
+    color: #fff;
+}
+
+.muteChatButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .manageChatButton {

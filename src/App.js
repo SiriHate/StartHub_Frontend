@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/security/AuthContext";
+import { NotificationProvider } from "./components/notifications/NotificationContext";
+import NotificationSidebar from "./components/notifications/NotificationSidebar";
 import PrivateRoute from "./components/security/PrivateRoute";
 import HomePage from "./components/pages/HomePage/HomePage";
 import LoginPage from "./components/pages/LoginPage/LoginPage";
@@ -34,8 +36,10 @@ import MyChats from "./components/pages/MyChats/MyChats";
 
 const App = () => {
     return (
-            <AuthProvider>
+        <AuthProvider>
+            <NotificationProvider>
                 <Router>
+                    <NotificationSidebar />
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/login" element={<LoginPage />} />
@@ -72,7 +76,8 @@ const App = () => {
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Router>
-            </AuthProvider>
+            </NotificationProvider>
+        </AuthProvider>
     );
 };
 

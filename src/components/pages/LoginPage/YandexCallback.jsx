@@ -12,7 +12,7 @@ const YandexCallback = () => {
     useEffect(() => {
         const hash = window.location.hash.slice(1);
         const params = new URLSearchParams(hash);
-        const accessToken = params.get('accessToken');
+        const accessToken = params.get('access_token') || params.get('accessToken');
 
         if (!accessToken) {
             setStatus('Токен не получен. Вернитесь на страницу входа.');
@@ -33,7 +33,7 @@ const YandexCallback = () => {
 
                 if (response.ok) {
                     const userData = await response.json();
-                    login(userData.accessToken, userData.accessToken);
+                    login(userData.accessToken, userData.refreshToken || userData.accessToken);
                     navigate('/');
                 } else {
                     setStatus('Ошибка авторизации. Попробуйте снова.');
@@ -44,7 +44,7 @@ const YandexCallback = () => {
         };
 
         authYandex();
-    }, [navigate]);
+    }, [navigate, login]);
 
     return (
         <div style={{

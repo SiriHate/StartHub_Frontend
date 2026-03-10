@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ModeratorPanel.module.css';
 import Pagination from '../../pagination/Pagination';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ const ModeratorPanel = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('users');
     const [searchQuery, setSearchQuery] = useState('');
+    const [appliedSearch, setAppliedSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [statusFilter, setStatusFilter] = useState('published');
     const [users, setUsers] = useState([]);
@@ -33,7 +34,7 @@ const ModeratorPanel = () => {
         checkUserRole();
     }, [navigate]);
 
-    const fetchUsers = async (page = 0, search = '') => {
+    const fetchUsers = useCallback(async (page = 0, search = '') => {
         try {
             setLoading(true);
             const params = new URLSearchParams({ username: search, page, size: itemsPerPage });
@@ -42,9 +43,9 @@ const ModeratorPanel = () => {
             const data = await response.json();
             setUsers(data.content); setTotalPages(data.totalPages);
         } catch (error) { console.error(error); } finally { setLoading(false); }
-    };
+    }, [itemsPerPage]);
 
-    const fetchProjects = async (page = 0) => {
+    const fetchProjects = useCallback(async (page = 0) => {
         try {
             setLoading(true);
             const moderationPassed = statusFilter === 'published' ? 'true' : 'false';
@@ -52,9 +53,9 @@ const ModeratorPanel = () => {
             if (!response.ok) { const d = await response.json(); if (d.errorMessage?.includes("No unmoderated")) { setProjects([]); setTotalPages(0); return; } throw new Error(); }
             const data = await response.json(); setProjects(data.content); setTotalPages(data.totalPages);
         } catch (error) { setProjects([]); setTotalPages(0); } finally { setLoading(false); }
-    };
+    }, [statusFilter, itemsPerPage]);
 
-    const fetchNews = async (page = 0) => {
+    const fetchNews = useCallback(async (page = 0) => {
         try {
             setLoading(true);
             const moderationPassed = statusFilter === 'published' ? 'true' : 'false';
@@ -62,9 +63,9 @@ const ModeratorPanel = () => {
             if (!response.ok) { const d = await response.json(); if (d.errorMessage?.includes("No unmoderated")) { setNews([]); setTotalPages(0); return; } throw new Error(); }
             const data = await response.json(); setNews(data.content); setTotalPages(data.totalPages);
         } catch (error) { setNews([]); setTotalPages(0); } finally { setLoading(false); }
-    };
+    }, [statusFilter, itemsPerPage]);
 
-    const fetchArticles = async (page = 0) => {
+    const fetchArticles = useCallback(async (page = 0) => {
         try {
             setLoading(true);
             const moderationPassed = statusFilter === 'published' ? 'true' : 'false';
@@ -72,18 +73,14 @@ const ModeratorPanel = () => {
             if (!response.ok) { const d = await response.json(); if (d.errorMessage?.includes("No unmoderated")) { setArticles([]); setTotalPages(0); return; } throw new Error(); }
             const data = await response.json(); setArticles(data.content); setTotalPages(data.totalPages);
         } catch (error) { setArticles([]); setTotalPages(0); } finally { setLoading(false); }
-    };
+    }, [statusFilter, itemsPerPage]);
 
     useEffect(() => {
-        setCurrentPage(1);
-    }, [activeTab, statusFilter]);
-
-    useEffect(() => {
-        if (activeTab === 'users') fetchUsers(currentPage - 1, searchQuery);
+        if (activeTab === 'users') fetchUsers(currentPage - 1, appliedSearch);
         else if (activeTab === 'projects') fetchProjects(currentPage - 1);
         else if (activeTab === 'news') fetchNews(currentPage - 1);
         else if (activeTab === 'articles') fetchArticles(currentPage - 1);
-    }, [activeTab, currentPage, searchQuery, statusFilter, itemsPerPage, fetchUsers, fetchProjects, fetchNews, fetchArticles]);
+    }, [activeTab, currentPage, appliedSearch, fetchUsers, fetchProjects, fetchNews, fetchArticles]);
 
     const getCurrentData = () => {
         switch (activeTab) {
@@ -95,7 +92,19 @@ const ModeratorPanel = () => {
         }
     };
 
-    const handleSearch = () => { setCurrentPage(1); if (activeTab === 'users') fetchUsers(0, searchQuery); };
+    const handleSearch = () => {
+        if (activeTab !== 'users') return;
+        setCurrentPage(1);
+        setAppliedSearch(searchQuery);
+    };
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        setCurrentPage(1);
+    };
+    const handleStatusChange = (status) => {
+        setStatusFilter(status);
+        setCurrentPage(1);
+    };
     const handleLogout = () => { document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure'; navigate('/'); };
     const handleUserClick = (username) => navigate(`/members/profile/${username}`);
     const handleProjectClick = (id) => navigate(`/project/${id}`);
@@ -186,7 +195,7 @@ const ModeratorPanel = () => {
                 {}
                 <div className={styles.tabs}>
                     {tabs.map(t => (
-                        <button key={t.key} className={`${styles.tab} ${activeTab === t.key ? styles.tabActive : ''}`} onClick={() => setActiveTab(t.key)}>
+                        <button key={t.key} className={`${styles.tab} ${activeTab === t.key ? styles.tabActive : ''}`} onClick={() => handleTabChange(t.key)}>
                             <i className={`fas ${t.icon}`}></i> {t.label}
                         </button>
                     ))}
@@ -205,10 +214,10 @@ const ModeratorPanel = () => {
                     )}
                     {activeTab !== 'users' && (
                         <div className={styles.statusRow}>
-                            <button className={`${styles.statusBtn} ${statusFilter === 'published' ? styles.statusActive : ''}`} onClick={() => setStatusFilter('published')}>
+                            <button className={`${styles.statusBtn} ${statusFilter === 'published' ? styles.statusActive : ''}`} onClick={() => handleStatusChange('published')}>
                                 <i className="fas fa-check-circle"></i> Опубликованные
                             </button>
-                            <button className={`${styles.statusBtn} ${statusFilter === 'pending' ? styles.statusActive : ''}`} onClick={() => setStatusFilter('pending')}>
+                            <button className={`${styles.statusBtn} ${statusFilter === 'pending' ? styles.statusActive : ''}`} onClick={() => handleStatusChange('pending')}>
                                 <i className="fas fa-clock"></i> Ожидающие
                             </button>
                         </div>

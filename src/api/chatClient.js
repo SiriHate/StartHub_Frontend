@@ -46,3 +46,19 @@ export const changeMemberRole = (memberId, role) =>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role }),
     });
+
+export const getMutedChats = () =>
+    apiClient(`${BASE}/chats/notifications/muted`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+export const muteChatNotifications = (chatId) =>
+    apiClient(`${BASE}/chats/${chatId}/notifications/mute`, {
+        method: 'POST',
+    });
+
+export const unmuteChatNotifications = (chatId) =>
+    apiClient(`${BASE}/chats/${chatId}/notifications/mute`, {
+        method: 'DELETE',
+    });

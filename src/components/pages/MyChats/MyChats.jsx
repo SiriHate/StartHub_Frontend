@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './MyChats.module.css';
 import NavigationBar from '../../menu/Menu';
 import { Helmet } from "react-helmet";
@@ -13,6 +13,9 @@ import {
     addChatMember,
     removeChatMember,
     changeMemberRole,
+    getMutedChats,
+    muteChatNotifications,
+    unmuteChatNotifications,
 } from '../../../api/chatClient';
 import chatWsClient from '../../../api/chatWsClient';
 
@@ -53,6 +56,8 @@ function MyChats() {
     const [pendingImagePreview, setPendingImagePreview] = useState(null);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [imageModalUrl, setImageModalUrl] = useState(null);
+    const [ignoredChatIds, setIgnoredChatIds] = useState([]);
+    const [updatingMute, setUpdatingMute] = useState(false);
     const messagesEndRef = useRef(null);
     const searchTimeoutRef = useRef(null);
     const dropdownRef = useRef(null);
@@ -69,11 +74,50 @@ function MyChats() {
     const fileInputRef = useRef(null);
 
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const openProfile = (username) => {
         if (username && username !== currentUsername) {
             navigate(`/members/profile/${username}`);
         }
+    };
+
+    const buildChatPreviewFromMessage = (message) => {
+        const content = typeof message?.content === 'string' ? message.content.trim() : '';
+        if (content) return content;
+        if (message?.imageUrl || message?.imageKey) return 'Изображение';
+        return 'Нет сообщений';
+    };
+
+    const refreshChatActivity = (chatId, message) => {
+        const targetId = Number(chatId);
+        if (!Number.isFinite(targetId)) return;
+
+        const preview = buildChatPreviewFromMessage(message);
+        const messageDate = typeof message?.sendAt === 'string' && message.sendAt.trim()
+            ? message.sendAt
+            : new Date().toISOString();
+
+        setChats(prevChats => {
+            const index = prevChats.findIndex(chat => Number(chat.id) === targetId);
+            if (index < 0) return prevChats;
+
+            const updated = {
+                ...prevChats[index],
+                lastMessage: preview,
+                lastMessageAt: messageDate,
+            };
+            return [updated, ...prevChats.slice(0, index), ...prevChats.slice(index + 1)];
+        });
+
+        setSelectedChat(prevSelected => {
+            if (!prevSelected || Number(prevSelected.id) !== targetId) return prevSelected;
+            return {
+                ...prevSelected,
+                lastMessage: preview,
+                lastMessageAt: messageDate,
+            };
+        });
     };
 
     const fetchMyChats = async (page, append = false) => {
@@ -122,6 +166,13 @@ function MyChats() {
             setLoading(true);
             await fetchUserData();
             try {
+                const ignoredChatsResponse = await getMutedChats();
+                if (ignoredChatsResponse.ok) {
+                    const ignored = await ignoredChatsResponse.json();
+                    setIgnoredChatIds(Array.isArray(ignored) ? ignored.map(Number).filter(Number.isFinite) : []);
+                }
+            } catch (_) {}
+            try {
                 await fetchMyChats(0, false);
             } catch {
                 setLoading(false);
@@ -140,6 +191,7 @@ function MyChats() {
             onConnectionChange: (connected) => setIsConnected(connected),
 
             onMessage: (msg) => {
+                refreshChatActivity(chatId, msg);
                 setMessages(prev => {
                     if (msg?.id != null && prev.some(m => m?.id === msg.id)) return prev;
                     const updated = [...prev, msg];
@@ -190,7 +242,7 @@ function MyChats() {
         const file = e.target.files?.[0];
         if (!file || !selectedChat) return;
 
-        const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
         if (!allowed.includes(file.type)) return;
 
         setPendingImagePreview(URL.createObjectURL(file));
@@ -198,10 +250,18 @@ function MyChats() {
 
         try {
             const response = await uploadChatImage(selectedChat.id, file);
-            if (!response.ok) throw new Error('Upload failed');
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Upload failed');
+            }
             const data = await response.json();
-            setPendingImageKey(data.imageKey);
-        } catch {
+            const imageKey = data?.imageKey || data?.image_key;
+            if (!imageKey) {
+                throw new Error('Image key missing in response');
+            }
+            setPendingImageKey(imageKey);
+        } catch (error) {
+            console.error('Image upload failed:', error);
             setPendingImagePreview(null);
             setPendingImageKey(null);
         } finally {
@@ -364,6 +424,24 @@ function MyChats() {
         }
     };
 
+    const getChatPreview = (chat) => {
+        const preview = typeof chat?.lastMessage === 'string' ? chat.lastMessage.trim() : '';
+        if (!preview) return 'Нет сообщений';
+        return preview;
+    };
+
+    const formatChatPreviewDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return '';
+        return date.toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
     const hasMoreChats = totalChatPages === 0 || chatPage + 1 < totalChatPages;
 
     const loadMoreChats = async () => {
@@ -380,6 +458,23 @@ function MyChats() {
     const filteredChats = chats.filter(chat =>
         getChatName(chat).toLowerCase().includes(searchQuery.trim().toLowerCase())
     );
+
+    useEffect(() => {
+        const rawChatId = searchParams.get('chatId');
+        if (!rawChatId) return;
+        const targetId = Number(rawChatId);
+        if (!Number.isFinite(targetId)) return;
+        if (selectedChat?.id === targetId) return;
+
+        const targetChat = chats.find(chat => Number(chat.id) === targetId);
+        if (!targetChat) return;
+
+        handleChatSelect(targetChat);
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete('chatId');
+        setSearchParams(nextParams, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chats, searchParams, selectedChat?.id, setSearchParams]);
 
     const loadMoreMessages = () => {
         if (!selectedChat || !chatWsClient.connected || !isConnected || loadingMoreMessages || !hasMoreMessages) return;
@@ -529,6 +624,30 @@ function MyChats() {
     };
 
     const getMemberDisplayName = (member) => member?.username ?? member?.userUsername ?? '—';
+    const isSelectedChatIgnored = selectedChat?.id != null && ignoredChatIds.includes(Number(selectedChat.id));
+
+    const handleToggleChatMute = async () => {
+        if (!selectedChat?.id || updatingMute) return;
+        const chatId = Number(selectedChat.id);
+        if (!Number.isFinite(chatId)) return;
+        setUpdatingMute(true);
+        try {
+            if (ignoredChatIds.includes(chatId)) {
+                const response = await unmuteChatNotifications(chatId);
+                if (response.ok) {
+                    setIgnoredChatIds(prev => prev.filter(id => id !== chatId));
+                }
+            } else {
+                const response = await muteChatNotifications(chatId);
+                if (response.ok) {
+                    setIgnoredChatIds(prev => prev.includes(chatId) ? prev : [...prev, chatId]);
+                }
+            }
+        } catch (_) {
+        } finally {
+            setUpdatingMute(false);
+        }
+    };
 
     return (
         <div>
@@ -576,7 +695,11 @@ function MyChats() {
                                     className={`${styles.chatItem} ${selectedChat?.id === chat.id ? styles.selected : ''}`}
                                     onClick={() => handleChatSelect(chat)}
                                 >
-                                    <div className={styles.chatName}>{getChatName(chat)}</div>
+                                    <div className={styles.chatHead}>
+                                        <div className={styles.chatName}>{getChatName(chat)}</div>
+                                        <div className={styles.chatDate}>{formatChatPreviewDate(chat.lastMessageAt)}</div>
+                                    </div>
+                                    <div className={styles.chatPreview}>{getChatPreview(chat)}</div>
                                 </div>
                             ))}
                             {hasMoreChats && (
@@ -593,6 +716,15 @@ function MyChats() {
                             <div className={styles.chatHeader}>
                                 <div className={styles.chatTitle}>{getChatName(selectedChat)}</div>
                                 <div className={styles.chatHeaderActions}>
+                                    <button
+                                        type="button"
+                                        onClick={handleToggleChatMute}
+                                        className={styles.muteChatButton}
+                                        disabled={updatingMute}
+                                    >
+                                        <i className={`fas ${isSelectedChatIgnored ? 'fa-bell' : 'fa-bell-slash'}`}></i>
+                                        {isSelectedChatIgnored ? 'Включить уведомления' : 'Заглушить чат'}
+                                    </button>
                                     {selectedChat.type === 'GROUP' && (currentUserRoleInChat === 'OWNER' || currentUserRoleInChat === 'MODERATOR') && (
                                         <button
                                             type="button"
